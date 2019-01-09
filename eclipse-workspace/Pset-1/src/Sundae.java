@@ -22,12 +22,12 @@ class Topping implements ISundae {
 
 class ExamplesSundae {
   ISundae chocolateScoop = new Scoop("chocolate");
-  ISundae rainbowChocolate = new Topping(chocolateScoop, "rainbow sprinkles");
-  ISundae caramelRainbow = new Topping(rainbowChocolate, "caramel");
-  ISundae yummy = new Topping(caramelRainbow, "whipped cream");
+  ISundae rainbowChocolate = new Topping(this.chocolateScoop, "rainbow sprinkles");
+  ISundae caramelRainbow = new Topping(this.rainbowChocolate, "caramel");
+  ISundae yummy = new Topping(this.caramelRainbow, "whipped cream");
 
   ISundae vanillaScoop = new Scoop("vanilla");
-  ISundae chocolateVanilla = new Topping(vanillaScoop, "chocolate sprinkles");
-  ISundae fudgeChocolate = new Topping(chocolateVanilla, "fudge");
-  ISundae noThankYou = new Topping(fudgeChocolate, "plum sauce");
+  ISundae chocolateVanilla = new Topping(this.vanillaScoop, "chocolate sprinkles");
+  ISundae fudgeChocolate = new Topping(this.chocolateVanilla, "fudge");
+  ISundae noThankYou = new Topping(this.fudgeChocolate, "plum sauce");
 }
