@@ -39,21 +39,22 @@ class Blend implements IBeverage {
   }
 }
 
-
 class ExamplesBeverage {
-  IBeverage espresso = new Coffee("Espresso", True);
+  IBeverage espresso = new Coffee("Espresso", true);
   IBeverage americano = new Blend(this.espresso, new Milk());
   IBeverage heavyCaff = new Blend(this.espresso, new Tea("Chai", "almond"));
   IBeverage twoMilk = new Blend(new Milk(), new Milk());
   IBeverage dirtyChai = new Blend(this.heavyCaff, this.twoMilk);
 }
 
-interface IAT { }
+interface IAT {
+}
 
 class Person implements IAT {
   String name;
   IAT lParent;
   IAT rParent;
+
   Person(String name, IAT lParent, IAT rParent) {
     this.name = name;
     this.lParent = lParent;
