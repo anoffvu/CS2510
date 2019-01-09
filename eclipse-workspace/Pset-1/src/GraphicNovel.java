@@ -21,5 +21,8 @@ class GraphicNovel {
 
 class ExamplesGraphicNovel {
   GraphicNovel maus = new GraphicNovel("Maus", "Spiegelman", "Spiegelman", 1980, 17.60, true);
-  GraphicNovel logicomix = new GraphicNovel("Logicomix", "Doxiadis", "Papadatos", 2009, 21.00, false);
+  GraphicNovel logicomix = 
+      new GraphicNovel("Logicomix", "Doxiadis", "Papadatos", 2009, 21.00, false);
+  GraphicNovel sabrina = 
+      new GraphicNovel("Sabrina", "Drnaso", "Drnaso", 2018, 19.00, false);
 }

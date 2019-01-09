@@ -26,7 +26,7 @@ class ExamplesSundae {
   ISundae caramelRainbow = new Topping(rainbowChocolate, "caramel");
   ISundae yummy = new Topping(caramelRainbow, "whipped cream");
 
-  ISundae vanillaScoop = new Scoop("Vanilla");
+  ISundae vanillaScoop = new Scoop("vanilla");
   ISundae chocolateVanilla = new Topping(vanillaScoop, "chocolate sprinkles");
   ISundae fudgeChocolate = new Topping(chocolateVanilla, "fudge");
   ISundae noThankYou = new Topping(fudgeChocolate, "plum sauce");

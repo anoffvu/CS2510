@@ -1,4 +1,4 @@
 
-public class ExamplesGame {
+class ExamplesGame {
 
 }
