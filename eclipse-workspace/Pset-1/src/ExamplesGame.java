@@ -1,7 +1,7 @@
-interface IResources {
+interface IResource {
 }
 
-class Denial implements IResources {
+class Denial implements IResource {
   String subject;
   int believability;
 
@@ -11,7 +11,7 @@ class Denial implements IResources {
   }
 }
 
-class Bribe implements IResources {
+class Bribe implements IResource {
   String target;
   int value;
 
@@ -21,7 +21,7 @@ class Bribe implements IResources {
   }
 }
 
-class Apology implements IResources {
+class Apology implements IResource {
   String excuse;
   boolean reusable;
 
@@ -36,19 +36,19 @@ interface IAction {
 
 class Purchase implements IAction {
   int cost;
-  IResources item;
+  IResource item;
 
-  Purchase(int cost, IResources item) {
+  Purchase(int cost, IResource item) {
     this.cost = cost;
     this.item = item;
   }
 }
 
 class Swap implements IAction {
-  IResources consumed;
-  IResources received;
+  IResource consumed;
+  IResource received;
 
-  Swap(IResources consumed, IResources received) {
+  Swap(IResource consumed, IResource received) {
     this.consumed = consumed;
     this.received = received;
   }
@@ -56,12 +56,12 @@ class Swap implements IAction {
 }
 
 class ExamplesGame {
-  IResources iDidntKnow = new Denial("knowledge", 51);
-  IResources witness = new Bribe("innocent witness", 49);
-  IResources iWontDoItAgain = new Apology("I won't do it again", false);
-  IResources iCouldntAct = new Denial("action", 49);
-  IResources boss = new Bribe("boss", 99);
-  IResources iAmSorry = new Apology("I am sorry", true);
+  IResource iDidntKnow = new Denial("knowledge", 51);
+  IResource witness = new Bribe("innocent witness", 49);
+  IResource iWontDoItAgain = new Apology("I won't do it again", false);
+  IResource iCouldntAct = new Denial("action", 49);
+  IResource boss = new Bribe("boss", 99);
+  IResource iAmSorry = new Apology("I am sorry", true);
   IAction purchase1 = new Purchase(10, this.iWontDoItAgain);
   IAction purchase2 = new Purchase(10, this.iCouldntAct);
   IAction swap1 = new Swap(this.iDidntKnow, this.witness);
