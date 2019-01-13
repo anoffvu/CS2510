@@ -1,112 +1,87 @@
 import tester.Tester;
 
-class Lec3 {
-
-}
-
-/*
- * //Design recipe 1. Data definition (template) 2. Signature and Purpose (short, concise
- * sentence) 3. "Check Expects" !! 4. Code 5. Run & Test it.
- *
- * SL : "function" Java: "method"
- *
- * put the template right under the constructor
- */
-interface IBeverage {
-}
-
-class Milk implements IBeverage {
-}
-
-class Coffee implements IBeverage {
+// a class to represent coffee
+class Coffee {
   String name;
-  boolean isFairTrade;
-  int price;
+  boolean isEspresso;
+  double price;
+  Origin origin;
 
-  Coffee(String name, boolean isFairTrade, int price) {
+  Coffee(String name, boolean isEspresso, double price, Origin origin) {
     this.name = name;
-    this.isFairTrade = isFairTrade;
+    this.isEspresso = isEspresso;
     this.price = price;
+    this.origin = origin;
   }
-  /*
-   * this.name ... s
-   * this.isFairTrade ... boolean
+
+  /* fields:
+   * this.name ... String
+   * this.isEspresso ... boolean
    * this.price ... int
-   * this.couponPrice(double) ... double
-   * this.sameCoffee(Coffee) ... Boolean
+   * this.origin ... Origin
+   * methods:
+   * this.couponPrice(int) ...double
+   * this.sameCoffee(Coffee) ... boolean
+   * methods for fields:
+   * this.origin.sameOrigin(Origin) ... boolean
    */
 
-  // compute the sale price of this Coffee given coupon
-  double couponPrice(double discount) {
-    // you dont need to input a coffee, because it automatically associates with this coffee,
-    // the coffee that it is initialized with, the class
-    return this.price - this.price * discount / 100;
+  //compute the price of this Coffee after using a coupon represented as a percentage
+  double couponPrice(int coupon) {
+    return this.price - (this.price * coupon)/100;
   }
-  boolean sameCoffee(Coffee theOther) {
-    return this.name.equals(theOther.name)
-        && this.price == theOther.price
-        && this.isFairTrade == theOther.isFairTrade;
+
+  //is this coffee the same as the given one?
+  boolean sameCoffee(Coffee that) {
+    return this.name.equals(that.name)
+        && this.isEspresso == that.isEspresso
+        && this.price == that.price
+        && this.origin.sameOrigin(that.origin);
   }
+
 }
 
-class Tea implements IBeverage {
-  String name;
-  String color;
+// a class to represent origin of a coffee
+class Origin {
+  String location;
+  boolean isFairTrade;
 
-  Tea(String name, String color) {
-    this.name = name;
-    this.color = color;
+  Origin(String location, boolean isFairTrade) {
+    this.location = location;
+    this.isFairTrade = isFairTrade;
   }
+
+  /* this.location ... String
+   * this.isFairTrade ... boolean
+   * this.sameOrigin(Origin) ... boolean
+   */
+
+  //is this Origin the same as that Origin
+  boolean sameOrigin(Origin that) {
+    return this.location.equals(that.location)
+        && this.isFairTrade == that.isFairTrade;
+  }
+
 }
 
-class Blend implements IBeverage {
-  IBeverage first;
-  IBeverage second;
 
-  Blend(IBeverage first, IBeverage second) {
-    this.first = first;
-    this.second = second;
-  }
-}
+class Examples {
+  Origin brazil = new Origin("Brazil", false);
+  Origin indonesia = new Origin("Indonesia", true);
+  Coffee morningCoffee = new Coffee("morning coffee", false, 10.0, this.brazil);
+  Coffee espressoCoffee = new Coffee("espresso coffee", true, 5.0, this.indonesia);
 
-class ExamplesBeverage {
-  Coffee espresso = new Coffee("Espresso", true, 20);
-  IBeverage americano = new Blend(this.espresso, new Milk());
-  IBeverage heavyCaff = new Blend(this.espresso, new Tea("Chai", "almond"));
-  IBeverage twoMilk = new Blend(new Milk(), new Milk());
-  IBeverage dirtyChai = new Blend(this.heavyCaff, this.twoMilk);
-
-  // to test coffee prices
-  boolean testCoffee(Tester t) {
-    return t.checkExpect(this.espresso.couponPrice(90), 2.0);
+  //test for coupon price
+  boolean testCoupon(Tester t) {
+    return t.checkExpect(this.morningCoffee.couponPrice(20), 8.0) &&
+        t.checkExpect(this.espressoCoffee.couponPrice(50), 2.5);
   }
 
-  boolean testAnotherCoffee(Tester t) {
-    return t.checkExpect(this.espresso.couponPrice(18), 16.4);
-  }
-
-  // test the sameness and differentude of some coffees
+  //test for Coffee sameness
   boolean testSameness(Tester t) {
-    return t.checkExpect(this.espresso.sameCoffee(this.espresso), true)
-        && t.checkExpect(this.espresso.sameCoffee(new Coffee("",true,15)),false);
+    return t.checkExpect(this.morningCoffee.sameCoffee(this.morningCoffee), true) &&
+        t.checkExpect(this.espressoCoffee.sameCoffee(this.morningCoffee), false) &&
+        t.checkExpect(this.brazil.sameOrigin(this.brazil), true) &&
+        t.checkExpect(this.indonesia.sameOrigin(this.brazil), false);
   }
-}
-
-interface IAT {
-}
-
-class Person implements IAT {
-  String name;
-  IAT lParent;
-  IAT rParent;
-
-  Person(String name, IAT lParent, IAT rParent) {
-    this.name = name;
-    this.lParent = lParent;
-    this.rParent = rParent;
-  }
-}
-
-class Unknown {
-
 }

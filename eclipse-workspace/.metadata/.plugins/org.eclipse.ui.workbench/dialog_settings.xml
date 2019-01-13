@@ -26,6 +26,7 @@
 		<item value="false" key="WizardFileSystemResourceImportPage1.STORE_CREATE_CONTAINER_STRUCTURE_ID"/>
 		<item value="false" key="WizardFileSystemResourceImportPage1.STORE_OVERWRITE_EXISTING_RESOURCES_ID"/>
 		<list key="WizardFileSystemResourceImportPage1.STORE_SOURCE_NAMES_ID">
+			<item value="/Users/An/Documents/CCCollege/Spring 2019/cs-2510/lab 1/src"/>
 			<item value="/Users/An/Desktop"/>
 		</list>
 	</section>
