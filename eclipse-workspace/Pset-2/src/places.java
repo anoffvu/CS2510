@@ -38,7 +38,12 @@ class Place {
   */
   // computes the total available seating in all the venues reachable from the current place
   int totalCapacity () {
-    if first(this.features) 
+    if (first.this.features instanceof Venue) {
+      int
+    } else {
+      return
+    }
+
   }
 
 }
