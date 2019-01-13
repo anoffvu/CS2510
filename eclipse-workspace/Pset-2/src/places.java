@@ -36,6 +36,10 @@ class Place {
   this.features ... ILoIFeature
   methods:
   */
+  // computes the total available seating in all the venues reachable from the current place
+  int totalCapacity () {
+    if first(this.features) 
+  }
 
 }
 
@@ -98,7 +102,8 @@ class SchuttleBus implements IFeature {
 }
 
 
-//Describe (in English, or in a diagram, or in code...) the contents of a map that has at least one venue, two restaurants, three places, and four shuttle busses.
+// !! Describe (in English, or in a diagram, or in code...) the contents of a map that has at least one venue, two restaurants, three places, and four shuttle busses. !!
+// !! Design the data representation of the example you just described. !!
 
 class ExamplesPlaces {
   Place cambridgeSide = new ("CambridgeSide Galleria", this.cambridgeSideFeatures);
