@@ -61,7 +61,7 @@ class Place {
 
   // computes the total available seating in all the Venues reachable from the current place
 
-  int totalCapacity() {
+  public int totalCapacity() {
     return this.features.capacityFromFeatures();
   }
 }
@@ -152,60 +152,81 @@ class SchuttleBus implements IFeature {
  */
 
 class ExamplesPlaces {
-  Place anSide = new Place("AnSide Galleria", this.anSideFeatures);
+// An Side
   IFeature anJapan = new Restaurant("An Japan", "teriyaki", 3.9);
   IFeature anbucks = new Restaurant("Anbucks", "coffee", 4.1);
   IFeature anBridgeSchuttle = new SchuttleBus("An Bridge Schuttle", this.anStation);
   ConsLoIFeature anSideFeaturesOne = new ConsLoIFeature(this.anJapan, new MtLoIFeature());
   ConsLoIFeature anSideFeaturesTwo = new ConsLoIFeature(this.anbucks, this.anSideFeaturesOne);
   ConsLoIFeature anSideFeatures = new ConsLoIFeature(this.anBridgeSchuttle, this.anSideFeaturesTwo);
-
-  Place anStation = new Place("An Station", this.anStationFeatures);
+// An Station
   IFeature anExpress = new SchuttleBus("An Express", this.anEnd);
   IFeature anCruiser = new SchuttleBus("An Cruiser", this.anSide);
   IFeature anVroomer = new SchuttleBus("An Vroomer", this.anStation);
   ConsLoIFeature anStationFeaturesOne = new ConsLoIFeature(this.anExpress, new MtLoIFeature());
   ConsLoIFeature anStationFeaturesTwo = new ConsLoIFeature(this.anCruiser, this.anStationFeaturesOne);
   ConsLoIFeature anStationFeatures = new ConsLoIFeature(this.anVroomer, this.anStationFeaturesTwo);
-
-  Place anEnd = new Place("An End", this.anEndFeatures);
+// An End
   IFeature anCommon = new Venue("An Common", "public", 150000);
   ConsLoIFeature anEndFeatures = new ConsLoIFeature(this.anCommon, new MtLoIFeature());
+// Anville places
+  Place anSide = new Place("AnSide Galleria", this.anSideFeatures);
+  Place anStation = new Place("An Station", this.anStationFeatures);
+  Place anEnd = new Place("An End", this.anEndFeatures);
 
-
-  Place cambridgeSide = new Place("CambridgeSide Galleria", this.cambridgeSideFeatures);
+// Cambridge Side
   IFeature sarkuJapan = new Restaurant("Sarku Japan", "teriyaki", 3.9);
   IFeature starbucks = new Restaurant("Starbucks", "coffee", 4.1);
-  IFeature bridgeSchuttle = new SchuttleBus("bridge schuttle", this.southStation);
   ConsLoIFeature cambridgeSideFeaturesOne = new ConsLoIFeature(this.sarkuJapan, new MtLoIFeature ());
   ConsLoIFeature cambridgeSideFeaturesTwo = new ConsLoIFeature(this.starbucks, this.cambridgeSideFeaturesOne);
-  ConsLoIFeature cambridgeSideFeatures = new ConsLoIFeature(this.bridgeSchuttle, this.cambridgeSideFeaturesTwo);
-
-  Place southStation = new Place("South Station", this.southStationFeatures);
-  IFeature littleItalyExpress = new SchuttleBus("Little Italy Express", this.northEnd);
+// South Station
   IFeature reginasPizza = new Restaurant("Regina's Pizza", "pizza", 4.0);
-  IFeature crimsonCruiser = new SchuttleBus("Crimson Cruiser", this.harvard);
   IFeature bostonCommon = new Venue("Boston Common", "public", 150000);
   ConsLoIFeature southStationFeaturesOne = new ConsLoIFeature(this.littleItalyExpress, new MtLoIFeature ());
   ConsLoIFeature southStationFeaturesTwo = new ConsLoIFeature(this.reginasPizza, this.southStationFeaturesOne);
-  ConsLoIFeature southStationFeaturesThree = new ConsLoIFeature(this.crimsonCruiser, this.southStationFeaturesTwo);
-  ConsLoIFeature southStationFeatures = new ConsLoIFeature(this.bostonCommon, this.southStationFeaturesThree);
-
-  Place northEnd = new Place("North End", this.northEndFeatures);
+  ConsLoIFeature southStationFeaturesThree = new ConsLoIFeature(this.bostonCommon,
+      this.southStationFeaturesTwo);
+// North End
   IFeature tdGarden = new Venue("TD Garden", "stadium", 19580);
   IFeature theDailyCatch = new Restaurant("The Daily Catch", "Sicilian", 4.4);
   ConsLoIFeature northEndFeaturesOne = new ConsLoIFeature(this.tdGarden, new MtLoIFeature ());
-  ConsLoIFeature northEndFeatures = new ConsLoIFeature(this.theDailyCatch, this.northEndFeaturesOne);
-
-  Place harvard = new Place("Harvard", this.harvardFeatures);
-  IFeature freshman15 = new SchuttleBus("Freshmen-15", this.northEnd);
+// Harvard
   IFeature borderCafe = new Restaurant("Border Cafe", "Tex-Mex", 4.5);
   IFeature harvardStadium = new Venue("Harvard Stadium", "football", 30323);
-  ConsLoIFeature harvardFeaturesOne = new ConsLoIFeature(this.freshman15, new MtLoIFeature ());
-  ConsLoIFeature harvardFeaturesTwo = new ConsLoIFeature(this.borderCafe, this.harvardFeaturesOne);
-  ConsLoIFeature harvardFeatures = new ConsLoIFeature(this.harvardStadium, this.harvardFeaturesTwo);
-  
+  ConsLoIFeature harvardFeaturesOne = new ConsLoIFeature(this.borderCafe, new MtLoIFeature());
+  ConsLoIFeature harvardFeaturesTwo = new ConsLoIFeature(this.harvardStadium,
+      this.harvardFeaturesOne);
+// arranging feature lists, places, and schuttles so they can past the tester
+// defining objects before they are used
+  ConsLoIFeature northEndFeatures = new ConsLoIFeature(this.theDailyCatch,
+      this.northEndFeaturesOne);
+  Place northEnd = new Place("North End", this.northEndFeatures);
+  IFeature freshman15 = new SchuttleBus("Freshmen-15", this.northEnd);
+  ConsLoIFeature harvardFeatures = new ConsLoIFeature(this.freshman15, harvardFeaturesTwo);
+  Place harvard = new Place("Harvard", this.harvardFeatures);
+  IFeature crimsonCruiser = new SchuttleBus("Crimson Cruiser", this.harvard);
+  ConsLoIFeature southStationFeatures = new ConsLoIFeature(this.crimsonCruiser,
+      this.southStationFeaturesThree);
+  Place southStation = new Place("South Station", this.southStationFeatures);
+  IFeature bridgeSchuttle = new SchuttleBus("bridge schuttle", this.southStation);
+  ConsLoIFeature cambridgeSideFeatures = new ConsLoIFeature(this.bridgeSchuttle,
+      this.cambridgeSideFeaturesTwo);
+  Place cambridgeSide = new Place("CambridgeSide Galleria", this.cambridgeSideFeatures);
+  IFeature littleItalyExpress = new SchuttleBus("Little Italy Express", this.northEnd);
+
+  // totalCapacity and helpers' tests
   boolean testTotalCapacity(Tester t) {
-    return t.checkExpect(this.anEnd.totalCapacity(), 150000);
+    return t.checkExpect(this.anEnd.totalCapacity(), 150000)
+        && t.checkExpect(this.harvard.totalCapacity(), 49903);
   }
+  boolean testCapacityFromFeatures(Tester t) {
+    return t.checkExpect(this.harvardFeatures.capacityFromFeatures(), 49903)
+        && t.checkExpect(this.anEndFeatures.capacityFromFeatures(), 150000);
+  }
+
+  boolean testCapacityFeature(Tester t) {
+    return t.checkExpect(this.harvardStadium.capacityFeature(), 30323)
+        && t.checkExpect(this.theDailyCatch.capacityFeature(), 0);
+  }
+
 }
