@@ -14,7 +14,8 @@ class Coffee {
     this.origin = origin;
   }
 
-  /* fields:
+  /*
+   * fields:
    * this.name ... String
    * this.isEspresso ... boolean
    * this.price ... int
@@ -26,17 +27,15 @@ class Coffee {
    * this.origin.sameOrigin(Origin) ... boolean
    */
 
-  //compute the price of this Coffee after using a coupon represented as a percentage
+  // compute the price of this Coffee after using a coupon represented as a percentage
   double couponPrice(int coupon) {
-    return this.price - (this.price * coupon)/100;
+    return this.price - (this.price * coupon) / 100;
   }
 
-  //is this coffee the same as the given one?
+  // is this coffee the same as the given one?
   boolean sameCoffee(Coffee that) {
-    return this.name.equals(that.name)
-        && this.isEspresso == that.isEspresso
-        && this.price == that.price
-        && this.origin.sameOrigin(that.origin);
+    return this.name.equals(that.name) && this.isEspresso == that.isEspresso
+        && this.price == that.price && this.origin.sameOrigin(that.origin);
   }
 
 }
@@ -51,19 +50,18 @@ class Origin {
     this.isFairTrade = isFairTrade;
   }
 
-  /* this.location ... String
+  /*
+   * this.location ... String
    * this.isFairTrade ... boolean
    * this.sameOrigin(Origin) ... boolean
    */
 
-  //is this Origin the same as that Origin
+  // is this Origin the same as that Origin
   boolean sameOrigin(Origin that) {
-    return this.location.equals(that.location)
-        && this.isFairTrade == that.isFairTrade;
+    return this.location.equals(that.location) && this.isFairTrade == that.isFairTrade;
   }
 
 }
-
 
 class Examples {
   Origin brazil = new Origin("Brazil", false);
@@ -71,17 +69,17 @@ class Examples {
   Coffee morningCoffee = new Coffee("morning coffee", false, 10.0, this.brazil);
   Coffee espressoCoffee = new Coffee("espresso coffee", true, 5.0, this.indonesia);
 
-  //test for coupon price
+  // test for coupon price
   boolean testCoupon(Tester t) {
-    return t.checkExpect(this.morningCoffee.couponPrice(20), 8.0) &&
-        t.checkExpect(this.espressoCoffee.couponPrice(50), 2.5);
+    return t.checkExpect(this.morningCoffee.couponPrice(20), 8.0)
+        && t.checkExpect(this.espressoCoffee.couponPrice(50), 2.5);
   }
 
-  //test for Coffee sameness
+  // test for Coffee sameness
   boolean testSameness(Tester t) {
-    return t.checkExpect(this.morningCoffee.sameCoffee(this.morningCoffee), true) &&
-        t.checkExpect(this.espressoCoffee.sameCoffee(this.morningCoffee), false) &&
-        t.checkExpect(this.brazil.sameOrigin(this.brazil), true) &&
-        t.checkExpect(this.indonesia.sameOrigin(this.brazil), false);
+    return t.checkExpect(this.morningCoffee.sameCoffee(this.morningCoffee), true)
+        && t.checkExpect(this.espressoCoffee.sameCoffee(this.morningCoffee), false)
+        && t.checkExpect(this.brazil.sameOrigin(this.brazil), true)
+        && t.checkExpect(this.indonesia.sameOrigin(this.brazil), false);
   }
 }
