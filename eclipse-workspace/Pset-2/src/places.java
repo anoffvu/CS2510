@@ -103,22 +103,29 @@ class Place {
    * Methods:
    * this.totalCapacity ... int
    * this.foodinessRating ... double
+   * this.restaurantCountOfThisPlace ... int
    * Methods on Fields
    * this.features.sumFoodinessRating ... double
    * this.features.countRestaurants ... int
    */
 
   // computes the total available seating in all the Venues reachable from the current place
-  public int totalCapacity() {
+  int totalCapacity() {
     return this.features.capacityFromFeatures();
   }
 
-//calcuates the number of restaurants in this place
-  public int restaurantCountOfThisPlace() {
+  // calculates the number of restaurants in this place
+  int restaurantCountOfThisPlace() {
    return this.features.countRestaurants();
  }
+
+  // calculates the sum foodiness ratings of this place
+  double sumFoodinessRatingOfThisPlace() {
+    return this.features.sumFoodinessRating();
+  }
+
   // computes the average rating of all restaurants reachable at the current place
-  public double foodinessRating() {
+  double foodinessRating() {
     return this.features.sumFoodinessRating() / this.features.countRestaurants();
   }
 }
@@ -224,6 +231,7 @@ class SchuttleBus implements IFeature {
    * restaurantCountOfThisFeature ... int
    * Methods on fields
    * this.destination.totalCapacity ... int
+   * this.destination.sumFoodinessRatingOfThisPlace ... double
    */
 // calculates the capacity of this IFeature
   public int capacityFeature() {
@@ -232,7 +240,7 @@ class SchuttleBus implements IFeature {
 
 // calculates the foodiness rating of this IFeature
   public double foodinessRatingOfFeature() {
-    return 0.0;
+    return this.destination.sumFoodinessRatingOfThisPlace();
   }
 
 // adds 1 to a count if this IFeature is a Restaurant
@@ -344,12 +352,12 @@ class ExamplesPlaces {
         && t.checkExpect(this.harvardStadium.foodinessRatingOfFeature(), 0.0);
   }
 
-  // TODO tests for sumFoodinessRating
-  /*
-   * boolean testSumFoodinessRating(Tester t) {
-   * return t.checkExpect(this.harvardFeatures.sumFoodinessRating(), 8.9);
-   * }
-   */
+  // tests for sumFoodinessRating
+  boolean testSumFoodinessRating(Tester t) {
+    return t.checkExpect(this.harvardFeatures.sumFoodinessRating(), 8.9)
+        && t.checkExpect(this.anEndFeatures.sumFoodinessRating(), 0.0);
+  }
+
   // tests for restaurantCountOfThisFeature
   boolean testrestaurantCountOfThisFeature(Tester t) {
     return t.checkExpect(this.theDailyCatch.restaurantCountOfThisFeature(), 1)
@@ -362,7 +370,7 @@ class ExamplesPlaces {
         && t.checkExpect(this.anEndFeatures.countRestaurants(), 0);
   }
 
-//tests for restaurantCountOfThisPlace
+  // tests for restaurantCountOfThisPlace
   boolean testRestaurantCountOfThisPlace(Tester t) {
     return t.checkExpect(this.harvard.restaurantCountOfThisPlace(), 2)
         && t.checkExpect(this.anEnd.restaurantCountOfThisPlace(), 0);
