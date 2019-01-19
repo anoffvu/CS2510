@@ -3,11 +3,15 @@ import tester.Tester;
 interface ILoIFeature {
   // calculates the capacity of venues from a list of features
   int capacityFromFeatures();
+  double sumFoodinessRating();
+  int countRestaurants();
 }
 
 interface IFeature {
   // calculates the capacity of a single feature
   int capacityFeature();
+  double foodinessRatingOfFeature();
+  int restaurantCountOfThisFeature();
 }
 
 class ConsLoIFeature implements ILoIFeature {
@@ -18,26 +22,67 @@ class ConsLoIFeature implements ILoIFeature {
     this.first = first;
     this.rest = rest;
     }
+
   /*
    * Template
    * Fields:
    * this.first ... IFeature
    * this.rest ... ILoIFeature
    * Methods:
+   * capacityFromFeatures ... int
+   * sumFoodinessRating ... double
+   * countRestaurants ... int
+   * Methods on Fields:
+   * this.first.capacityFeature ... int
+   * this.rest.capacityFeature ... int
+   * this.first.foodiniessRatingOfFeature() ... double
+   * this.rest.sumFoodinessRating() ... double
+   * this.first.restaurantCountOfThisFeature ... int
+   * this.rest.countRestaurants() ... int
    */
   // calculates the capacity of a non empty list of IFeatures
   public int capacityFromFeatures() {
     return this.first.capacityFeature() + this.rest.capacityFromFeatures();
   }
 
+  // calculates the total foodiness ratings from all reachable restaurants
+  public double sumFoodinessRating() {
+    return this.first.foodinessRatingOfFeature() + this.rest.sumFoodinessRating();
+  }
 
+  // calculates the total number of reachable restaurants
+  public int countRestaurants() {
+    return this.first.restaurantCountOfThisFeature() + this.rest.countRestaurants();
+  }
 }
 
 class MtLoIFeature implements ILoIFeature {
     MtLoIFeature() { }
 
-  // calculates the capacity of and empty list of IFeatures
+  /*
+   * Template
+   * Fields:
+   * this.first ... IFeature
+   * this.rest ... ILoIFeature
+   * Methods:
+   * capacityFromFeatures ... int
+   * sumFoodinessRating ... double
+   * countRestaurants ... int
+   * Methods on Fields:
+   */
+  // calculates the capacity of a empty list of IFeatures
   public int capacityFromFeatures() {
+    return 0;
+  }
+
+  // calculates the total foodiness ratings from all reachable restaurants in an empty list
+  // of IFeatures
+  public double sumFoodinessRating() {
+    return 0.0;
+  }
+
+  // calculates the total number of reachable restaurants in an empty list of IFeatures
+  public int countRestaurants() {
     return 0;
   }
 }
@@ -57,12 +102,24 @@ class Place {
    * this.features ... ILoIFeature
    * Methods:
    * this.totalCapacity ... int
+   * this.foodinessRating ... double
+   * Methods on Fields
+   * this.features.sumFoodinessRating ... double
+   * this.features.countRestaurants ... int
    */
 
   // computes the total available seating in all the Venues reachable from the current place
-
   public int totalCapacity() {
     return this.features.capacityFromFeatures();
+  }
+
+//calcuates the number of restaurants in this place
+  public int restaurantCountOfThisPlace() {
+   return this.features.countRestaurants();
+ }
+  // computes the average rating of all restaurants reachable at the current place
+  public double foodinessRating() {
+    return this.features.sumFoodinessRating() / this.features.countRestaurants();
   }
 }
 
@@ -78,6 +135,7 @@ class Restaurant implements IFeature {
     this.type = type;
     this.averageRating = averageRating;
   }
+
   /*
    * Template
    * Fields:
@@ -86,10 +144,23 @@ class Restaurant implements IFeature {
    * this.averageRating ... double
    * Methods:
    * capacityFeature ... int
+   * foodinessRatingOfFeature ... double
+   * restaurantCountOfThisFeature ... int
+   * Methods on fields
    */
-
+// calculates the capacity of this IFeature
   public int capacityFeature() {
     return 0;
+  }
+
+// calculates the foodiness rating of this restaurant
+  public double foodinessRatingOfFeature() {
+    return this.averageRating;
+  }
+
+// adds 1 to a count if this IFeature is a Restaurant
+  public int restaurantCountOfThisFeature() {
+    return 1;
   }
 }
 
@@ -112,10 +183,23 @@ class Venue implements IFeature {
    * this.capcity ... int
    * Methods:
    * capacityFeature ... int
+   * foodinessRatingOfFeature ... double
+   * restaurantCountOfThisFeature ... int
+   * Methods on fields
    */
-
+// calculates the capacity of a feature
   public int capacityFeature() {
     return this.capacity;
+  }
+
+// calculates the foodiness rating of this Venue
+  public double foodinessRatingOfFeature() {
+    return 0.0;
+  }
+
+// adds 1 to a count if this feature is a restaurant
+  public int restaurantCountOfThisFeature() {
+    return 0;
   }
 
 }
@@ -128,15 +212,32 @@ class SchuttleBus implements IFeature {
     this.name = name;
     this.destination = destination;
   }
+
   /*
    * Template
    * Fields:
    * this.name ... String
    * this.destination ... Place
    * Methods:
+   * capacityFeature ... int
+   * foodinessRatingOfFeature ... double
+   * restaurantCountOfThisFeature ... int
+   * Methods on fields
+   * this.destination.totalCapacity ... int
    */
+// calculates the capacity of this IFeature
   public int capacityFeature() {
     return this.destination.totalCapacity();
+  }
+
+// calculates the foodiness rating of this IFeature
+  public double foodinessRatingOfFeature() {
+    return 0.0;
+  }
+
+// adds 1 to a count if this IFeature is a Restaurant
+  public int restaurantCountOfThisFeature() {
+    return this.destination.restaurantCountOfThisPlace();
   }
 }
 
@@ -214,19 +315,56 @@ class ExamplesPlaces {
   Place cambridgeSide = new Place("CambridgeSide Galleria", this.cambridgeSideFeatures);
   IFeature littleItalyExpress = new SchuttleBus("Little Italy Express", this.northEnd);
 
-  // totalCapacity and helpers' tests
+  // tests for totalCapacity
   boolean testTotalCapacity(Tester t) {
     return t.checkExpect(this.anEnd.totalCapacity(), 150000)
         && t.checkExpect(this.harvard.totalCapacity(), 49903);
   }
+
+  // tests for capacityFromFeatures
   boolean testCapacityFromFeatures(Tester t) {
     return t.checkExpect(this.harvardFeatures.capacityFromFeatures(), 49903)
         && t.checkExpect(this.anEndFeatures.capacityFromFeatures(), 150000);
   }
 
+  // tests for capacityFeature
   boolean testCapacityFeature(Tester t) {
     return t.checkExpect(this.harvardStadium.capacityFeature(), 30323)
         && t.checkExpect(this.theDailyCatch.capacityFeature(), 0);
   }
 
+  // tests for foodinessRating
+  // boolean testFoodinessRating(Tester t) {
+  // return t.checkExpect(this.harvard.foodinessRating(), 4.45);
+  // }
+
+  // tests for foodinessRatingOfFeature
+  boolean testFoodinessRatingOfFeature(Tester t) {
+    return t.checkExpect(this.theDailyCatch.foodinessRatingOfFeature(), 4.4)
+        && t.checkExpect(this.harvardStadium.foodinessRatingOfFeature(), 0.0);
+  }
+
+  // TODO tests for sumFoodinessRating
+  /*
+   * boolean testSumFoodinessRating(Tester t) {
+   * return t.checkExpect(this.harvardFeatures.sumFoodinessRating(), 8.9);
+   * }
+   */
+  // tests for restaurantCountOfThisFeature
+  boolean testrestaurantCountOfThisFeature(Tester t) {
+    return t.checkExpect(this.theDailyCatch.restaurantCountOfThisFeature(), 1)
+        && t.checkExpect(this.harvardStadium.restaurantCountOfThisFeature(), 0);
+  }
+
+  // tests for countRestaurants
+  boolean testCountRestaurants(Tester t) {
+    return t.checkExpect(this.harvardFeatures.countRestaurants(), 2)
+        && t.checkExpect(this.anEndFeatures.countRestaurants(), 0);
+  }
+
+//tests for restaurantCountOfThisPlace
+  boolean testRestaurantCountOfThisPlace(Tester t) {
+    return t.checkExpect(this.harvard.restaurantCountOfThisPlace(), 2)
+        && t.checkExpect(this.anEnd.restaurantCountOfThisPlace(), 0);
+  }
 }
