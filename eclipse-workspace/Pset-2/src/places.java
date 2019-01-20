@@ -1,37 +1,52 @@
 import tester.Tester;
 
-interface ILoIFeature {
+interface ILoFeature {
   // calculates the capacity of venues from a list of features
   int capacityFromFeatures();
+
+  // Calculates the total foodiness rating of all the features in a list
   double sumFoodinessRating();
+
+  // counts the number of restaurants in a list of features
   int countRestaurants();
+
+  // creates a restaurant info string from a list of features
+  String restaurantInfoFromFeatures();
 }
 
 interface IFeature {
   // calculates the capacity of a single feature
   int capacityFeature();
+
+  // Calculates the total foodiness rating of this feature
   double foodinessRatingOfFeature();
+
+  // calculates the number of restaurants in this feature
   int restaurantCountOfThisFeature();
+
+  // computes the restaurant string of this feature
+  String restaurantInfoOfThisFeature();
 }
 
-class ConsLoIFeature implements ILoIFeature {
+class ConsLoFeature implements ILoFeature {
   IFeature first;
-  ILoIFeature rest;
+  ILoFeature rest;
 
-  ConsLoIFeature(IFeature first, ILoIFeature rest) {
+  ConsLoFeature(IFeature first, ILoFeature rest) {
     this.first = first;
     this.rest = rest;
-    }
+  }
 
   /*
    * Template
    * Fields:
    * this.first ... IFeature
-   * this.rest ... ILoIFeature
+   * this.rest ... ILoFeature
    * Methods:
    * capacityFromFeatures ... int
    * sumFoodinessRating ... double
    * countRestaurants ... int
+   * restaurantInfoFromFeatures ... String
    * Methods on Fields:
    * this.first.capacityFeature ... int
    * this.rest.capacityFeature ... int
@@ -54,20 +69,27 @@ class ConsLoIFeature implements ILoIFeature {
   public int countRestaurants() {
     return this.first.restaurantCountOfThisFeature() + this.rest.countRestaurants();
   }
+
+  // creates a restaurant string from a non empty list of features
+  public String restaurantInfoFromFeatures() {
+    return this.first.restaurantInfoOfThisFeature() + this.rest.restaurantInfoFromFeatures();
+  }
 }
 
-class MtLoIFeature implements ILoIFeature {
-    MtLoIFeature() { }
+class MtLoFeature implements ILoFeature {
+  MtLoFeature() {
+  }
 
   /*
    * Template
    * Fields:
    * this.first ... IFeature
-   * this.rest ... ILoIFeature
+   * this.rest ... ILoFeature
    * Methods:
    * capacityFromFeatures ... int
    * sumFoodinessRating ... double
    * countRestaurants ... int
+   * restaurantInfoFromFeatures ... String
    * Methods on Fields:
    */
   // calculates the capacity of a empty list of IFeatures
@@ -85,13 +107,18 @@ class MtLoIFeature implements ILoIFeature {
   public int countRestaurants() {
     return 0;
   }
+
+  // creates a restaurant string from a empty list of features
+  public String restaurantInfoFromFeatures() {
+    return "";
+  }
 }
 
 class Place {
   String name;
-  ILoIFeature features;
+  ILoFeature features;
 
-  Place(String name, ILoIFeature features) {
+  Place(String name, ILoFeature features) {
     this.name = name;
     this.features = features;
   }
@@ -99,14 +126,16 @@ class Place {
    * Template
    * Fields:
    * this.name ... String
-   * this.features ... ILoIFeature
+   * this.features ... ILoFeature
    * Methods:
-   * this.totalCapacity ... int
-   * this.foodinessRating ... double
-   * this.restaurantCountOfThisPlace ... int
+   * totalCapacity ... int
+   * restaurantCountOfThisPlace ... int
+   * sumfoodinessrating ... double
+   * foodinessRating ... double
    * Methods on Fields
-   * this.features.sumFoodinessRating ... double
+   * this.features.capacityFromFeatures ... int
    * this.features.countRestaurants ... int
+   * this.features.sumFoodinessRating ... double
    */
 
   // computes the total available seating in all the Venues reachable from the current place
@@ -116,8 +145,8 @@ class Place {
 
   // calculates the number of restaurants in this place
   int restaurantCountOfThisPlace() {
-   return this.features.countRestaurants();
- }
+    return this.features.countRestaurants();
+  }
 
   // calculates the sum foodiness ratings of this place
   double sumFoodinessRatingOfThisPlace() {
@@ -126,11 +155,31 @@ class Place {
 
   // computes the average rating of all restaurants reachable at the current place
   double foodinessRating() {
-    return this.features.sumFoodinessRating() / this.features.countRestaurants();
+    if (this.features.countRestaurants() == 0) {
+      return 0.0;
+    }
+    else {
+      return this.features.sumFoodinessRating() / this.features.countRestaurants();
+    }
+  }
+
+  // produces one String that has in it all names and types of restaurants reachable from
+  // this place
+  String restaurantInfo() {
+    if (this.features.countRestaurants() == 0) {
+      return "";
+    }
+    else {
+      return this.features.restaurantInfoFromFeatures().substring(0,
+          this.features.restaurantInfoFromFeatures().length() - 2);
+    }
+  }
+
+  // produces the restaurant info of a place when it is accessed by a shuttle
+  public String restaurantInfoOfThisPlace() {
+    return this.features.restaurantInfoFromFeatures();
   }
 }
-
-
 
 class Restaurant implements IFeature {
   String name;
@@ -155,19 +204,24 @@ class Restaurant implements IFeature {
    * restaurantCountOfThisFeature ... int
    * Methods on fields
    */
-// calculates the capacity of this IFeature
+  // calculates the capacity of this IFeature
   public int capacityFeature() {
     return 0;
   }
 
-// calculates the foodiness rating of this restaurant
+  // calculates the foodiness rating of this restaurant
   public double foodinessRatingOfFeature() {
     return this.averageRating;
   }
 
-// adds 1 to a count if this IFeature is a Restaurant
+  // adds 1 to a count if this IFeature is a Restaurant
   public int restaurantCountOfThisFeature() {
     return 1;
+  }
+
+  // computes the restaurant string of this Restaurant
+  public String restaurantInfoOfThisFeature() {
+    return this.name + " (" + this.type + "), ";
   }
 }
 
@@ -194,28 +248,33 @@ class Venue implements IFeature {
    * restaurantCountOfThisFeature ... int
    * Methods on fields
    */
-// calculates the capacity of a feature
+  // calculates the capacity of a feature
   public int capacityFeature() {
     return this.capacity;
   }
 
-// calculates the foodiness rating of this Venue
+  // calculates the foodiness rating of this Venue
   public double foodinessRatingOfFeature() {
     return 0.0;
   }
 
-// adds 1 to a count if this feature is a restaurant
+  // computes the count of restaurants in this feature
   public int restaurantCountOfThisFeature() {
     return 0;
   }
 
+  // computes the restaurant info string of this Venue
+  public String restaurantInfoOfThisFeature() {
+    return "";
+  }
+
 }
 
-class SchuttleBus implements IFeature {
+class ShuttleBus implements IFeature {
   String name;
   Place destination;
 
-  SchuttleBus(String name, Place destination) {
+  ShuttleBus(String name, Place destination) {
     this.name = name;
     this.destination = destination;
   }
@@ -232,96 +291,99 @@ class SchuttleBus implements IFeature {
    * Methods on fields
    * this.destination.totalCapacity ... int
    * this.destination.sumFoodinessRatingOfThisPlace ... double
+   * this.destination.restaurantCountOfThisPlace ... int
    */
-// calculates the capacity of this IFeature
+  // calculates the capacity of this IFeature
   public int capacityFeature() {
     return this.destination.totalCapacity();
   }
 
-// calculates the foodiness rating of this IFeature
+  // calculates the foodiness rating of this IFeature
   public double foodinessRatingOfFeature() {
     return this.destination.sumFoodinessRatingOfThisPlace();
   }
 
-// adds 1 to a count if this IFeature is a Restaurant
+  // adds 1 to a count if this IFeature is a Restaurant
   public int restaurantCountOfThisFeature() {
     return this.destination.restaurantCountOfThisPlace();
   }
-}
 
+  // computes the restaurant info string of this ShuttleBus
+  public String restaurantInfoOfThisFeature() {
+    return this.destination.restaurantInfoOfThisPlace();
+  }
+}
 
 /*
  * This city is called Anville. Everything is about me, An. There are 3 places: AnSide
  * Galleria, An Station, An End. AnSide Galleria has a teriyaki restaurant named An Japan
- * that is rated 3.9 stars, a coffee shop named Anbucks that is rated 4.1 stars, aStationnd a
- * schuttle called An Bridge Schuttle that goes to An Station. An Station has a schuttle
- * called An Express that goes to An End, another schuttle called An Cruiser that goes to
- * An Side, and a public venue called An Common that can hold 150,000 people. An End has a
- * schuttle bus called An Vroomer that goes to An Station.
+ * that is rated 3.9 stars, a coffee shop named Anbucks that is rated 4.1 stars, and a
+ * Shuttle called
+ * An Bridge Shuttle that goes to An End. An Station has a Shuttle
+ * called An Express that goes to An End, another Shuttle called An Cruiser that goes to
+ * An Side. An End has a public venue called An Common that can hold 150,000 people.
  */
 
 class ExamplesPlaces {
-// An Side
+  // An End
+  IFeature anCommon = new Venue("An Common", "public", 150000);
+  ConsLoFeature anEndFeatures = new ConsLoFeature(this.anCommon, new MtLoFeature());
+  Place anEnd = new Place("An End", this.anEndFeatures);
+  // An Side
   IFeature anJapan = new Restaurant("An Japan", "teriyaki", 3.9);
   IFeature anbucks = new Restaurant("Anbucks", "coffee", 4.1);
-  IFeature anBridgeSchuttle = new SchuttleBus("An Bridge Schuttle", this.anStation);
-  ConsLoIFeature anSideFeaturesOne = new ConsLoIFeature(this.anJapan, new MtLoIFeature());
-  ConsLoIFeature anSideFeaturesTwo = new ConsLoIFeature(this.anbucks, this.anSideFeaturesOne);
-  ConsLoIFeature anSideFeatures = new ConsLoIFeature(this.anBridgeSchuttle, this.anSideFeaturesTwo);
-// An Station
-  IFeature anExpress = new SchuttleBus("An Express", this.anEnd);
-  IFeature anCruiser = new SchuttleBus("An Cruiser", this.anSide);
-  IFeature anVroomer = new SchuttleBus("An Vroomer", this.anStation);
-  ConsLoIFeature anStationFeaturesOne = new ConsLoIFeature(this.anExpress, new MtLoIFeature());
-  ConsLoIFeature anStationFeaturesTwo = new ConsLoIFeature(this.anCruiser, this.anStationFeaturesOne);
-  ConsLoIFeature anStationFeatures = new ConsLoIFeature(this.anVroomer, this.anStationFeaturesTwo);
-// An End
-  IFeature anCommon = new Venue("An Common", "public", 150000);
-  ConsLoIFeature anEndFeatures = new ConsLoIFeature(this.anCommon, new MtLoIFeature());
-// Anville places
+  IFeature anBridgeShuttle = new ShuttleBus("An Bridge Shuttle", this.anEnd);
+  ConsLoFeature anSideFeaturesOne = new ConsLoFeature(this.anJapan, new MtLoFeature());
+  ConsLoFeature anSideFeaturesTwo = new ConsLoFeature(this.anbucks, this.anSideFeaturesOne);
+  ConsLoFeature anSideFeatures = new ConsLoFeature(this.anBridgeShuttle, this.anSideFeaturesTwo);
   Place anSide = new Place("AnSide Galleria", this.anSideFeatures);
+  // An Station
+  IFeature anExpress = new ShuttleBus("An Express", this.anEnd);
+  IFeature anCruiser = new ShuttleBus("An Cruiser", this.anSide);
+  ConsLoFeature anStationFeaturesOne = new ConsLoFeature(this.anExpress, new MtLoFeature());
+  ConsLoFeature anStationFeatures = new ConsLoFeature(this.anCruiser, this.anStationFeaturesOne);
   Place anStation = new Place("An Station", this.anStationFeatures);
-  Place anEnd = new Place("An End", this.anEndFeatures);
 
-// Cambridge Side
-  IFeature sarkuJapan = new Restaurant("Sarku Japan", "teriyaki", 3.9);
-  IFeature starbucks = new Restaurant("Starbucks", "coffee", 4.1);
-  ConsLoIFeature cambridgeSideFeaturesOne = new ConsLoIFeature(this.sarkuJapan, new MtLoIFeature ());
-  ConsLoIFeature cambridgeSideFeaturesTwo = new ConsLoIFeature(this.starbucks, this.cambridgeSideFeaturesOne);
-// South Station
-  IFeature reginasPizza = new Restaurant("Regina's Pizza", "pizza", 4.0);
-  IFeature bostonCommon = new Venue("Boston Common", "public", 150000);
-  ConsLoIFeature southStationFeaturesOne = new ConsLoIFeature(this.littleItalyExpress, new MtLoIFeature ());
-  ConsLoIFeature southStationFeaturesTwo = new ConsLoIFeature(this.reginasPizza, this.southStationFeaturesOne);
-  ConsLoIFeature southStationFeaturesThree = new ConsLoIFeature(this.bostonCommon,
-      this.southStationFeaturesTwo);
-// North End
+  // North End
   IFeature tdGarden = new Venue("TD Garden", "stadium", 19580);
   IFeature theDailyCatch = new Restaurant("The Daily Catch", "Sicilian", 4.4);
-  ConsLoIFeature northEndFeaturesOne = new ConsLoIFeature(this.tdGarden, new MtLoIFeature ());
-// Harvard
+  ConsLoFeature northEndFeaturesOne = new ConsLoFeature(this.theDailyCatch, new MtLoFeature());
+  ConsLoFeature northEndFeatures = new ConsLoFeature(this.tdGarden, this.northEndFeaturesOne);
+  Place northEnd = new Place("North End", this.northEndFeatures);
+  // Harvard
   IFeature borderCafe = new Restaurant("Border Cafe", "Tex-Mex", 4.5);
   IFeature harvardStadium = new Venue("Harvard Stadium", "football", 30323);
-  ConsLoIFeature harvardFeaturesOne = new ConsLoIFeature(this.borderCafe, new MtLoIFeature());
-  ConsLoIFeature harvardFeaturesTwo = new ConsLoIFeature(this.harvardStadium,
-      this.harvardFeaturesOne);
-// arranging feature lists, places, and schuttles so they can past the tester
-// defining objects before they are used
-  ConsLoIFeature northEndFeatures = new ConsLoIFeature(this.theDailyCatch,
-      this.northEndFeaturesOne);
-  Place northEnd = new Place("North End", this.northEndFeatures);
-  IFeature freshman15 = new SchuttleBus("Freshmen-15", this.northEnd);
-  ConsLoIFeature harvardFeatures = new ConsLoIFeature(this.freshman15, harvardFeaturesTwo);
+  IFeature freshman15 = new ShuttleBus("Freshmen-15", this.northEnd);
+  ConsLoFeature harvardFeaturesOne = new ConsLoFeature(this.harvardStadium, new MtLoFeature());
+  ConsLoFeature harvardFeaturesTwo = new ConsLoFeature(this.borderCafe, this.harvardFeaturesOne);
+  ConsLoFeature harvardFeatures = new ConsLoFeature(this.freshman15, harvardFeaturesTwo);
   Place harvard = new Place("Harvard", this.harvardFeatures);
-  IFeature crimsonCruiser = new SchuttleBus("Crimson Cruiser", this.harvard);
-  ConsLoIFeature southStationFeatures = new ConsLoIFeature(this.crimsonCruiser,
+  // South Station
+  IFeature littleItalyExpress = new ShuttleBus("Little Italy Express", this.northEnd);
+  IFeature reginasPizza = new Restaurant("Regina's Pizza", "pizza", 4.0);
+  IFeature crimsonCruiser = new ShuttleBus("Crimson Cruiser", this.harvard);
+  IFeature bostonCommon = new Venue("Boston Common", "public", 150000);
+  ConsLoFeature southStationFeaturesOne = new ConsLoFeature(this.bostonCommon, new MtLoFeature());
+  ConsLoFeature southStationFeaturesTwo = new ConsLoFeature(this.crimsonCruiser,
+      this.southStationFeaturesOne);
+  ConsLoFeature southStationFeaturesThree = new ConsLoFeature(this.reginasPizza,
+      this.southStationFeaturesTwo);
+  ConsLoFeature southStationFeatures = new ConsLoFeature(this.littleItalyExpress,
       this.southStationFeaturesThree);
   Place southStation = new Place("South Station", this.southStationFeatures);
-  IFeature bridgeSchuttle = new SchuttleBus("bridge schuttle", this.southStation);
-  ConsLoIFeature cambridgeSideFeatures = new ConsLoIFeature(this.bridgeSchuttle,
+  // Cambridge Side
+  IFeature sarkuJapan = new Restaurant("Sarku Japan", "teriyaki", 3.9);
+  IFeature starbucks = new Restaurant("Starbucks", "coffee", 4.1);
+  IFeature bridgeShuttle = new ShuttleBus("bridge shuttle", this.southStation);
+  ConsLoFeature cambridgeSideFeaturesOne = new ConsLoFeature(this.bridgeShuttle, new MtLoFeature());
+  ConsLoFeature cambridgeSideFeaturesTwo = new ConsLoFeature(this.starbucks,
+      this.cambridgeSideFeaturesOne);
+  ConsLoFeature cambridgeSideFeatures = new ConsLoFeature(this.sarkuJapan,
       this.cambridgeSideFeaturesTwo);
   Place cambridgeSide = new Place("CambridgeSide Galleria", this.cambridgeSideFeatures);
-  IFeature littleItalyExpress = new SchuttleBus("Little Italy Express", this.northEnd);
+
+  // mist test examples
+  IFeature busToCambridgeSide = new ShuttleBus("Bus to Cambridge", this.cambridgeSide);
 
   // tests for totalCapacity
   boolean testTotalCapacity(Tester t) {
@@ -338,13 +400,15 @@ class ExamplesPlaces {
   // tests for capacityFeature
   boolean testCapacityFeature(Tester t) {
     return t.checkExpect(this.harvardStadium.capacityFeature(), 30323)
-        && t.checkExpect(this.theDailyCatch.capacityFeature(), 0);
+        && t.checkExpect(this.theDailyCatch.capacityFeature(), 0)
+        && t.checkExpect(this.anBridgeShuttle.capacityFeature(), 150000);
   }
 
   // tests for foodinessRating
-  // boolean testFoodinessRating(Tester t) {
-  // return t.checkExpect(this.harvard.foodinessRating(), 4.45);
-  // }
+  boolean testFoodinessRating(Tester t) {
+    return t.checkExpect(this.harvard.foodinessRating(), 4.45)
+        && t.checkExpect(this.anEnd.foodinessRating(), 0.0);
+  }
 
   // tests for foodinessRatingOfFeature
   boolean testFoodinessRatingOfFeature(Tester t) {
@@ -361,7 +425,8 @@ class ExamplesPlaces {
   // tests for restaurantCountOfThisFeature
   boolean testrestaurantCountOfThisFeature(Tester t) {
     return t.checkExpect(this.theDailyCatch.restaurantCountOfThisFeature(), 1)
-        && t.checkExpect(this.harvardStadium.restaurantCountOfThisFeature(), 0);
+        && t.checkExpect(this.harvardStadium.restaurantCountOfThisFeature(), 0)
+        && t.checkExpect(this.anCruiser.restaurantCountOfThisFeature(), 2);
   }
 
   // tests for countRestaurants
@@ -374,5 +439,38 @@ class ExamplesPlaces {
   boolean testRestaurantCountOfThisPlace(Tester t) {
     return t.checkExpect(this.harvard.restaurantCountOfThisPlace(), 2)
         && t.checkExpect(this.anEnd.restaurantCountOfThisPlace(), 0);
+  }
+
+  // tests for restaurantInfo
+  boolean testRestaurantInfo(Tester t) {
+    return t.checkExpect(this.cambridgeSide.restaurantInfo(),
+        "Sarku Japan (teriyaki), Starbucks (coffee), The Daily Catch (Sicilian), "
+            + "Regina's Pizza (pizza), The Daily Catch (Sicilian), Border Cafe (Tex-Mex)")
+        && t.checkExpect(this.anEnd.restaurantInfo(), "");
+  }
+
+  // tests for restaurantInfoFromFeatures
+  boolean testRestaurantInfoFromFeatures(Tester t) {
+    return t.checkExpect(this.cambridgeSideFeatures.restaurantInfoFromFeatures(),
+        "Sarku Japan (teriyaki), Starbucks (coffee), The Daily Catch (Sicilian), "
+            + "Regina's Pizza (pizza), The Daily Catch (Sicilian), Border Cafe (Tex-Mex), ")
+        && t.checkExpect(this.anEndFeatures.restaurantInfoFromFeatures(), "");
+  }
+
+  // tests for restaurantInfoOfThisFeature
+  boolean testRestaurantInfoOfThisFeature(Tester t) {
+    return t.checkExpect(this.busToCambridgeSide.restaurantInfoOfThisFeature(),
+        "Sarku Japan (teriyaki), Starbucks (coffee), The Daily Catch (Sicilian), "
+            + "Regina's Pizza (pizza), The Daily Catch (Sicilian), Border Cafe (Tex-Mex), ")
+        && t.checkExpect(this.tdGarden.restaurantInfoOfThisFeature(), "")
+        && t.checkExpect(this.anJapan.restaurantInfoOfThisFeature(), "An Japan (teriyaki), ");
+  }
+
+  // tests for restaurantInfoOfThisPlace
+  boolean testRestaurantInfoOfThisPlace(Tester t) {
+    return t.checkExpect(this.cambridgeSide.restaurantInfoOfThisPlace(),
+        "Sarku Japan (teriyaki), Starbucks (coffee), The Daily Catch (Sicilian), "
+            + "Regina's Pizza (pizza), The Daily Catch (Sicilian), Border Cafe (Tex-Mex), ")
+        && t.checkExpect(this.anEnd.restaurantInfoOfThisPlace(), "");
   }
 }
