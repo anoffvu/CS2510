@@ -29,7 +29,9 @@ interface IFeature {
 }
 
 class ConsLoFeature implements ILoFeature {
+  // the first feature in this list of features
   IFeature first;
+  // the rest of the features in this list of features
   ILoFeature rest;
 
   ConsLoFeature(IFeature first, ILoFeature rest) {
@@ -115,7 +117,9 @@ class MtLoFeature implements ILoFeature {
 }
 
 class Place {
+  // name of this place
   String name;
+  // a list of all the features that belong to this place
   ILoFeature features;
 
   Place(String name, ILoFeature features) {
@@ -182,13 +186,19 @@ class Place {
 }
 
 class Restaurant implements IFeature {
+  // the name of this restaurant
   String name;
+  // the kind of food this restaurant sells
   String type;
+  // the average customer rating of this restaurant
   double averageRating;
 
   Restaurant(String name, String type, double averageRating) {
+    // name of this restaurant
     this.name = name;
+    // what kind of food this restaurant sells
     this.type = type;
+    // the average rating of this restaurant
     this.averageRating = averageRating;
   }
 
@@ -226,13 +236,19 @@ class Restaurant implements IFeature {
 }
 
 class Venue implements IFeature {
+  // the name of this venue
   String name;
+  // the type of this venue
   String type;
+  // how many people this venue can hold
   int capacity;
 
   Venue(String name, String type, int capacity) {
+    // the name of this venue
     this.name = name;
+    // what kind of venue this is
     this.type = type;
+    // how many people this venue can hold
     this.capacity = capacity;
   }
 
@@ -271,7 +287,9 @@ class Venue implements IFeature {
 }
 
 class ShuttleBus implements IFeature {
+  // the name of this shuttle bus
   String name;
+  // the place where this shuttle drops you off
   Place destination;
 
   ShuttleBus(String name, Place destination) {
@@ -474,3 +492,14 @@ class ExamplesPlaces {
         && t.checkExpect(this.anEnd.restaurantInfoOfThisPlace(), "");
   }
 }
+
+/*
+ * Some methods will double count because they will visit the same places twice. For
+ * example, a method call on South Station will visit the destinations of its shuttles. in
+ * the case of South Station, it will visit North End, then Harvard. Once it is at
+ * Harvard, it will access it's shuttles which will visit North End again. This means that
+ * all of North End and it's features are counted twice.
+ * 
+ * restaurantInfo(), totalCapacity(), and foodinessRating() should all be victim of this
+ * kind of double counting, as it does access the shuttles of the places.
+ */
