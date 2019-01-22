@@ -143,9 +143,9 @@ class Scale implements IOperation {
   // returns the operation recipe of this Scale operation
   public String operationRecipe(int depth) {
     if (depth == 1) {
-      return "scale (" + this.picture.pictureRecipe(0) + ")";
+      return "scale(" + this.picture.pictureRecipe(0) + ")";
     }
-    return "scale (" + this.picture.pictureRecipe(depth - 1) + ")";
+    return "scale(" + this.picture.pictureRecipe(depth - 1) + ")";
   }
 
 }
@@ -179,10 +179,14 @@ class Beside implements IOperation {
     return new Beside(this.picture2, this.picture1);
   }
 
-  // you stopped here for the night
+  // returns the operation recipe of this Beside operation
   public String operationRecipe(int depth) {
-    // TODO Auto-generated method stub
-    return null;
+    if (depth == 1) {
+      return "beside(" + this.picture1.pictureRecipe(0) + ", " + this.picture2.pictureRecipe(0)
+          + ")";
+    }
+    return "beside(" + this.picture1.pictureRecipe(depth - 1) + ", "
+        + this.picture2.pictureRecipe(depth - 1) + ")";
   }
 }
 
@@ -218,6 +222,16 @@ class Overlay implements IOperation {
   // mirrors this Overlay operation
   public IOperation mirrorOperation() {
     return this;
+  }
+
+  // returns the operation recipe of this Overlay operation
+  public String operationRecipe(int depth) {
+    if (depth == 1) {
+      return "overlay(" + this.topPicture.pictureRecipe(0) + ", "
+          + this.bottomPicture.pictureRecipe(0) + ")";
+    }
+    return "overlay(" + this.topPicture.pictureRecipe(depth - 1) + ", "
+        + this.bottomPicture.pictureRecipe(depth - 1) + ")";
   }
 }
 
@@ -329,44 +343,47 @@ class ExamplesPicture {
             new Beside(this.doubleCircle, this.square));
   }
 
+  // tests for pictureRecipe
+  boolean testPictureRecipe(Tester t) {
+    return t.checkExpect(this.circle.pictureRecipe(-1), "circle")
+        && t.checkExpect(this.circle.pictureRecipe(0), "circle")
+        && t.checkExpect(this.circle.pictureRecipe(1), "circle")
+        && t.checkExpect(this.circle.pictureRecipe(2), "circle")
+        && t.checkExpect(this.doubledSquareOnCircle.pictureRecipe(2),
+            "beside(overlay(square, big circle), overlay(square, big circle))")
+        && t.checkExpect(this.doubledSquareOnCircle.pictureRecipe(3),
+            "beside(overlay(square, scale(circle)), overlay(square, scale(circle)))")
+        && t.checkExpect(this.doubledSquareOnCircle.pictureRecipe(10),
+            "beside(overlay(square, scale(circle)), overlay(square, scale(circle)))");
+  }
+
+  // tests for operationRecipe
+  boolean testOperationRecipe(Tester t) {
+    // only calls this function when the depth is greater than 0, so no need to test for
+    // negative or 0 depth
+    return t.checkExpect(this.doubledSquareOnCircleOperation.operationRecipe(1),
+        "beside(square on circle, square on circle)")
+        && t.checkExpect(this.doubledSquareOnCircleOperation.operationRecipe(2),
+            "beside(overlay(square, big circle), overlay(square, big circle))")
+        && t.checkExpect(this.doubledSquareOnCircleOperation.operationRecipe(3),
+            "beside(overlay(square, scale(circle)), overlay(square, scale(circle)))")
+        && t.checkExpect(this.doubledSquareOnCircleOperation.operationRecipe(10),
+            "beside(overlay(square, scale(circle)), overlay(square, scale(circle)))");
+
+  }
   /*
-   * // tests for pictureRecipe
-   * boolean testPictureRecipe(Tester t) {
-   * return t.checkExpect(this.circle.pictureRecipe(-1), "circle")
-   * && t.checkExpect(this.circle.pictureRecipe(0), "circle")
-   * && t.checkExpect(this.circle.pictureRecipe(1), "circle")
-   * && t.checkExpect(this.circle.pictureRecipe(2), "circle")
-   * && t.checkExpect(this.doubledSquareOnCircle.pictureRecipe(2),
-   * "beside(overlay(square, big circle), overlay(square, big circle))")
-   * && t.checkExpect(this.doubledSquareOnCircle.pictureRecipe(3),
-   * "beside(overlay(square, scale(circle)), overlay(square, scale(circle)))")
-   * && t.checkExpect(this.doubledSquareOnCircle.pictureRecipe(10),
-   * "beside(overlay(square, scale(circle)), overlay(square, scale(circle)))");
-   * }
-   * 
-   * // tests for operationRecipe
    * boolean testOperationRecipe(Tester t) {
-   * // only calls this function when the depth is greater than 0, so no need to test for
-   * // negative or 0 depth
-   * return t.checkExpect(this.doubledSquareOnCircleOperation.operationRecipe(1),
-   * "beside(square on circle, square on circle)")
-   * && t.checkExpect(this.doubledSquareOnCircleOperation.operationRecipe(2),
-   * "beside(overlay(square, big circle), overlay(square, big circle))")
-   * && t.checkExpect(this.doubledSquareOnCircleOperation.operationRecipe(3),
-   * "beside(overlay(square, scale(circle)), overlay(square, scale(circle)))")
-   * && t.checkExpect(this.squareNextToDoubleCircleOperation.operationRecipe(10),
-   * "beside(overlay(square, scale(circle)), overlay(square, scale(circle)))");
-   * 
+   * return t.checkExpect(this.bigCircleOperation.operationRecipe(1), "scale (circle)")
+   * && t.checkExpect(this.bigCircleOperation.operationRecipe(2), "scale (circle)")
+   * && t.checkExpect(this.bigCircleOperation.operationRecipe(10), "scale (circle)")
+   * && t.checkExpect(this.biggerCircleOperation.operationRecipe(1), "scale (big circle)")
+   * && t.checkExpect(this.biggerCircleOperation.operationRecipe(2),
+   * "scale (scale (circle))")
+   * && t.checkExpect(this.biggerCircleOperation.operationRecipe(3),
+   * "scale (scale (circle))")
+   * && t.checkExpect(this.biggerCircleOperation.operationRecipe(10),
+   * "scale (scale (circle))");
    * }
    */
-  boolean testOperationRecipe(Tester t) {
-    return t.checkExpect(this.bigCircleOperation.operationRecipe(1), "scale (circle)")
-        && t.checkExpect(this.bigCircleOperation.operationRecipe(2), "scale (circle)")
-        && t.checkExpect(this.bigCircleOperation.operationRecipe(10), "scale (circle)")
-        && t.checkExpect(this.biggerCircleOperation.operationRecipe(1), "scale (big circle)")
-        && t.checkExpect(this.biggerCircleOperation.operationRecipe(2), "scale (scale (circle))")
-        && t.checkExpect(this.biggerCircleOperation.operationRecipe(3), "scale (scale (circle))")
-        && t.checkExpect(this.biggerCircleOperation.operationRecipe(10), "scale (scale (circle))");
-  }
 // you need more tests on recipes
 }
