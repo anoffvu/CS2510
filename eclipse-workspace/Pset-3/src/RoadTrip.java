@@ -49,5 +49,17 @@ class ExamplesRoadTrip {
               new ConsLoDirection(new Direction("Take the overpass", 45), new ConsLoDirection(
                   new Direction("Destination on left", 12), new MtLoDirection())))));
   RoadTrip HazelHenryRoadTrip = new RoadTrip("Hazel", "Henry", this.HazelHenryDirections);
+  ILoDirection HazelHenrySplitDirections = new ConsLoDirection(
+      new Direction("Make a left at Alberquerque", 13),
+      new ConsLoDirection(new Direction("Make a right at the fork", 2),
+          new ConsLoDirection(new Direction("Switch with Henry", 0),
+              new ConsLoDirection(new Direction("Make a left at the next fork", 3),
+                  new ConsLoDirection(new Direction("Switch with Hazel", 12),
+                      new ConsLoDirection(new Direction("Switch with Henry", 15),
+                          new ConsLoDirection(new Direction("Switch with Hazel", 15),
+                              new ConsLoDirection(new Direction("Take the overpass", 3),
+                                  new ConsLoDirection(new Direction("Destination on left", 12),
+                                      new MtLoDirection())))))))));
+  RoadTrip HazelHenrySplitRoadTrip = new RoadTrip("Hazel", "Henry", this.HazelHenrySplitDirections);
 
 }
