@@ -1837,3 +1837,15 @@ Java Model Exception: Java Model Status [<project root> [in Pset-3] is not on it
 	at org.eclipse.equinox.launcher.Main.run(Main.java:1501)
 !SUBENTRY 1 org.eclipse.jdt.core 4 1006 2019-01-22 18:10:16.260
 !MESSAGE <project root> [in Pset-3] is not on its project's build path
+
+!ENTRY org.eclipse.help.base 2 0 2019-01-23 16:49:27.973
+!MESSAGE Unable to consume Lucene index from bundle 'org.eclipse.wst.dtdeditor.doc.user_1.1.0.v201802171654 [892]'. The index should be rebuilt with Lucene 7.0.0
+
+!ENTRY org.eclipse.help.base 2 0 2019-01-23 16:49:28.012
+!MESSAGE Unable to consume Lucene index from bundle 'org.eclipse.wst.xmleditor.doc.user_1.1.0.v201802171654 [905]'. The index should be rebuilt with Lucene 7.0.0
+
+!ENTRY org.eclipse.help.base 2 0 2019-01-23 16:49:28.015
+!MESSAGE Unable to consume Lucene index from bundle 'org.eclipse.wst.xsdeditor.doc.user_1.0.800.v201711201733 [908]'. The index should be rebuilt with Lucene 7.0.0
+
+!ENTRY org.eclipse.help.base 2 0 2019-01-23 16:49:28.018
+!MESSAGE Unable to consume Lucene index from bundle 'org.eclipse.wst.sse.doc.user_1.2.0.v201802171654 [895]'. The index should be rebuilt with Lucene 7.0.0
