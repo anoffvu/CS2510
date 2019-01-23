@@ -1,5 +1,3 @@
-// and predefined colors (Red, Green, Yellow, Blue, Black, White)
-
 interface ILoDirection {
 
 }
