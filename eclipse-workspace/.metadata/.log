@@ -1849,3 +1849,246 @@ Java Model Exception: Java Model Status [<project root> [in Pset-3] is not on it
 
 !ENTRY org.eclipse.help.base 2 0 2019-01-23 16:49:28.018
 !MESSAGE Unable to consume Lucene index from bundle 'org.eclipse.wst.sse.doc.user_1.2.0.v201802171654 [895]'. The index should be rebuilt with Lucene 7.0.0
+!SESSION 2019-01-27 17:37:46.746 -----------------------------------------------
+eclipse.buildId=4.10.0.I20181206-0815
+java.version=9.0.1
+java.vendor=Oracle Corporation
+BootLoader constants: OS=macosx, ARCH=x86_64, WS=cocoa, NL=en_US
+Framework arguments:  -product org.eclipse.epp.package.java.product -keyring /Users/An/.eclipse_keyring
+Command-line arguments:  -os macosx -ws cocoa -arch x86_64 -product org.eclipse.epp.package.java.product -keyring /Users/An/.eclipse_keyring
+
+!ENTRY org.eclipse.core.net 1 0 2019-01-27 17:37:51.777
+!MESSAGE System property http.nonProxyHosts has been set to local|*.local|169.254/16|*.169.254/16 by an external source. This value will be overwritten using the values from the preferences
+
+!ENTRY org.eclipse.jdt.core 4 4 2019-01-27 18:17:43.911
+!MESSAGE Exception occurred during compilation unit conversion:
+----------------------------------- SOURCE BEGIN -------------------------------------
+interface ILoDirection {
+
+}
+
+interface ILoRoadTripChunk {
+
+}
+
+class ConsLoDirection implements ILoDirection {
+  Direction first;
+  ILoDirection rest;
+
+  ConsLoDirection(Direction first, ILoDirection rest) {
+    this.first = first;
+    this.rest = rest;
+  }
+}
+
+class MtLoDirection implements ILoDirection {
+  MtLoDirection() {
+  }
+}
+
+interface ILoObject {
+
+}
+
+class ConsLoRoadTripChunk implements ILoRoadTripChunk {
+  RoadTripChunk first;
+  ILoRoadTripChunk rest;
+
+  ConsLoRoadTripChunk(RoadTripChunk first, ILoRoadTripChunk rest) {
+    this.first = first;
+    this.rest = rest;
+  }
+}
+
+class MtLoRoadTripChunk implements ILoRoadTripChunk {
+  MtLoRoadTripChunk() {
+  }
+}
+
+class Direction {
+  String description;
+  int miles;
+
+  Direction(String description, int miles) {
+    this.description = description;
+    this.miles = miles;
+  }
+}
+
+class RoadTrip {
+  String driver1;
+  String driver2;
+  ILoDirection directions;
+
+  RoadTrip(String driver1, String driver2, ILoDirection directions) {
+    this.driver1 = driver1;
+    this.driver2 = driver2;
+    this.directions = directions;
+  }
+
+  ILoRoadTripChunk splitUpTrip(int splitSize) {
+    return new ILoRoadTripChunk(this.directions.firstRoadTripChunk(this.driver1, splitSize),
+        this.directions.restRoadTrip(this.driver1, this.driver2, splitSize));
+    // RoadTripChunk firstChunk = someFunctionToGrabFirstDirectionsWithDriver,
+    // uses the first driver, and grabs the first chunk of directions
+    // RoadTrip restRoadTrip = will grab the rest of the directions and switch drivers
+    // this function will switch the drivers and grab the rest of directions
+    // you access directions first so that it delegates better and
+
+    // previous ideas
+    // new ILoRoadTripChunk(new RoadTripChunk(this.driver1,
+    // this.directions.firstDirectionsChunk(splitSize))
+    // , splitUpTrip new RoadTripChunk(restChunk(splitSize)));
+    // new ConsLoRoadTrip(new RoadTripChunk(this.driver1,
+    // this.directions.firstChunk(splitSize)),
+  }
+  /*
+   * RoadTrip trimTripFirst(int splitSize) {
+   * if (this.directions.biggerThanSplit()){
+   * new RoadTripChunk (this.directions.first.description, )
+   * }
+   * }
+   */
+}
+
+class RoadTripChunk {
+  String driver;
+  ILoDirection directions;
+
+  RoadTripChunk(String driver, ILoDirection directions) {
+    this.driver = driver;
+    this.directions = directions;
+  }
+}
+
+class ExamplesRoadTrip {
+  ILoDirection hazelHenryDirections = new ConsLoDirection(
+      new Direction("Make a left at Alberquerque", 13),
+      new ConsLoDirection(new Direction("Make a right at the fork", 2),
+          new ConsLoDirection(new Direction("Make a left at the next fork", 3),
+              new ConsLoDirection(new Direction("Take the overpass", 45), new ConsLoDirection(
+                  new Direction("Destination on left", 12), new MtLoDirection())))));
+  RoadTrip hazelHenryRoadTrip = new RoadTrip("Hazel", "Henry", this.hazelHenryDirections);
+  ILoRoadTripChunk hazelHenryRoadTripChunks = 
+      new ConsLoRoadTripChunk(new RoadTripChunk("Hazel", 
+        new ConsLoDirection(new Direction("Make a left at Alberquerque", 13),
+          new ConsLoDirection(new Direction("Make a right at the fork", 2),
+            new ConsLoDirection(new Direction("Switch with Henry", 0), new MtLoDirection())))), 
+        new ConsLoRoadTripChunk(new RoadTripChunk("Henry", 
+          new ConsLoDirection(new Direction("Make a left at the next fork", 3),
+            new ConsLoDirection(new Direction("Switch with Hazel", 12), new MtLoDirection())))
+          new ConsLoRoadTripChunk(new RoadTripChunk("Hazel", new ConsLoDirection(
+            new Direction("Switch with Henry", 15), new MtLoDirection())), 
+            new ConsLoRoadTripChunk(new RoadTripChunk("Henry",
+              new ConsLoDirection(new Direction("Switch with Hazel", 15), new MtLoDirection())),
+                new ConsLoRoadTripChunk(new RoadTripChunknew ConsLoDirection(new Direction("Take the overpass", 3),
+                                  new ConsLoDirection(new Direction("Destination on left", 12),
+                                      new MtLoDirection())))))
+
+  ILoDirection hazelHenrySplitDirections = new ConsLoDirection(
+      new Direction("Make a left at Alberquerque", 13),
+      new ConsLoDirection(new Direction("Make a right at the fork", 2),
+          new ConsLoDirection(new Direction("Switch with Henry", 0),
+              new ConsLoDirection(new Direction("Make a left at the next fork", 3),
+                  new ConsLoDirection(new Direction("Switch with Hazel", 12),
+                      new ConsLoDirection(new Direction("Switch with Henry", 15),
+                          new ConsLoDirection(new Direction("Switch with Hazel", 15),
+                              new ConsLoDirection(new Direction("Take the overpass", 3),
+                                  new ConsLoDirection(new Direction("Destination on left", 12),
+                                      new MtLoDirection())))))))));
+  RoadTrip hazelHenrySplitRoadTrip = new RoadTrip("Hazel", "Henry", this.hazelHenrySplitDirections);
+  ILoDirection shortDirections = new ConsLoDirection(
+      new Direction("Destination is on the right", 20), new MtLoDirection());
+}
+
+----------------------------------- SOURCE END -------------------------------------
+!STACK 0
+java.lang.IllegalArgumentException
+	at org.eclipse.jdt.core.dom.ASTNode.setSourceRange(ASTNode.java:2949)
+	at org.eclipse.jdt.core.dom.ASTConverter.convertToFieldDeclaration(ASTConverter.java:3298)
+	at org.eclipse.jdt.core.dom.ASTConverter.checkAndAddMultipleFieldDeclaration(ASTConverter.java:447)
+	at org.eclipse.jdt.core.dom.ASTConverter.buildBodyDeclarations(ASTConverter.java:197)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:3036)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1393)
+	at org.eclipse.jdt.core.dom.AST.convertCompilationUnit(AST.java:367)
+	at org.eclipse.jdt.internal.core.CompilationUnit.buildStructure(CompilationUnit.java:202)
+	at org.eclipse.jdt.internal.core.Openable.generateInfos(Openable.java:268)
+	at org.eclipse.jdt.internal.core.JavaElement.openWhenClosed(JavaElement.java:596)
+	at org.eclipse.jdt.internal.core.CompilationUnit.makeConsistent(CompilationUnit.java:1145)
+	at org.eclipse.jdt.internal.core.ReconcileWorkingCopyOperation.makeConsistent(ReconcileWorkingCopyOperation.java:173)
+	at org.eclipse.jdt.internal.core.ReconcileWorkingCopyOperation.executeOperation(ReconcileWorkingCopyOperation.java:94)
+	at org.eclipse.jdt.internal.core.JavaModelOperation.run(JavaModelOperation.java:736)
+	at org.eclipse.jdt.internal.core.JavaModelOperation.runOperation(JavaModelOperation.java:802)
+	at org.eclipse.jdt.internal.core.CompilationUnit.reconcile(CompilationUnit.java:1322)
+	at org.eclipse.jdt.internal.ui.text.java.JavaReconcilingStrategy.reconcile(JavaReconcilingStrategy.java:131)
+	at org.eclipse.jdt.internal.ui.text.java.JavaReconcilingStrategy.access$0(JavaReconcilingStrategy.java:113)
+	at org.eclipse.jdt.internal.ui.text.java.JavaReconcilingStrategy$1.run(JavaReconcilingStrategy.java:93)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:45)
+	at org.eclipse.jdt.internal.ui.text.java.JavaReconcilingStrategy.reconcile(JavaReconcilingStrategy.java:90)
+	at org.eclipse.jdt.internal.ui.text.java.JavaReconcilingStrategy.reconcile(JavaReconcilingStrategy.java:157)
+	at org.eclipse.jdt.internal.ui.text.CompositeReconcilingStrategy.reconcile(CompositeReconcilingStrategy.java:92)
+	at org.eclipse.jdt.internal.ui.text.JavaCompositeReconcilingStrategy.reconcile(JavaCompositeReconcilingStrategy.java:107)
+	at org.eclipse.jface.text.reconciler.MonoReconciler.process(MonoReconciler.java:76)
+	at org.eclipse.jface.text.reconciler.AbstractReconciler$BackgroundThread.run(AbstractReconciler.java:210)
+
+!ENTRY org.eclipse.jdt.ui 4 2 2019-01-27 18:17:43.915
+!MESSAGE Problems occurred when invoking code from plug-in: "org.eclipse.jdt.ui".
+!STACK 0
+java.lang.IllegalArgumentException
+	at org.eclipse.jdt.core.dom.ASTNode.setSourceRange(ASTNode.java:2949)
+	at org.eclipse.jdt.core.dom.ASTConverter.convertToFieldDeclaration(ASTConverter.java:3298)
+	at org.eclipse.jdt.core.dom.ASTConverter.checkAndAddMultipleFieldDeclaration(ASTConverter.java:447)
+	at org.eclipse.jdt.core.dom.ASTConverter.buildBodyDeclarations(ASTConverter.java:197)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:3036)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1393)
+	at org.eclipse.jdt.core.dom.AST.convertCompilationUnit(AST.java:367)
+	at org.eclipse.jdt.internal.core.CompilationUnit.buildStructure(CompilationUnit.java:202)
+	at org.eclipse.jdt.internal.core.Openable.generateInfos(Openable.java:268)
+	at org.eclipse.jdt.internal.core.JavaElement.openWhenClosed(JavaElement.java:596)
+	at org.eclipse.jdt.internal.core.CompilationUnit.makeConsistent(CompilationUnit.java:1145)
+	at org.eclipse.jdt.internal.core.ReconcileWorkingCopyOperation.makeConsistent(ReconcileWorkingCopyOperation.java:173)
+	at org.eclipse.jdt.internal.core.ReconcileWorkingCopyOperation.executeOperation(ReconcileWorkingCopyOperation.java:94)
+	at org.eclipse.jdt.internal.core.JavaModelOperation.run(JavaModelOperation.java:736)
+	at org.eclipse.jdt.internal.core.JavaModelOperation.runOperation(JavaModelOperation.java:802)
+	at org.eclipse.jdt.internal.core.CompilationUnit.reconcile(CompilationUnit.java:1322)
+	at org.eclipse.jdt.internal.ui.text.java.JavaReconcilingStrategy.reconcile(JavaReconcilingStrategy.java:131)
+	at org.eclipse.jdt.internal.ui.text.java.JavaReconcilingStrategy.access$0(JavaReconcilingStrategy.java:113)
+	at org.eclipse.jdt.internal.ui.text.java.JavaReconcilingStrategy$1.run(JavaReconcilingStrategy.java:93)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:45)
+	at org.eclipse.jdt.internal.ui.text.java.JavaReconcilingStrategy.reconcile(JavaReconcilingStrategy.java:90)
+	at org.eclipse.jdt.internal.ui.text.java.JavaReconcilingStrategy.reconcile(JavaReconcilingStrategy.java:157)
+	at org.eclipse.jdt.internal.ui.text.CompositeReconcilingStrategy.reconcile(CompositeReconcilingStrategy.java:92)
+	at org.eclipse.jdt.internal.ui.text.JavaCompositeReconcilingStrategy.reconcile(JavaCompositeReconcilingStrategy.java:107)
+	at org.eclipse.jface.text.reconciler.MonoReconciler.process(MonoReconciler.java:76)
+	at org.eclipse.jface.text.reconciler.AbstractReconciler$BackgroundThread.run(AbstractReconciler.java:210)
+
+!ENTRY org.eclipse.jdt.ui 4 0 2019-01-27 18:17:43.916
+!MESSAGE Error in JDT Core during reconcile
+!STACK 0
+java.lang.IllegalArgumentException
+	at org.eclipse.jdt.core.dom.ASTNode.setSourceRange(ASTNode.java:2949)
+	at org.eclipse.jdt.core.dom.ASTConverter.convertToFieldDeclaration(ASTConverter.java:3298)
+	at org.eclipse.jdt.core.dom.ASTConverter.checkAndAddMultipleFieldDeclaration(ASTConverter.java:447)
+	at org.eclipse.jdt.core.dom.ASTConverter.buildBodyDeclarations(ASTConverter.java:197)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:3036)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1393)
+	at org.eclipse.jdt.core.dom.AST.convertCompilationUnit(AST.java:367)
+	at org.eclipse.jdt.internal.core.CompilationUnit.buildStructure(CompilationUnit.java:202)
+	at org.eclipse.jdt.internal.core.Openable.generateInfos(Openable.java:268)
+	at org.eclipse.jdt.internal.core.JavaElement.openWhenClosed(JavaElement.java:596)
+	at org.eclipse.jdt.internal.core.CompilationUnit.makeConsistent(CompilationUnit.java:1145)
+	at org.eclipse.jdt.internal.core.ReconcileWorkingCopyOperation.makeConsistent(ReconcileWorkingCopyOperation.java:173)
+	at org.eclipse.jdt.internal.core.ReconcileWorkingCopyOperation.executeOperation(ReconcileWorkingCopyOperation.java:94)
+	at org.eclipse.jdt.internal.core.JavaModelOperation.run(JavaModelOperation.java:736)
+	at org.eclipse.jdt.internal.core.JavaModelOperation.runOperation(JavaModelOperation.java:802)
+	at org.eclipse.jdt.internal.core.CompilationUnit.reconcile(CompilationUnit.java:1322)
+	at org.eclipse.jdt.internal.ui.text.java.JavaReconcilingStrategy.reconcile(JavaReconcilingStrategy.java:131)
+	at org.eclipse.jdt.internal.ui.text.java.JavaReconcilingStrategy.access$0(JavaReconcilingStrategy.java:113)
+	at org.eclipse.jdt.internal.ui.text.java.JavaReconcilingStrategy$1.run(JavaReconcilingStrategy.java:93)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:45)
+	at org.eclipse.jdt.internal.ui.text.java.JavaReconcilingStrategy.reconcile(JavaReconcilingStrategy.java:90)
+	at org.eclipse.jdt.internal.ui.text.java.JavaReconcilingStrategy.reconcile(JavaReconcilingStrategy.java:157)
+	at org.eclipse.jdt.internal.ui.text.CompositeReconcilingStrategy.reconcile(CompositeReconcilingStrategy.java:92)
+	at org.eclipse.jdt.internal.ui.text.JavaCompositeReconcilingStrategy.reconcile(JavaCompositeReconcilingStrategy.java:107)
+	at org.eclipse.jface.text.reconciler.MonoReconciler.process(MonoReconciler.java:76)
+	at org.eclipse.jface.text.reconciler.AbstractReconciler$BackgroundThread.run(AbstractReconciler.java:210)
