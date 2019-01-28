@@ -296,13 +296,13 @@ class ExamplesRoadTrip {
   ILoDirection shortDirections = new ConsLoDirection(new Direction("Destination on right", 20),
       new MtLoDirection());
   RoadTrip shortTrip = new RoadTrip("short1", "short2", this.shortDirections);
-  ILoRoadTripChunk shortTripChunks = new ConsLoRoadTripChunk(
-      new RoadTripChunk("short1",
-          new ConsLoDirection(new Direction("Switch with short2", 15), new MtLoDirection())),
+  ILoRoadTripChunk shortTripChunks = 
       new ConsLoRoadTripChunk(
-          new RoadTripChunk("short2",
-              new ConsLoDirection(new Direction("Destination on right", 5), new MtLoDirection())),
-          new MtLoRoadTripChunk()));
+          new RoadTripChunk("short1", new ConsLoDirection(new Direction("Switch with short2", 15), new MtLoDirection())),
+        new ConsLoRoadTripChunk(
+              new RoadTripChunk("short2", new ConsLoDirection(
+                  new Direction("Destination on right", 5), new MtLoDirection())),
+              new MtLoRoadTripChunk()));
 
   boolean testSplitUpTrip(Tester t) {
 
