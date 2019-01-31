@@ -1,3 +1,5 @@
+import tester.Tester;
+
 interface ILoDirection {
 
   ILoRoadTripChunk splitUpTripAccumulator(String driver1, String driver2, int splitSize,
@@ -15,7 +17,8 @@ interface ILoDirection {
 //interface ILoLoDirection { }
 
 interface ILoRoadTripChunk {
-
+  // reverses a list of road trip chunks
+  ILoRoadTripChunk reverseChunks();
 }
 
 class ConsLoDirection implements ILoDirection {
@@ -45,7 +48,7 @@ class ConsLoDirection implements ILoDirection {
       // split the direction and call accumulator with 0 distance traveled, new
     } // if the switch will happen before this direction ends
     else {
-
+      return new MtLoRoadTripChunk();
     }
   }
 
@@ -101,7 +104,8 @@ class MtLoDirection implements ILoDirection {
   // splits up a roadTrip
   public ILoRoadTripChunk splitUpTripAccumulator(String driver, String switchDriver, int splitSize,
       int distanceTraveledSoFar, ILoDirection directionsOfThisChunk, ILoRoadTripChunk chunksSoFar) {
-    return (new ConsLoRoadTripChunk(new RoadTripChunk(driver, directionsOfThisChunk), chunksSoFar).reverseChunks();
+    return (new ConsLoRoadTripChunk(new RoadTripChunk(driver, directionsOfThisChunk), chunksSoFar)
+        .reverseChunks());
   }
 
   // reverses an empty list of directions
@@ -149,10 +153,20 @@ class ConsLoRoadTripChunk implements ILoRoadTripChunk {
     this.first = first;
     this.rest = rest;
   }
+
+  // reverses a non empty list of RoadTripChunks
+  public ILoRoadTripChunk reverseChunks(ILoRoadTripChunk reversedSoFar) {
+    return null;
+  }
 }
 
 class MtLoRoadTripChunk implements ILoRoadTripChunk {
   MtLoRoadTripChunk() {
+  }
+
+  // reverses an empty list of RoadTripChunks
+  public ILoRoadTripChunk reverseChunks(ILoRoadTripChunk reversedSoFar) {
+    return reversedSoFar;
   }
 }
 
@@ -308,4 +322,3 @@ class ExamplesRoadTrip {
 
   }
 }
-
