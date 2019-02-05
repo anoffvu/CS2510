@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
     <fullyQualifiedTypeName name="tester.Tester"/>
+    <fullyQualifiedTypeName name="ILoRoadTripChunk"/>
+    <fullyQualifiedTypeName name="java.awt.Color"/>
+    <fullyQualifiedTypeName name="javalib.worldcanvas.WorldCanvas"/>
+    <fullyQualifiedTypeName name="javalib.funworld.WorldScene"/>
+    <fullyQualifiedTypeName name="javalib.worldimages.OutlineMode"/>
+    <fullyQualifiedTypeName name="javalib.worldimages.CircleImage"/>
+    <fullyQualifiedTypeName name="javalib.worldimages.OverlayImage"/>
 </qualifiedTypeNameHistroy>
