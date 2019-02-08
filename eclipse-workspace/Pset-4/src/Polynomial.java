@@ -5,7 +5,7 @@ class Monomial {
   int coefficient;
 
   Monomial(int degree, int coefficient) {
-    if (this.degree >= 0) {
+    if (degree >= 0) {
       this.degree = degree;
     }
     else {
@@ -13,22 +13,26 @@ class Monomial {
     }
     this.coefficient = coefficient;
   }
+  /*
+   * Template
+   * Fields:
+   * degree ... int
+   * coefficient ... int
+   * Methods:
+   * isZero ... boolean
+   * sameMonomial ... boolean
+   * Methods of fields:
+   */
 
   // returns if this monomial has a coefficient of 0
   public boolean isZero() {
     return this.coefficient == 0;
   }
 
-  /*
-   * // if this monomial is in the other list of monomials, remove it
-   * public ILoMonomial findAndRemove(ILoMonomial other) {
-   * if (this.sameMonomial(other.first)) {
-   * 
-   * } else {
-   * new ConsLoMonomial(other.first, other.)
-   * }
-   * }
-   */
+  // checks if the given monomial is the same as this monomial
+  public boolean sameMonomial(Monomial desired) {
+    return this.degree == desired.degree && this.coefficient == desired.coefficient;
+  }
 }
 
 interface ILoMonomial {
@@ -41,9 +45,23 @@ interface ILoMonomial {
 
   // removes the monomials with a coefficient of 0 in a list of monomials
   ILoMonomial removeZeros();
+
+  // removes that monomial from this ILoMonomial
+  ILoMonomial findAndRemove(Monomial desired);
 }
 
 class MtLoMonomial implements ILoMonomial {
+
+  /*
+   * Template
+   * Fields:
+   * Methods:
+   * sameMonomials ... boolean
+   * isEmpty ... boolean
+   * findAndRemove ... ILoMonomial
+   * removeZeros ... ILoMonomial
+   * Methods of fields:
+   */
 
   // determines if this MtLoMonomial is equivalent to the other ILoMonomial
   public boolean sameMonomials(ILoMonomial other) {
@@ -75,6 +93,19 @@ class ConsLoMonomial implements ILoMonomial {
     this.rest = rest;
   }
 
+  /*
+   * Template
+   * Fields:
+   * first ... Monomial
+   * rest ... ILoMonomial
+   * Methods:
+   * sameMonomials ... boolean
+   * isEmpty ... boolean
+   * findAndRemove ... ILoMonomial
+   * removeZeros ... ILoMonomial
+   * Methods of fields:
+   */
+
   // determines if this MtLoMonomial is equivalent to the other ILoMonomial
   public boolean sameMonomials(ILoMonomial other) {
     return this.rest.sameMonomials(other.findAndRemove(this.first));
@@ -88,7 +119,10 @@ class ConsLoMonomial implements ILoMonomial {
   // if this list of monomials has that monomial, remove it
   public ILoMonomial findAndRemove(Monomial desired) {
     if (this.first.sameMonomial(desired)) {
-
+      return this.rest;
+    }
+    else {
+      return new ConsLoMonomial(this.first, this.rest.findAndRemove(desired));
     }
   }
 
@@ -107,17 +141,34 @@ class Polynomial {
   ILoMonomial monomials;
 
   Polynomial(ILoMonomial monomials) {
-    this.monomials = monomials;
+    if (!this.containsSameDegree()) {
+      this.monomials = monomials;
+    } else {
+      throw new IllegalArgumentException("Polynomials cannot have monomials with the same degree.")
+    }
   }
+
+  /*
+   * Template
+   * Fields:
+   * monomials ... ILoMonomial
+   * Methods:
+   * samePolynomial ... boolean
+   * Methods of fields:
+   */
 
   // determines if this polynomial is equal to that polynomial
   public boolean samePolynomial(Polynomial other) {
-    return this.monomials.removeZeros().sameMonomials(other.monomials.removeZeros());
-    // && other.monomials.sameMonomials(this.monomials)
+    return this.monomials.removeZeros().sameMonomials(other.monomials.removeZeros())
+        && other.monomials.removeZeros().sameMonomials(this.monomials.removeZeros());
   }
 }
 
 class ExamplesPolynomial {
+  Monomial oneToOne = new Monomial(1, 1);
+  Monomial twoToThree = new Monomial(2, 3);
+  Monomial fourToZero = new Monomial(4, 0);
+  Monomial oneToFour = new Monomial(0, 4);
   ILoMonomial monomialsEmpty = new MtLoMonomial();
   // 0x^0 -> 2x^2
   ILoMonomial monomials1 = new ConsLoMonomial(new Monomial(0, 0), new ConsLoMonomial(
@@ -138,9 +189,13 @@ class ExamplesPolynomial {
       new ConsLoMonomial(new Monomial(1, 1),
           new ConsLoMonomial(new Monomial(10, 0), new ConsLoMonomial(new Monomial(3, 3),
               new ConsLoMonomial(new Monomial(66, 0), new MtLoMonomial())))));
-
   ILoMonomial filteredLotsOfZeros = new ConsLoMonomial(new Monomial(1, 1),
       new ConsLoMonomial(new Monomial(3, 3), new MtLoMonomial()));
+
+  ILoMonomial illegalMonomials1 = new ConsLoMonomial(new Monomial(1, 1), new ConsLoMonomial(
+      new Monomial(2, 1), new ConsLoMonomial(new Monomial(3, 3), new MtLoMonomial())));
+  ILoMonomial illegalMonomials2 = new ConsLoMonomial(new Monomial(1, 1), new ConsLoMonomial(
+      new Monomial(2, 2), new ConsLoMonomial(new Monomial(3, 2), new MtLoMonomial())));
 
   Polynomial poly1 = new Polynomial(this.monomials1);
   Polynomial poly2 = new Polynomial(this.monomials2);
@@ -187,6 +242,42 @@ class ExamplesPolynomial {
         && t.checkExpect(this.monomials3.removeZeros(), this.monomials3)
         && t.checkExpect(this.monomials2.removeZeros(), this.monomials3)
         && t.checkExpect(this.monomialsEmpty.removeZeros(), this.monomialsEmpty);
+  }
+
+  // tests for sameMonomial
+  boolean testSameMonomial(Tester t) {
+    return t.checkExpect(this.oneToOne.sameMonomial(this.oneToOne), true)
+        && t.checkExpect(this.oneToOne.sameMonomial(this.oneToFour), false)
+        && t.checkExpect(this.twoToThree.sameMonomial(this.oneToFour), false)
+        && t.checkExpect(this.fourToZero.sameMonomial(this.oneToFour), false);
+  }
+
+  // tests for findAndRemove
+  boolean testFindAndRemove(Tester t) {
+    return t.checkExpect(this.monomials2.findAndRemove(new Monomial(0, 0)), this.monomials3)
+        && t.checkExpect(this.monomialsEmpty.findAndRemove(new Monomial(0, 0)), this.monomialsEmpty)
+        && t.checkExpect(this.monomials2.findAndRemove(new Monomial(2, 2)),
+            new ConsLoMonomial(new Monomial(0, 0), new ConsLoMonomial(new Monomial(1, 1),
+                new ConsLoMonomial(new Monomial(3, 3), new MtLoMonomial()))));
+  }
+
+  // tests for Monomial constructor
+  boolean testMonomialConstructorException(Tester t) {
+    return t.checkConstructorException(
+        new IllegalArgumentException("Degrees of monomials cannot be negative"), "Monomial", -1, 0)
+        && t.checkConstructorException(
+            new IllegalArgumentException("Degrees of monomials cannot be negative"), "Monomial",
+            -10, 0);
+  }
+
+  // tests for Monomial constructor
+  boolean testPolynomialConstructorException(Tester t) {
+    return t.checkConstructorException(
+        new IllegalArgumentException("Polynomials cannot have monomials with the same degree."),
+        "Polynomial", this.illegalMonomials1)
+        && t.checkConstructorException(
+            new IllegalArgumentException("Polynomials cannot have monomials with the same degree."),
+            "Polynomial", this.illegalMonomials2);
   }
 
 }
