@@ -48,6 +48,9 @@ interface ILoMonomial {
 
   // removes that monomial from this ILoMonomial
   ILoMonomial findAndRemove(Monomial desired);
+
+  // detects if this ILoMonomial has duplicate degree monomials
+  boolean containsSameDegree();
 }
 
 class MtLoMonomial implements ILoMonomial {
@@ -81,6 +84,11 @@ class MtLoMonomial implements ILoMonomial {
   // removes the monomials with a coefficient of 0 in an MtLoMonomial
   public ILoMonomial removeZeros() {
     return this;
+  }
+
+  // detects if this ILoMonomial has duplicate degree monomials
+  public boolean containsSameDegree() {
+    return false;
   }
 }
 
@@ -135,13 +143,22 @@ class ConsLoMonomial implements ILoMonomial {
       return new ConsLoMonomial(this.first, this.rest.removeZeros());
     }
   }
+
+  // determines if this ConsLoMonomial contains any duplicate degree monomials
+  // take the first monomial, remove this monomial from your search list
+  // if you find another monomial with the same degree, return true
+  // else return false
+  public boolean containsSameDegree() {
+    return this.first.(this.removeFirstInstance(this.first))
+        || this.rest.containsSameDegree();
+  }
 }
 
 class Polynomial {
   ILoMonomial monomials;
 
   Polynomial(ILoMonomial monomials) {
-    if (!this.containsSameDegree()) {
+    if (!this.monomials.containsSameDegree()) {
       this.monomials = monomials;
     } else {
       throw new IllegalArgumentException("Polynomials cannot have monomials with the same degree.")
@@ -278,6 +295,14 @@ class ExamplesPolynomial {
         && t.checkConstructorException(
             new IllegalArgumentException("Polynomials cannot have monomials with the same degree."),
             "Polynomial", this.illegalMonomials2);
+  }
+
+  // tests for containsSameDegree
+  boolean testContainsSameDegree(Tester t) {
+    return t.checkExpect(this.illegalMonomials1.containsSameDegree(), true)
+        && t.checkExpect(this.illegalMonomials2.containsSameDegree(), true)
+        && t.checkExpect(this.monomials1.containsSameDegree(), false)
+        && t.checkExpect(this.monomials2.containsSameDegree(), false);
   }
 
 }
