@@ -10,6 +10,17 @@ class CampusTour {
     this.startingLocation = startingLocation;
   }
 
+  /*
+   * TEMPLATE:
+   * Fields:
+   * this.startTime ... int
+   * this.startingLocation ... ITourLocation
+   * Methods:
+   * this.sameTour(CampusTour other) ... boolean
+   * Methods for fields:
+   * this.sameTourLocation(ItourLocation other) ... boolean
+   */
+
   // is this tour the same tour as the given one?
   boolean sameTour(CampusTour other) {
     return this.startTime == other.startTime
@@ -20,7 +31,7 @@ class CampusTour {
 // a spot on the tour
 interface ITourLocation {
 
-  // determines if this tourLocation is the same as that tourLocation
+  // determines if this ITourLocation is the same as that ITourLocation
   boolean sameTourLocation(ITourLocation other);
 
   // determines if this ITourLocation is the same as that TourEnd
@@ -33,12 +44,16 @@ interface ITourLocation {
   boolean sameBranchingTour(BranchingTour other);
 }
 
+// abstract class which implements ITourLocation
 abstract class ATourLocation implements ITourLocation {
   String speech; // the speech to give at this spot on the tour
 
   ATourLocation(String speech) {
     this.speech = speech;
   }
+
+  // determines if this tourLocation is the same as that tourLocation
+  public abstract boolean sameTourLocation(ITourLocation other);
 
   // determines if this TourLocation is the same as that tourEnd
   public boolean sameTourEnd(TourEnd other) {
@@ -54,7 +69,6 @@ abstract class ATourLocation implements ITourLocation {
   public boolean sameBranchingTour(BranchingTour other) {
     return false;
   }
-
 }
 
 // the end of the tour
@@ -65,6 +79,21 @@ class TourEnd extends ATourLocation {
     super(speech);
     this.location = location;
   }
+
+  /*
+   * TEMPLATE:
+   * Fields:
+   * this.speech ... String
+   * this.location ... ICampusLocation
+   * Methods:
+   * this.sameTourLocation(ITourLocation other) ... boolean
+   * this.sameTourEnd(TourEnd other) ... boolean
+   * this.sameMandatory(Mandatory other) ... boolean
+   * this.sameBranchingTour(BranchingTour other) ... boolean
+   * Methods for fields:
+   * this.sameTourEnd(TourEnd other) ... boolean
+   * this.sameCampusLocation(ICampusLocation other) ... boolean
+   */
 
   // determines if this TourEnd is the same as the other ITourLocation
   public boolean sameTourLocation(ITourLocation other) {
@@ -88,6 +117,23 @@ class Mandatory extends ATourLocation {
     this.next = next;
   }
 
+  /*
+   * TEMPLATE:
+   * Fields:
+   * this.speech ... String
+   * this.location ... ICampusLocation
+   * this.next ... ITourLocation
+   * Methods:
+   * this.sameTourLocation(ITourLocation other) ... boolean
+   * this.sameTourEnd(TourEnd other) ... boolean
+   * this.sameMandatory(Mandatory other) ... boolean
+   * this.sameBranchingTour(BranchingTour other) ... boolean
+   * Methods for fields:
+   * this.sameMandatory(Mandatory other) ... boolean
+   * this.sameCampusLocation(ICampusLocation other) ... boolean
+   * this.sameTourLocation(ITourLocation other) ... boolean
+   */
+
   // determines if this Mandatory is the same as that ITourLocation
   public boolean sameTourLocation(ITourLocation other) {
     return other.sameMandatory(this);
@@ -98,7 +144,6 @@ class Mandatory extends ATourLocation {
     return this.speech.equals(other.speech) && this.location.sameCampusLocation(other.location)
         && this.next.sameTourLocation(other.next);
   }
-
 }
 
 // up to the tour guide where to go next
@@ -111,6 +156,22 @@ class BranchingTour extends ATourLocation {
     this.option1 = option1;
     this.option2 = option2;
   }
+
+  /*
+   * TEMPLATE:
+   * Fields:
+   * this.speech ... String
+   * this.option1 ... ITourLocation
+   * this.option2 ... ITourLocation
+   * Methods:
+   * this.sameTourLocation(ITourLocation other) ... boolean
+   * this.sameTourEnd(TourEnd other) ... boolean
+   * this.sameMandatory(Mandatory other) ... boolean
+   * this.sameBranchingTour(BranchingTour other) ... boolean
+   * Methods for fields:
+   * this.sameBranchingTour(BranchingTour other) ... boolean
+   * this.sameTourLocation(ITourLocation other) ... boolean
+   */
 
   // determines if this BranchingTour is the same as that ITourLocation
   public boolean sameTourLocation(ITourLocation other) {
@@ -126,6 +187,7 @@ class BranchingTour extends ATourLocation {
   }
 }
 
+// represents a campus location
 interface ICampusLocation {
 
   // is this Building the same as that Building?
@@ -139,6 +201,7 @@ interface ICampusLocation {
 
 }
 
+// represents a building
 class Building implements ICampusLocation {
   String name;
   Address address;
@@ -147,6 +210,19 @@ class Building implements ICampusLocation {
     this.name = name;
     this.address = address;
   }
+
+  /*
+   * TEMPLATE:
+   * Fields:
+   * this.name ... String
+   * this.address ... Address
+   * Methods:
+   * this.sameBuilding(Building other) ... boolean
+   * this.sameQuad(Quad other) ... boolean
+   * this.sameCampusLocation(ICampusLocation other) ... boolean
+   * Methods for fields:
+   * this.sameBuilding(Building other) ... boolean
+   */
 
   // is this Building the same as that Building?
   public boolean sameBuilding(Building other) {
@@ -164,6 +240,7 @@ class Building implements ICampusLocation {
   }
 }
 
+// represents an address
 class Address {
   String street;
   int number;
@@ -173,12 +250,22 @@ class Address {
     this.street = street;
   }
 
+  /*
+   * TEMPLATE:
+   * Fields:
+   * this.street ... String
+   * this.number ... int
+   * Methods:
+   * this.sameAddress(Address other) ... boolean
+   */
+
   // checks equality of Addresses
   public boolean sameAddress(Address other) {
     return this.street.equals(other.street) && this.number == other.number;
   }
 }
 
+// represents a quad
 class Quad implements ICampusLocation {
   String name;
   ILoCampusLocation surroundings; // in clockwise order, starting north
@@ -187,6 +274,20 @@ class Quad implements ICampusLocation {
     this.name = name;
     this.surroundings = surroundings;
   }
+
+  /*
+   * TEMPLATE:
+   * Fields:
+   * this.name ... String
+   * this.surroundings ... ILoCampusLocation
+   * Methods:
+   * this.sameBuilding(Building other) ... boolean
+   * this.sameQuad(Quad other) ... boolean
+   * this.sameCampusLocation(ICampusLocation other) ... boolean
+   * Methods for fields:
+   * this.sameILoCampusLocation(ILoCampusLocation that) ... boolean
+   * this.sameQuad(Quad other) ... boolean
+   */
 
   // is this Building the same as that Building?
   public boolean sameBuilding(Building other) {
@@ -206,6 +307,7 @@ class Quad implements ICampusLocation {
 
 }
 
+// represents a list of campus locations
 interface ILoCampusLocation {
 
   // is this ILoCampusLocation the same as that ILoCampusLocation?
@@ -219,7 +321,18 @@ interface ILoCampusLocation {
 
 }
 
+// represents an empty list of campus locations
 class MtLoCampusLocation implements ILoCampusLocation {
+
+  /*
+   * TEMPLATE:
+   * Methods:
+   * this.sameILoCampusLocation(ILoCampusLocation that) ... boolean
+   * this.sameMtLoCampusLocation(MtLoCampusLocation that) ... boolean
+   * this.sameConsLoCampusLocation(ConsLoCampusLocation that) ... boolean
+   * Methods for fields:
+   * this.sameMtLoCampusLocation(MtLoCampusLocation that) ... boolean
+   */
 
   // is this ILoCampusLocation the same as that ILoCampusLocation?
   public boolean sameILoCampusLocation(ILoCampusLocation that) {
@@ -238,6 +351,7 @@ class MtLoCampusLocation implements ILoCampusLocation {
 
 }
 
+// represents a list of campus locations
 class ConsLoCampusLocation implements ILoCampusLocation {
   ICampusLocation first;
   ILoCampusLocation rest;
@@ -246,6 +360,18 @@ class ConsLoCampusLocation implements ILoCampusLocation {
     this.first = first;
     this.rest = rest;
   }
+
+  /*
+   * TEMPLATE:
+   * Methods:
+   * this.sameILoCampusLocation(ILoCampusLocation that) ... boolean
+   * this.sameMtLoCampusLocation(MtLoCampusLocation that) ... boolean
+   * this.sameConsLoCampusLocation(ConsLoCampusLocation that) ... boolean
+   * Methods for fields:
+   * this.sameConsLoCampusLocation(ConsLoCampusLocation that) ... boolean
+   * this.sameCampusLocation(ICampusLocation other) ... boolean
+   * this.sameILoCampusLocation(ILoCampusLocation that) ... boolean
+   */
 
   // is this ILoCampusLocation the same as that ILoCampusLocation?
   public boolean sameILoCampusLocation(ILoCampusLocation that) {
@@ -264,11 +390,8 @@ class ConsLoCampusLocation implements ILoCampusLocation {
 
 }
 
+// examples and tests for CampusTour
 class ExamplesCampusTour {
-  // TODO: add examples + tests
-  // check nested branchings with order switched, deeper trees, deeper trees that are the
-  // same
-  // deeper trees that are almost the same
 
   Address speareAdd = new Address("Speare Pl", 10);
   Address steastAdd = new Address("Speare Pl", 11);
@@ -296,12 +419,14 @@ class ExamplesCampusTour {
           new ConsLoCampusLocation(this.dodgeHall, new MtLoCampusLocation())));
   Quad krentzmanQuad2 = new Quad("Krentzman Quad", krentzmanLocs2);
 
+  // an example tour
   CampusTour tourOne = new CampusTour(600, this.dodgeTour);
   ITourLocation dodgeTour = new Mandatory("", this.dodgeHall, this.ellOrRichards);
   ITourLocation ellOrRichards = new BranchingTour("", this.ellTour, this.richardsTour);
   ITourLocation richardsTour = new TourEnd("", this.richardsHall);
   ITourLocation ellTour = new TourEnd("", this.ellHall);
 
+  // another example tour
   CampusTour tourTwo = new CampusTour(600, this.speareTour);
   ITourLocation speareTour = new Mandatory("aaa", this.speareHall, this.steastTour);
   ITourLocation steastTour = new Mandatory("a", this.stetsonEast, this.stwestOrMarino);
@@ -310,7 +435,7 @@ class ExamplesCampusTour {
   ITourLocation marinoTour = new TourEnd("marino tour end", this.marinoCenter);
   TourEnd tourEnd2 = new TourEnd("tour end 2", this.stetsonWest);
 
-  // tests for sameTourEnd
+  // tests for sameTourEnd method in ITourLocation
   boolean testSameTourEnd(Tester t) {
     return t.checkExpect(this.stwestTour.sameTourEnd(this.stwestTour), true)
         && t.checkExpect(this.marinoTour.sameTourEnd(this.stwestTour), false)
@@ -318,8 +443,7 @@ class ExamplesCampusTour {
         && t.checkExpect(this.steastTour.sameTourEnd(this.stwestTour), false);
   }
 
-  // examples and tests for sameMandatory
-
+  // examples and tests for sameMandatory method in ITourLocation
   Mandatory man1 = new Mandatory("man1 speech", this.speareHall, stwestTour);
   Mandatory man2 = new Mandatory("man2 speech", this.speareHall, stwestTour);
   Mandatory man3 = new Mandatory("man1 speech", this.stetsonEast, stwestTour);
@@ -334,8 +458,7 @@ class ExamplesCampusTour {
         && t.checkExpect(this.stwestOrMarino.sameMandatory(this.man1), false);
   }
 
-  // examples and tests for sameBranchingTour
-
+  // examples and tests for sameBranchingTour method in ITourLocation
   ITourLocation branchEnd = new TourEnd("Branch end 1", this.speareHall);
   ITourLocation branchEnd2 = new TourEnd("Branch end 2", this.speareHall);
   BranchingTour branching1 = new BranchingTour("branching 1", this.branchEnd, this.branchEnd);
@@ -355,7 +478,20 @@ class ExamplesCampusTour {
         && t.checkExpect(this.dodgeTour.sameBranchingTour(this.branching1), false);
   }
 
-  // examples and tests for sameAddress
+  // tests for sameBuilding method in ICampusLocation
+  boolean testSameBuilding(Tester t) {
+    return t.checkExpect(this.speareHall.sameBuilding(this.speareHall), true)
+        && t.checkExpect(this.speareHall.sameBuilding(this.stetsonWest), false);
+  }
+
+  // tests for sameQuad method in ICampusLocation
+  boolean testSameQuad(Tester t) {
+    return t.checkExpect(this.krentzmanQuad.sameQuad(this.krentzmanQuad2), false)
+        && t.checkExpect(this.krentzmanQuad.sameQuad(this.krentzmanQuad), true);
+
+  }
+
+  // examples and tests for sameAddress method
   Address address1 = new Address("address 1", 1);
   Address address2 = new Address("address 2", 1);
   Address address3 = new Address("address 1", 2);
@@ -366,29 +502,61 @@ class ExamplesCampusTour {
         && t.checkExpect(this.address2.sameAddress(this.address1), false)
         && t.checkExpect(this.address3.sameAddress(this.address1), false)
         && t.checkExpect(this.address4.sameAddress(this.address1), false);
-
   }
 
-  // tests for sameQuad
-  boolean testSameQuad(Tester t) {
-    return t.checkExpect(this.krentzmanQuad.sameQuad(this.krentzmanQuad2), false)
-        && t.checkExpect(this.krentzmanQuad.sameQuad(this.krentzmanQuad), true);
-
-  }
-
-  // tests for sameBuilding
-  boolean testSameBuilding(Tester t) {
-    return t.checkExpect(this.speareHall.sameBuilding(this.speareHall), true)
-        && t.checkExpect(this.speareHall.sameBuilding(this.stetsonWest), false);
-  }
-
-  // tests for sameCampusLocation
+  // tests for sameCampusLocation method in ICampusLocation
   ICampusLocation emptyQuad = new Quad("Empty Quad", new MtLoCampusLocation());
 
   boolean testSameCampusLocation(Tester t) {
     return t.checkExpect(this.marinoCenter.sameCampusLocation(this.marinoCenter), true)
         && t.checkExpect(this.marinoCenter.sameCampusLocation(this.dodgeHall), false)
-        && t.checkExpect(this.marinoCenter.sameCampusLocation(this.emptyQuad), false);
+        && t.checkExpect(this.marinoCenter.sameCampusLocation(this.emptyQuad), false)
+        && t.checkExpect(this.emptyQuad.sameCampusLocation(this.emptyQuad), true);
   }
 
+  // tests for sameMtLoCampusLocation method in ILoCampusLocation
+  MtLoCampusLocation mtList = new MtLoCampusLocation();
+
+  boolean testSameMtLoCampusLocation(Tester t) {
+    return t.checkExpect(this.mtList.sameMtLoCampusLocation(this.mtList), true);
+  }
+
+  // tests for sameLoCampusLocation method in ILoCampusLocation
+  ConsLoCampusLocation listOfHalls = new ConsLoCampusLocation(this.dodgeHall,
+      new ConsLoCampusLocation(this.richardsHall,
+          new ConsLoCampusLocation(this.ellHall, new MtLoCampusLocation())));
+
+  ConsLoCampusLocation listOfHalls2 = new ConsLoCampusLocation(this.richardsHall,
+      new ConsLoCampusLocation(this.ellHall, new MtLoCampusLocation()));
+
+  boolean testSameConsLoCampusLocation(Tester t) {
+    return t.checkExpect(this.listOfHalls.sameConsLoCampusLocation(this.listOfHalls), true)
+        && t.checkExpect(this.listOfHalls.sameConsLoCampusLocation(this.listOfHalls2), false);
+  }
+
+  // tests for sameILoCampusLocation method in ILoCampusLocation
+  ILoCampusLocation mtList2 = new MtLoCampusLocation();
+
+  boolean testSameILoCampusLocation(Tester t) {
+    return t.checkExpect(this.mtList2.sameILoCampusLocation(krentzmanLocs), false)
+        && t.checkExpect(this.krentzmanLocs2.sameILoCampusLocation(this.mtList2), false)
+        && t.checkExpect(this.krentzmanLocs.sameILoCampusLocation(this.krentzmanLocs), true);
+  }
+
+  // tests for sameTourLocation
+
+  boolean testSameTourLocation(Tester t) {
+    return t.checkExpect(this.richardsTour.sameTourLocation(this.richardsTour), true)
+        && t.checkExpect(this.ellTour.sameTourLocation(this.richardsTour), false)
+        && t.checkExpect(this.ellTour.sameTourLocation(this.branchEnd), false)
+        && t.checkExpect(this.ellTour.sameTourLocation(this.man1), false)
+        && t.checkExpect(this.branchEnd.sameTourLocation(this.branchEnd), true)
+        && t.checkExpect(this.branchEnd.sameTourLocation(this.branchEnd2), false)
+        && t.checkExpect(this.branchEnd.sameTourLocation(this.richardsTour), false)
+        && t.checkExpect(this.branchEnd.sameTourLocation(this.man1), false)
+        && t.checkExpect(this.man1.sameTourLocation(this.man1), true)
+        && t.checkExpect(this.man1.sameTourLocation(this.man2), false)
+        && t.checkExpect(this.man1.sameTourLocation(this.branchEnd2), false)
+        && t.checkExpect(this.man1.sameTourLocation(this.richardsTour), false);
+  }
 }
