@@ -115,7 +115,7 @@ class MtLoRunner implements ILoRunner {
 
   // returns an error when finding the fastest finisher of an empty list
   public Runner findMin(IRunnerComparator comp) {
-    new RuntimeException("There is no winner of an empty list!");
+    throw new RuntimeException("There is no winner of an empty list!");
   }
 
   @Override
