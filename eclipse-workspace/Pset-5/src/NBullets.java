@@ -32,7 +32,10 @@ interface ILoBullet {
   WorldScene draw(WorldScene ws);
 
   // moves an entire list of bullets
-  ILoBullet moveLOB();
+  ILoBullet moveLOB(ILoShip los);
+
+  // explodes a bullet
+  ILoBullet explode(Bullet first);
 
 }
 
@@ -45,8 +48,13 @@ class MtLoBullet implements ILoBullet {
   }
 
   // returning this because of an empty list of bullets
-  public ILoBullet moveLOB() {
+  public ILoBullet moveLOB(ILoShip los) {
     return this;
+  }
+
+  // explodes a bullet and adds it to this empty list of bullets
+  public ILoBullet explode(Bullet first) {
+    return null;
   }
 }
 
@@ -66,13 +74,21 @@ class ConsLoBullet implements ILoBullet {
   }
 
   // moves this list of bullets
-  public ILoBullet moveLOB() {
-    if (this.first.onScreen()) {
-      return new ConsLoBullet(this.first.move(), this.rest.moveLOB());
+  public ILoBullet moveLOB(ILoShip los) {
+    if (this.first.onScreen() && this.first.isColliding(los)) {
+      return this.rest.moveLOB(los).explode(this.first);
+    }
+    else if (this.first.onScreen()) {
+      return new ConsLoBullet(this.first.move(), this.rest.moveLOB(los));
     }
     else {
-      return this.rest.moveLOB();
+      return this.rest.moveLOB(los);
     }
+  }
+
+  // explodes a bullet onto this non empty list of bullets
+  public ILoBullet explode(Bullet first) {
+    return null;
   }
 }
 
@@ -87,6 +103,9 @@ interface ILoShip {
 
   // spawns ships on the screen
   public ILoShip spawn(int currentClock);
+
+  // determines if the passed in bullet has hit any ships
+  boolean anyHits(Bullet bullet);
 }
 
 //represents an empty list of ships 
@@ -122,6 +141,11 @@ class MtLoShip implements ILoShip {
       return new ConsLoShip(
           new Ship(10, 500, new Utils().randomNumber(50, 250), 0.0, 5, Color.pink), new MtLoShip());
     }
+  }
+
+  // has this bullet hit any ships in this empty list of Ships
+  public boolean anyHits(Bullet bullet) {
+    return false;
   }
 }
 
@@ -171,6 +195,11 @@ class ConsLoShip implements ILoShip {
       return new ConsLoShip(
           new Ship(10, 500, new Utils().randomNumber(50, 250), 0.0, 5, Color.pink), this);
     }
+  }
+
+  // checks if the bullet has hit any ships in this non empty list of ships
+  public boolean anyHits(Bullet bullet) {
+    return this.first.hit(bullet) || this.rest.anyHits(bullet);
   }
 }
 
@@ -231,6 +260,11 @@ class Bullet extends AObjects {
   // convenience constructor for a brand new bullet at the bottom middle of the screen
   Bullet() {
     this(2, 250, 300, 270, 8, Color.blue, 1);
+  }
+
+  // determines if this bullet is hitting any ships
+  public boolean isColliding(ILoShip los) {
+    return los.anyHits(this);
   }
 
   Bullet(int size, int x, int y, double direction, double velocity, Color color, int bulletRound) {
@@ -310,7 +344,7 @@ class GameScene extends World {
   // updates the game very tick
   public GameScene onTick() {
     return new GameScene(this.bulletsLeft, this.destroyed, this.loShips.spawn(clock).moveLOS(),
-        this.loBullets.moveLOB(), this.random, this.clock + 1);
+        this.loBullets.moveLOB(this.loShips), this.random, this.clock + 1);
   }
 
   // if the spacebar is pressed and there is enough remaining bullets fire a bullet
@@ -326,7 +360,11 @@ class GameScene extends World {
 
   // draw the ships and the bullets on to the new worldscene
   public WorldScene makeScene() {
-    return this.loShips.draw(this.loBullets.draw(new WorldScene(500, 300)));
+
+    WorldScene canvas = new WorldScene(500, 300);
+    WorldScene drawnBullets = this.loBullets.draw(canvas);
+    WorldScene drawnShips = this.loShips.draw(drawnBullets);
+    return drawnShips;
   }
 
 }
@@ -387,6 +425,21 @@ class ExamplesNBullets {
     return t.checkExpect(this.defaultBullet.hit(this.hitShip), true)
         && t.checkExpect(this.defaultBullet.hit(this.hitShip2), true)
         && t.checkExpect(this.defaultBullet.hit(this.missShip), false);
+  }
+
+  // TODO: test for anyHit
+  boolean testAnyHit(Tester t) {
+    return true;
+  }
+
+  // TODO: test for isColliding
+  boolean testIsColliding(Tester t) {
+    return true;
+  }
+
+  // TODO: test for explode
+  boolean testExplode(Tester t) {
+    return true;
   }
 
   // TODO: test for onTick
