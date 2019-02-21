@@ -204,7 +204,7 @@ class Bullet extends AObjects {
   }
 
   Bullet(int size, int x, int y, double direction, double velocity, Color color, int bulletNumber) {
-    super(size, x, y, direction, velocity, color);
+    super(size + ((bulletNumber - 1) * 2), x, y, direction, velocity, color);
     this.bulletNumber = bulletNumber;
   }
 
@@ -331,4 +331,5 @@ class ExamplesNBullets {
    * return game.bigBang(worldWidth, worldHeight, tickRate);
    * }
    */
+
 }
