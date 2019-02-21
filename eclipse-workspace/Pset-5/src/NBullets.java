@@ -267,7 +267,6 @@ class GameScene extends World {
   Random random;
   int clock;
 
-
   // constructing a game scene
   public GameScene(int bulletsLeft, int destroyed, ILoShip loShips, ILoBullet loBullets,
       Random random, int clock) {
@@ -292,8 +291,8 @@ class GameScene extends World {
   public GameScene onTick() {
     // logic for ship spawning
     if (this.clock % 28 == 0) {
-    return new GameScene(this.bulletsLeft, this.destroyed, this.loShips.spawn().moveLOS(),
-        this.loBullets.moveLOB(), this.random, this.clock + 1);
+      return new GameScene(this.bulletsLeft, this.destroyed, this.loShips.spawn().moveLOS(),
+          this.loBullets.moveLOB(), this.random, this.clock + 1);
     }
     else {
       return new GameScene(this.bulletsLeft, this.destroyed, this.loShips.moveLOS(),
@@ -329,10 +328,45 @@ class ExamplesNBullets {
   Ship hitShip = new Ship(20, 250, 279, 180.0, 10.0, Color.blue);
   Ship hitShip2 = new Ship(20, 250, 285, 180.0, 10.0, Color.blue);
 
+  // TODO: test for randomNumber
+  boolean testRandomNumber(Tester t) {
+    return true;
+  }
+
+  // TODO: test for onScreen
+  boolean testOnScreen(Tester t) {
+    return true;
+  }
+
+  // TODO: test for spawn
+  boolean testSpawn(Tester t) {
+    return true;
+  }
+
+  // TODO: test for distanceX
+  boolean testDistanceX(Tester t) {
+    return true;
+  }
+
+  // TODO: test for distanceY
+  boolean testDistanceY(Tester t) {
+    return true;
+  }
+
   // test for move function
   boolean testMove(Tester t) {
     return t.checkExpect(this.defaultBullet.move(), new Bullet(2, 250, 292, 270, 8, Color.blue, 1))
         && t.checkExpect(this.secondBullet.move(), new Bullet(2, 250, 284, 270, 8, Color.blue, 1));
+  }
+
+  // TODO: test for moveLOS
+  boolean testMoveLOS(Tester t) {
+    return true;
+  }
+
+  // TODO: test for moveLOB
+  boolean testMoveLOB(Tester t) {
+    return true;
   }
 
   // test for hit
@@ -340,6 +374,16 @@ class ExamplesNBullets {
     return t.checkExpect(this.defaultBullet.hit(this.hitShip), true)
         && t.checkExpect(this.defaultBullet.hit(this.hitShip2), true)
         && t.checkExpect(this.defaultBullet.hit(this.missShip), false);
+  }
+
+  // TODO: test for onTick
+  boolean testOnTick(Tester t) {
+    return true;
+  }
+
+  // TODO: test for onKeyEvent
+  boolean testOnKeyEvent(Tester t) {
+    return true;
   }
 
   /*
