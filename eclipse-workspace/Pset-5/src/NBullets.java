@@ -86,7 +86,7 @@ interface ILoShip {
   public ILoShip moveLOS();
 
   // spawns ships on the screen
-  public ILoShip spawn();
+  public ILoShip spawn(int currentClock);
 }
 
 //represents an empty list of ships 
@@ -102,8 +102,18 @@ class MtLoShip implements ILoShip {
     return this;
   }
 
-  // spawns a new ship
-  public ILoShip spawn() {
+  // checks if its time to spawn a ship, and does so
+  public ILoShip spawn(int currentClock) {
+    if (currentClock % 28 == 0) {
+      return this.spawnShip();
+    }
+    else {
+      return this;
+    }
+  }
+
+  // spawns a new ship if time is right
+  public ILoShip spawnShip() {
     if (new Random().nextBoolean()) {
       return new ConsLoShip(
           new Ship(10, 0, new Utils().randomNumber(50, 250), 180.0, 5, Color.pink), new MtLoShip());
@@ -141,8 +151,18 @@ class ConsLoShip implements ILoShip {
     }
   }
 
+  // checks if its time to spawn a ship, and does so
+  public ILoShip spawn(int currentClock) {
+    if (currentClock % 28 == 0) {
+      return this.spawnShip();
+    }
+    else {
+      return this;
+    }
+  }
+
   // spawns a ship onto this non empty list of ships
-  public ILoShip spawn() {
+  public ILoShip spawnShip() {
     if (new Random().nextBoolean()) {
       return new ConsLoShip(
           new Ship(10, 0, new Utils().randomNumber(50, 250), 180.0, 5, Color.pink), this);
@@ -289,15 +309,8 @@ class GameScene extends World {
 
   // updates the game very tick
   public GameScene onTick() {
-    // logic for ship spawning
-    if (this.clock % 28 == 0) {
-      return new GameScene(this.bulletsLeft, this.destroyed, this.loShips.spawn().moveLOS(),
-          this.loBullets.moveLOB(), this.random, this.clock + 1);
-    }
-    else {
-      return new GameScene(this.bulletsLeft, this.destroyed, this.loShips.moveLOS(),
-          this.loBullets.moveLOB(), this.random, this.clock + 1);
-    }
+    return new GameScene(this.bulletsLeft, this.destroyed, this.loShips.spawn(clock).moveLOS(),
+        this.loBullets.moveLOB(), this.random, this.clock + 1);
   }
 
   // if the spacebar is pressed and there is enough remaining bullets fire a bullet
@@ -386,14 +399,12 @@ class ExamplesNBullets {
     return true;
   }
 
-  /*
-   * boolean testBigBang(Tester t) {
-   * GameScene game = new GameScene();
-   * int worldWidth = 500;
-   * int worldHeight = 300;
-   * double tickRate = 1.0 / 500.0;
-   * return game.bigBang(worldWidth, worldHeight, tickRate);
-   * }
-   */
+  boolean testBigBang(Tester t) {
+    GameScene game = new GameScene();
+    int worldWidth = 500;
+    int worldHeight = 300;
+    double tickRate = 1.0 / 500.0;
+    return game.bigBang(worldWidth, worldHeight, tickRate);
+  }
 
 }
