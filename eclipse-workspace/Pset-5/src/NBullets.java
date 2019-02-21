@@ -197,15 +197,15 @@ abstract class AObjects implements IObjects {
 
 // represents a bullet 
 class Bullet extends AObjects {
-  int bulletNumber;
+  int bulletRound;
 
   Bullet() {
     this(2, 250, 300, 270, 8, Color.blue, 1);
   }
 
-  Bullet(int size, int x, int y, double direction, double velocity, Color color, int bulletNumber) {
-    super(size + ((bulletNumber - 1) * 2), x, y, direction, velocity, color);
-    this.bulletNumber = bulletNumber;
+  Bullet(int size, int x, int y, double direction, double velocity, Color color, int bulletRound) {
+    super(size + ((bulletRound - 1) * 2), x, y, direction, velocity, color);
+    this.bulletRound = bulletRound;
   }
 
   WorldScene draw(WorldScene ws) {
@@ -217,7 +217,7 @@ class Bullet extends AObjects {
     double y = this.velocity * Math.sin(Math.toRadians(this.direction));
 
     return new Bullet(this.size, (int) x + this.x, (int) y + this.y, this.direction, this.velocity,
-        this.color, this.bulletNumber);
+        this.color, this.bulletRound);
   }
 }
 
