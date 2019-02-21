@@ -6,8 +6,9 @@ import javalib.funworld.WorldScene;
 import javalib.worldimages.CircleImage;
 import tester.Tester;
 
-
+// general utils class for the project
 class Utils {
+  // initiates a random variable
   Random rand = new Random();
   int screenWidth = 500;
   int screenHeight = 300;
@@ -59,10 +60,12 @@ class ConsLoBullet implements ILoBullet {
     this.rest = rest;
   }
 
+  // draws this non empty list of bullets
   public WorldScene draw(WorldScene ws) {
     return this.first.draw(this.rest.draw(ws));
   }
 
+  // moves this list of bullets
   public ILoBullet moveLOB() {
     if (this.first.onScreen()) {
       return new ConsLoBullet(this.first.move(), this.rest.moveLOB());
@@ -89,14 +92,17 @@ interface ILoShip {
 //represents an empty list of ships 
 class MtLoShip implements ILoShip {
 
+  // draws this empty list of ships
   public WorldScene draw(WorldScene ws) {
     return ws;
   }
 
+  // moves this empty list of ships
   public ILoShip moveLOS() {
     return this;
   }
 
+  // spawns a new ship
   public ILoShip spawn() {
     if (new Random().nextBoolean()) {
       return new ConsLoShip(
@@ -120,10 +126,12 @@ class ConsLoShip implements ILoShip {
     this.rest = rest;
   }
 
+  // draws this non empty list of ships
   public WorldScene draw(WorldScene ws) {
     return this.first.draw(this.rest.draw(ws));
   }
 
+  // moves this non empty list of ships
   public ILoShip moveLOS() {
     if (this.first.onScreen()) {
       return new ConsLoShip(this.first.move(), this.rest.moveLOS());
@@ -133,6 +141,7 @@ class ConsLoShip implements ILoShip {
     }
   }
 
+  // spawns a ship onto this non empty list of ships
   public ILoShip spawn() {
     if (new Random().nextBoolean()) {
       return new ConsLoShip(
@@ -199,6 +208,7 @@ abstract class AObjects implements IObjects {
 class Bullet extends AObjects {
   int bulletRound;
 
+  // convenience constructor for a brand new bullet at the bottom middle of the screen
   Bullet() {
     this(2, 250, 300, 270, 8, Color.blue, 1);
   }
@@ -208,10 +218,12 @@ class Bullet extends AObjects {
     this.bulletRound = bulletRound;
   }
 
+  // draws this single bullet
   WorldScene draw(WorldScene ws) {
     return ws.placeImageXY(new CircleImage(this.size, "solid", this.color), this.x, this.y);
   }
 
+  // moves this single bullet according to its velocity
   public Bullet move() {
     double x = -this.velocity * Math.cos(Math.toRadians(this.direction));
     double y = this.velocity * Math.sin(Math.toRadians(this.direction));
@@ -236,12 +248,14 @@ class Ship extends AObjects {
     return new Ship(this.size, (int) x + this.x, this.y, this.direction, this.velocity, this.color);
   }
 
+  // draws this single ship
   WorldScene draw(WorldScene ws) {
     return ws.placeImageXY(new CircleImage(this.size, "solid", this.color), this.x, this.y);
   }
 
 }
 
+// world state of the game
 class GameScene extends World {
   public static final int screenWidth = 500;
   public static final int screenHeight = 300;
@@ -254,6 +268,7 @@ class GameScene extends World {
   int clock;
 
 
+  // constructing a game scene
   public GameScene(int bulletsLeft, int destroyed, ILoShip loShips, ILoBullet loBullets,
       Random random, int clock) {
     this.bulletsLeft = bulletsLeft;
@@ -264,6 +279,7 @@ class GameScene extends World {
     this.clock = clock;
   }
 
+  // convenience constructor representing the start of the game
   public GameScene() {
     this.bulletsLeft = 10;
     this.destroyed = 0;
@@ -272,7 +288,9 @@ class GameScene extends World {
     this.clock = 0;
   }
 
+  // updates the game very tick
   public GameScene onTick() {
+    // logic for ship spawning
     if (this.clock % 28 == 0) {
     return new GameScene(this.bulletsLeft, this.destroyed, this.loShips.spawn().moveLOS(),
         this.loBullets.moveLOB(), this.random, this.clock + 1);
@@ -311,11 +329,13 @@ class ExamplesNBullets {
   Ship hitShip = new Ship(20, 250, 279, 180.0, 10.0, Color.blue);
   Ship hitShip2 = new Ship(20, 250, 285, 180.0, 10.0, Color.blue);
 
+  // test for move function
   boolean testMove(Tester t) {
     return t.checkExpect(this.defaultBullet.move(), new Bullet(2, 250, 292, 270, 8, Color.blue, 1))
         && t.checkExpect(this.secondBullet.move(), new Bullet(2, 250, 284, 270, 8, Color.blue, 1));
   }
 
+  // test for hit
   boolean testHit(Tester t) {
     return t.checkExpect(this.defaultBullet.hit(this.hitShip), true)
         && t.checkExpect(this.defaultBullet.hit(this.hitShip2), true)
