@@ -35,7 +35,7 @@ interface ILoBullet {
   ILoBullet moveLOB(ILoShip los);
 
   // explodes a bullet
-  ILoBullet explode(Bullet first);
+  ILoBullet explode(Bullet hitBullet);
 
 }
 
@@ -53,7 +53,14 @@ class MtLoBullet implements ILoBullet {
   }
 
   // explodes a bullet and adds it to this empty list of bullets
-  public ILoBullet explode(Bullet first) {
+  public ILoBullet explode(Bullet hitBullet) {
+    double explodeAngle = hitBullet.explodeAngles();
+    int explodeCount = hitBullet.explodeCount();
+    return this.explodeHelper(explodeAngle, explodeCount);
+  }
+
+  private ILoBullet explodeHelper(double explodeAngle, int explodeCount) {
+    // TODO Auto-generated method stub
     return null;
   }
 }
@@ -87,7 +94,7 @@ class ConsLoBullet implements ILoBullet {
   }
 
   // explodes a bullet onto this non empty list of bullets
-  public ILoBullet explode(Bullet first) {
+  public ILoBullet explode(Bullet hitBullet) {
     return null;
   }
 }
@@ -272,6 +279,16 @@ class Bullet extends AObjects {
     this.bulletRound = bulletRound;
   }
 
+  // calculates the explosion angles if this bullet explodes
+  public double explodeAngles() {
+    return 360.00 / this.bulletRound;
+  }
+
+//calculates the explosion angles if this bullet explodes
+  public int explodeCount() {
+    return this.bulletRound + 1;
+  }
+
   // draws this single bullet
   WorldScene draw(WorldScene ws) {
     return ws.placeImageXY(new CircleImage(this.size, "solid", this.color), this.x, this.y);
@@ -439,6 +456,16 @@ class ExamplesNBullets {
 
   // TODO: test for explode
   boolean testExplode(Tester t) {
+    return true;
+  }
+
+  // TODO: test for explodeAngles
+  boolean testExplodeAngles(Tester t) {
+    return true;
+  }
+
+  // TODO: test for explodeCount
+  boolean testExplodeCount(Tester t) {
     return true;
   }
 
