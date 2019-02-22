@@ -70,10 +70,17 @@ class MtLoBullet implements ILoBullet {
 
   public ILoBullet explodeHelper(double explodeAngle, int explodeCount, int x, int y,
       int bulletRound, int initialSize, ILoBullet base) {
-    if (explodeCount > 0) {
+
+    if (explodeCount > 0 && bulletRound < 4) {
       return new ConsLoBullet(
           new Bullet(initialSize + (2 * bulletRound), x, y, explodeAngle * explodeCount, 10,
               Color.blue, bulletRound + 1),
+          this.explodeHelper(explodeAngle, explodeCount - 1, x, y, bulletRound, initialSize, base));
+    }
+    else if (explodeCount > 0 && bulletRound >= 4) {
+      return new ConsLoBullet(
+          new Bullet(initialSize, x, y, explodeAngle * explodeCount, 10, Color.blue,
+              bulletRound + 1),
           this.explodeHelper(explodeAngle, explodeCount - 1, x, y, bulletRound, initialSize, base));
     }
     else {
@@ -200,7 +207,7 @@ class MtLoShip implements ILoShip {
 
   // checks if its time to spawn a ship, and does so
   public ILoShip spawn(int currentClock) {
-    if (currentClock % 28 == 0) {
+    if (currentClock % 14 == 0) {
       return this.spawnShip();
     }
     else {
@@ -212,11 +219,11 @@ class MtLoShip implements ILoShip {
   public ILoShip spawnShip() {
     if (new Random().nextBoolean()) {
       return new ConsLoShip(
-          new Ship(10, 0, new Utils().randomNumber(50, 250), 180.0, 5, Color.pink), new MtLoShip());
+          new Ship(20, 0, new Utils().randomNumber(50, 250), 180.0, 5, Color.pink), new MtLoShip());
     }
     else {
       return new ConsLoShip(
-          new Ship(10, 500, new Utils().randomNumber(50, 250), 0.0, 5, Color.pink), new MtLoShip());
+          new Ship(20, 500, new Utils().randomNumber(50, 250), 0.0, 5, Color.pink), new MtLoShip());
     }
   }
 
@@ -264,7 +271,7 @@ class ConsLoShip implements ILoShip {
 
   // checks if its time to spawn a ship, and does so
   public ILoShip spawn(int currentClock) {
-    if (currentClock % 2 == 0) {
+    if (currentClock % 14 == 0) {
       return this.spawnShip();
     }
     else {
@@ -276,11 +283,11 @@ class ConsLoShip implements ILoShip {
   public ILoShip spawnShip() {
     if (new Random().nextBoolean()) {
       return new ConsLoShip(
-          new Ship(10, 0, new Utils().randomNumber(50, 250), 180.0, 5, Color.pink), this);
+          new Ship(20, 0, new Utils().randomNumber(50, 250), 180.0, 5, Color.pink), this);
     }
     else {
       return new ConsLoShip(
-          new Ship(10, 500, new Utils().randomNumber(50, 250), 0.0, 5, Color.pink), this);
+          new Ship(20, 500, new Utils().randomNumber(50, 250), 0.0, 5, Color.pink), this);
     }
   }
 
