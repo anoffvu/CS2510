@@ -450,6 +450,21 @@ class GameScene extends World {
   Random random;
   int clock;
 
+  // convenience constructor representing the start of the game
+  public GameScene() {
+    this(10);
+  }
+
+  // convenience constructor representing the start of the game, for use by grader
+  public GameScene(int bullets) {
+    this(new Random(), bullets);
+  }
+
+  // convenience constructor after having initialized a random
+  public GameScene(Random rand, int bullets) {
+    this(bullets, 0, new MtLoShip(), new MtLoBullet(), rand, 0);
+  }
+
   // constructing a game scene
   public GameScene(int bulletsLeft, int destroyed, ILoShip loShips, ILoBullet loBullets,
       Random random, int clock) {
@@ -461,14 +476,7 @@ class GameScene extends World {
     this.clock = clock;
   }
 
-  // convenience constructor representing the start of the game
-  public GameScene() {
-    this.bulletsLeft = 10;
-    this.destroyed = 0;
-    this.loShips = new MtLoShip();
-    this.loBullets = new MtLoBullet();
-    this.clock = 0;
-  }
+
 
   // updates the game very tick
   public GameScene onTick() {
