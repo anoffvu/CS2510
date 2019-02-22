@@ -4,6 +4,8 @@ import java.util.Random;
 import javalib.funworld.World;
 import javalib.funworld.WorldScene;
 import javalib.worldimages.CircleImage;
+import javalib.worldimages.TextImage;
+import javalib.worldimages.WorldEnd;
 import tester.Tester;
 
 // general utils class for the project
@@ -37,6 +39,12 @@ interface ILoBullet {
   // explodes a bullet
   ILoBullet explode(Bullet hitBullet);
 
+  // determines if this list of bullets is empty
+  boolean isEmpty();
+
+  // determines if the passed in ship has hit any bullets
+  boolean anyHits(Ship ship);
+
 }
 
 // represents an empty list of bullets 
@@ -52,16 +60,37 @@ class MtLoBullet implements ILoBullet {
     return this;
   }
 
-  // explodes a bullet and adds it to this empty list of bullets
+//explodes a bullet and adds it to this empty list of bullets
   public ILoBullet explode(Bullet hitBullet) {
     double explodeAngle = hitBullet.explodeAngles();
     int explodeCount = hitBullet.explodeCount();
-    return this.explodeHelper(explodeAngle, explodeCount);
+    return explodeHelper(explodeAngle, explodeCount, hitBullet.x, hitBullet.y,
+        hitBullet.bulletRound, hitBullet.size, this);
   }
 
-  private ILoBullet explodeHelper(double explodeAngle, int explodeCount) {
-    // TODO Auto-generated method stub
-    return null;
+  public ILoBullet explodeHelper(double explodeAngle, int explodeCount, int x, int y,
+      int bulletRound, int initialSize, ILoBullet base) {
+    if (explodeCount > 0) {
+      return new ConsLoBullet(
+          new Bullet(initialSize + (2 * bulletRound), x, y, explodeAngle * explodeCount, 10,
+              Color.blue, bulletRound + 1),
+          this.explodeHelper(explodeAngle, explodeCount - 1, x, y, bulletRound, initialSize, base));
+    }
+    else {
+      return base;
+    }
+
+  }
+
+  // determines if this empty list is empty
+  public boolean isEmpty() {
+    return true;
+  }
+
+  // determines if the passed in ship has hit any bullets in this empty list
+  // of bullets
+  public boolean anyHits(Ship ship) {
+    return false;
   }
 }
 
@@ -82,6 +111,7 @@ class ConsLoBullet implements ILoBullet {
 
   // moves this list of bullets
   public ILoBullet moveLOB(ILoShip los) {
+    // checks if the first bullet is colliding with a ship
     if (this.first.onScreen() && this.first.isColliding(los)) {
       return this.rest.moveLOB(los).explode(this.first);
     }
@@ -93,9 +123,43 @@ class ConsLoBullet implements ILoBullet {
     }
   }
 
-  // explodes a bullet onto this non empty list of bullets
+  // explodes a bullet and adds it to this empty list of bullets
   public ILoBullet explode(Bullet hitBullet) {
-    return null;
+    double explodeAngle = hitBullet.explodeAngles();
+    int explodeCount = hitBullet.explodeCount();
+    return explodeHelper(explodeAngle, explodeCount, hitBullet.x, hitBullet.y,
+        hitBullet.bulletRound, hitBullet.size, this);
+  }
+
+  public ILoBullet explodeHelper(double explodeAngle, int explodeCount, int x, int y,
+      int bulletRound, int initialSize, ILoBullet base) {
+
+    if (explodeCount > 0 && bulletRound < 4) {
+      return new ConsLoBullet(
+          new Bullet(initialSize + (2 * bulletRound), x, y, explodeAngle * explodeCount, 10,
+              Color.blue, bulletRound + 1),
+          this.explodeHelper(explodeAngle, explodeCount - 1, x, y, bulletRound, initialSize, base));
+    }
+    else if (explodeCount > 0 && bulletRound >= 4) {
+      return new ConsLoBullet(
+          new Bullet(initialSize, x, y, explodeAngle * explodeCount, 10, Color.blue,
+              bulletRound + 1),
+          this.explodeHelper(explodeAngle, explodeCount - 1, x, y, bulletRound, initialSize, base));
+    }
+    else {
+      return base;
+    }
+
+  }
+
+  // determines if this non empty list is empty
+  public boolean isEmpty() {
+    return false;
+  }
+
+  // determines if the passed in ship has hit any bullets
+  public boolean anyHits(Ship ship) {
+    return this.first.collided(ship) || this.rest.anyHits(ship);
   }
 }
 
@@ -113,6 +177,12 @@ interface ILoShip {
 
   // determines if the passed in bullet has hit any ships
   boolean anyHits(Bullet bullet);
+
+  // counts the collisions on this list of ships
+  public int countCollisions(ILoBullet lob);
+
+  // removes any ships that have collided with a bullet
+  ILoShip removeCollisions(ILoBullet lob);
 }
 
 //represents an empty list of ships 
@@ -154,6 +224,16 @@ class MtLoShip implements ILoShip {
   public boolean anyHits(Bullet bullet) {
     return false;
   }
+
+  // counts the number of ships that have collided with a bullet
+  public int countCollisions(ILoBullet lob) {
+    return 0;
+  }
+
+  // removes any collided ships from this empty list of ships
+  public ILoShip removeCollisions(ILoBullet lob) {
+    return this;
+  }
 }
 
 //represents a list of ships 
@@ -184,7 +264,7 @@ class ConsLoShip implements ILoShip {
 
   // checks if its time to spawn a ship, and does so
   public ILoShip spawn(int currentClock) {
-    if (currentClock % 28 == 0) {
+    if (currentClock % 2 == 0) {
       return this.spawnShip();
     }
     else {
@@ -207,6 +287,26 @@ class ConsLoShip implements ILoShip {
   // checks if the bullet has hit any ships in this non empty list of ships
   public boolean anyHits(Bullet bullet) {
     return this.first.hit(bullet) || this.rest.anyHits(bullet);
+  }
+
+  // counts the number of ships that have collided with a bullet
+  public int countCollisions(ILoBullet lob) {
+    int count = 0;
+    if (this.first.isCollided(lob)) {
+      return count + 1;
+    }
+    return count + rest.countCollisions(lob);
+  }
+
+  // removes ships that have collided with a bullet
+  public ILoShip removeCollisions(ILoBullet lob) {
+    if (this.first.isCollided(lob)) {
+      return this.rest.removeCollisions(lob);
+    }
+    else {
+      return new ConsLoShip(this.first, this.rest.removeCollisions(lob));
+    }
+
   }
 }
 
@@ -269,19 +369,23 @@ class Bullet extends AObjects {
     this(2, 250, 300, 270, 8, Color.blue, 1);
   }
 
+  public boolean collided(Ship ship) {
+    return this.hit(ship);
+  }
+
   // determines if this bullet is hitting any ships
   public boolean isColliding(ILoShip los) {
     return los.anyHits(this);
   }
 
   Bullet(int size, int x, int y, double direction, double velocity, Color color, int bulletRound) {
-    super(size + ((bulletRound - 1) * 2), x, y, direction, velocity, color);
+    super(size, x, y, direction, velocity, color);
     this.bulletRound = bulletRound;
   }
 
   // calculates the explosion angles if this bullet explodes
   public double explodeAngles() {
-    return 360.00 / this.bulletRound;
+    return 360.00 / (this.bulletRound + 1);
   }
 
 //calculates the explosion angles if this bullet explodes
@@ -311,6 +415,10 @@ class Ship extends AObjects {
 
   Ship(int size, int x, int y, double direction, double velocity, Color color) {
     super(size, x, y, direction, velocity, color);
+  }
+
+  public boolean isCollided(ILoBullet lob) {
+    return lob.anyHits(this);
   }
 
   // move a single ship across the screen
@@ -360,8 +468,16 @@ class GameScene extends World {
 
   // updates the game very tick
   public GameScene onTick() {
-    return new GameScene(this.bulletsLeft, this.destroyed, this.loShips.spawn(clock).moveLOS(),
-        this.loBullets.moveLOB(this.loShips), this.random, this.clock + 1);
+    int collisionCount = this.loShips.countCollisions(this.loBullets);
+    if (collisionCount > 0) {
+      return new GameScene(this.bulletsLeft, this.destroyed + collisionCount,
+          this.loShips.spawn(clock).removeCollisions(this.loBullets).moveLOS(),
+          this.loBullets.moveLOB(this.loShips), this.random, this.clock + 1);
+    }
+    else {
+      return new GameScene(this.bulletsLeft, this.destroyed, this.loShips.spawn(clock).moveLOS(),
+          this.loBullets.moveLOB(this.loShips), this.random, this.clock + 1);
+    }
   }
 
   // if the spacebar is pressed and there is enough remaining bullets fire a bullet
@@ -375,13 +491,23 @@ class GameScene extends World {
     }
   }
 
+  public WorldScene drawInfo(WorldScene ws) {
+    return ws.placeImageXY(
+        new TextImage("Score: " + this.destroyed + "   Bullets Left: " + this.bulletsLeft, 12,
+            Color.black),
+        80, 280);
+  }
+
+  public WorldEnd worldEnds() {
+    if (bulletsLeft <= 0 && this.loBullets.isEmpty()) {
+      return new WorldEnd(true, makeScene());
+    }
+    return new WorldEnd(false, new WorldScene(screenWidth, screenHeight));
+  }
+
   // draw the ships and the bullets on to the new worldscene
   public WorldScene makeScene() {
-
-    WorldScene canvas = new WorldScene(500, 300);
-    WorldScene drawnBullets = this.loBullets.draw(canvas);
-    WorldScene drawnShips = this.loShips.draw(drawnBullets);
-    return drawnShips;
+    return this.drawInfo(this.loBullets.draw(this.loShips.draw(new WorldScene(500, 300))));
   }
 
 }
@@ -483,7 +609,7 @@ class ExamplesNBullets {
     GameScene game = new GameScene();
     int worldWidth = 500;
     int worldHeight = 300;
-    double tickRate = 1.0 / 500.0;
+    double tickRate = 1.0 / 40.0;
     return game.bigBang(worldWidth, worldHeight, tickRate);
   }
 
