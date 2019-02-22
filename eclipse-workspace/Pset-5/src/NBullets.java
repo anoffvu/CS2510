@@ -528,8 +528,8 @@ class GameScene extends World {
 
 class ExamplesNBullets {
 
-  GameScene world = new GameScene();
-  Random rand = new Random(10);
+  GameScene world = new GameScene(new Random(1), 10);
+  // Random rand = new Random(10);
 
   Bullet defaultBullet = new Bullet(2, 250, 300, 270, 8, Color.blue, 1);
   Bullet secondBullet = new Bullet(2, 250, 292, 270, 8, Color.blue, 1);
@@ -547,20 +547,26 @@ class ExamplesNBullets {
   ILoShip sList2 = new ConsLoShip(secondShip,
       new ConsLoShip(new Ship(2, 258, 290, 180, 8, Color.blue), new MtLoShip()));
 
-  // TODO: test for randomNumber
-  boolean testRandomNumber(Tester t) {
-    return t.checkExpect(new Utils().randomNumber(0, 20, this.rand), 13);
-  }
+  /*
+   * // TODO: test for randomNumber
+   * boolean testRandomNumber(Tester t) {
+   * return t.checkExpect(new Utils().randomNumber(0, 20, world.random), 5)
+   * && t.checkExpect(new Utils().randomNumber(0, 400, world.random), 313);
+   * }
+   */
 
   // TODO: test for onScreen
   boolean testOnScreen(Tester t) {
     return true;
   }
 
-  // TODO: test for spawn
-  boolean testSpawn(Tester t) {
-    return true;
-  }
+  /*
+   * // TODO: test for spawn
+   * boolean testSpawn(Tester t) {
+   * return t.checkExpect(new MtLoShip().spawn(0, world.random),
+   * new ConsLoShip(new Ship(20, 500, 97, 0.0, 5.0, Color.pink), new MtLoShip()));
+   * }
+   */
 
   // TODO: test for spawnShip
   boolean testSpawnShip(Tester t) {
@@ -625,7 +631,16 @@ class ExamplesNBullets {
 
   // TODO: test for explodeHelper
   boolean testExplodeHelper(Tester t) {
-    return true;
+    return t.checkExpect(new MtLoBullet().explodeHelper(180.0, 1, 0, 0, 1, 10, new MtLoBullet()),
+        new ConsLoBullet(new Bullet(12, 0, 0, 180.0, 10, Color.blue, 2), new MtLoBullet()))
+        && t.checkExpect(new MtLoBullet().explodeHelper(180.0, 2, 0, 0, 1, 10, new MtLoBullet()),
+            new ConsLoBullet(new Bullet(12, 0, 0, 360.0, 10, Color.blue, 2), new ConsLoBullet(
+                new Bullet(12, 0, 0, 180.0, 10, Color.blue, 2), new MtLoBullet())))
+        && t.checkExpect(
+            new MtLoBullet().explodeHelper(180.0, 1, 0, 0, 1, 10,
+                new ConsLoBullet(new Bullet(12, 0, 0, 360.0, 10, Color.blue, 2), new MtLoBullet())),
+            new ConsLoBullet(new Bullet(12, 0, 0, 180.0, 10, Color.blue, 2), new ConsLoBullet(
+                new Bullet(12, 0, 0, 360.0, 10, Color.blue, 2), new MtLoBullet())));
   }
 
 
