@@ -166,7 +166,7 @@ class ConsLoBullet implements ILoBullet {
 
   // determines if the passed in ship has hit any bullets
   public boolean anyHits(Ship ship) {
-    return this.first.collided(ship) || this.rest.anyHits(ship);
+    return this.first.hit(ship) || this.rest.anyHits(ship);
   }
 }
 
@@ -376,9 +376,6 @@ class Bullet extends AObjects {
     this(2, 250, 300, 270, 8, Color.blue, 1);
   }
 
-  public boolean collided(Ship ship) {
-    return this.hit(ship);
-  }
 
   // determines if this bullet is hitting any ships
   public boolean isColliding(ILoShip los) {
@@ -658,14 +655,13 @@ class ExamplesNBullets {
   boolean testOnKeyEvent(Tester t) {
     return true;
   }
-  /*
-   * boolean testBigBang(Tester t) {
-   * GameScene game = new GameScene();
-   * int worldWidth = 500;
-   * int worldHeight = 300;
-   * double tickRate = 1.0 / 40.0;
-   * return game.bigBang(worldWidth, worldHeight, tickRate);
-   * }
-   */
+
+  boolean testBigBang(Tester t) {
+    GameScene game = new GameScene();
+    int worldWidth = 500;
+    int worldHeight = 300;
+    double tickRate = 1.0 / 40.0;
+    return game.bigBang(worldWidth, worldHeight, tickRate);
+  }
 
 }
