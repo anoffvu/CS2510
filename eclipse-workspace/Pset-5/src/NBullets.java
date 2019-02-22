@@ -554,6 +554,11 @@ class ExamplesNBullets {
     return true;
   }
 
+  // TODO: test for spawnShip
+  boolean testSpawnShip(Tester t) {
+    return true;
+  }
+
   // test for distanceX
   boolean testDistanceX(Tester t) {
     return t.checkExpect(this.defaultBullet.distanceX(this.secondBullet), 0)
