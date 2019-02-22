@@ -525,9 +525,19 @@ class ExamplesNBullets {
 
   Bullet defaultBullet = new Bullet(2, 250, 300, 270, 8, Color.blue, 1);
   Bullet secondBullet = new Bullet(2, 250, 292, 270, 8, Color.blue, 1);
+  Ship defaultShip = new Ship(2, 250, 300, 180, 8, Color.blue);
+  Ship secondShip = new Ship(2, 258, 300, 180, 8, Color.blue);
   Ship missShip = new Ship(20, 250, 270, 180.0, 10.0, Color.blue);
   Ship hitShip = new Ship(20, 250, 279, 180.0, 10.0, Color.blue);
   Ship hitShip2 = new Ship(20, 250, 285, 180.0, 10.0, Color.blue);
+  ILoBullet bList1 = new ConsLoBullet(defaultBullet,
+      new ConsLoBullet(new Bullet(2, 250, 290, 180, 8, Color.blue, 1), new MtLoBullet()));
+  ILoBullet bList2 = new ConsLoBullet(secondBullet,
+      new ConsLoBullet(new Bullet(2, 258, 290, 180, 8, Color.blue, 1), new MtLoBullet()));
+  ILoShip sList1 = new ConsLoShip(defaultShip,
+      new ConsLoShip(new Ship(2, 250, 290, 180, 8, Color.blue), new MtLoShip()));
+  ILoShip sList2 = new ConsLoShip(secondShip,
+      new ConsLoShip(new Ship(2, 258, 290, 180, 8, Color.blue), new MtLoShip()));
 
   // TODO: test for randomNumber
   boolean testRandomNumber(Tester t) {
@@ -557,17 +567,20 @@ class ExamplesNBullets {
   // test for move function
   boolean testMove(Tester t) {
     return t.checkExpect(this.defaultBullet.move(), new Bullet(2, 250, 292, 270, 8, Color.blue, 1))
-        && t.checkExpect(this.secondBullet.move(), new Bullet(2, 250, 284, 270, 8, Color.blue, 1));
+        && t.checkExpect(this.secondBullet.move(), new Bullet(2, 250, 284, 270, 8, Color.blue, 1))
+        && t.checkExpect(this.defaultShip.move(), this.secondShip);
   }
 
   // TODO: test for moveLOS
   boolean testMoveLOS(Tester t) {
-    return true;
+    return t.checkExpect(this.sList1.moveLOS(), this.sList2)
+        && t.checkExpect(new MtLoShip().moveLOS(), new MtLoShip());
   }
 
-  // TODO: test for moveLOB
+  // test for moveLOB
   boolean testMoveLOB(Tester t) {
-    return true;
+    return t.checkExpect(this.bList1.moveLOB(new MtLoShip()), this.bList2)
+        && t.checkExpect(new MtLoBullet().moveLOB(new MtLoShip()), new MtLoBullet());
   }
 
   // test for hit
@@ -611,13 +624,14 @@ class ExamplesNBullets {
   boolean testOnKeyEvent(Tester t) {
     return true;
   }
-
-  boolean testBigBang(Tester t) {
-    GameScene game = new GameScene();
-    int worldWidth = 500;
-    int worldHeight = 300;
-    double tickRate = 1.0 / 40.0;
-    return game.bigBang(worldWidth, worldHeight, tickRate);
-  }
+  /*
+   * boolean testBigBang(Tester t) {
+   * GameScene game = new GameScene();
+   * int worldWidth = 500;
+   * int worldHeight = 300;
+   * double tickRate = 1.0 / 40.0;
+   * return game.bigBang(worldWidth, worldHeight, tickRate);
+   * }
+   */
 
 }
