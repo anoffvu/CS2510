@@ -554,14 +554,19 @@ class ExamplesNBullets {
     return true;
   }
 
-  // TODO: test for distanceX
+  // test for distanceX
   boolean testDistanceX(Tester t) {
-    return true;
+    return t.checkExpect(this.defaultBullet.distanceX(this.secondBullet), 0)
+        && t.checkExpect(this.defaultShip.distanceX(this.secondShip), -8);
   }
 
-  // TODO: test for distanceY
+  // test for distanceY
   boolean testDistanceY(Tester t) {
-    return true;
+    return t
+        .checkExpect(new Bullet(2, 250, 290, 270, 8, Color.blue, 1)
+            .distanceY(new Bullet(2, 250, 298, 270, 8, Color.blue, 1)), -8)
+        && t.checkExpect(new Ship(2, 250, 290, 270, 8, Color.blue)
+            .distanceY(new Ship(2, 250, 298, 270, 8, Color.blue)), -8);
   }
 
   // test for move function
@@ -571,7 +576,7 @@ class ExamplesNBullets {
         && t.checkExpect(this.defaultShip.move(), this.secondShip);
   }
 
-  // TODO: test for moveLOS
+  // test for moveLOS
   boolean testMoveLOS(Tester t) {
     return t.checkExpect(this.sList1.moveLOS(), this.sList2)
         && t.checkExpect(new MtLoShip().moveLOS(), new MtLoShip());
@@ -590,7 +595,7 @@ class ExamplesNBullets {
         && t.checkExpect(this.defaultBullet.hit(this.missShip), false);
   }
 
-  // TODO: test for anyHit
+  // TODO: test for anyHits
   boolean testAnyHit(Tester t) {
     return true;
   }
@@ -602,6 +607,11 @@ class ExamplesNBullets {
 
   // TODO: test for explode
   boolean testExplode(Tester t) {
+    return true;
+  }
+
+  // TODO: test for isEmpty
+  boolean testIsEmpty(Tester t) {
     return true;
   }
 
