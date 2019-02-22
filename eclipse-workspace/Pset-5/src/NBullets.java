@@ -666,6 +666,11 @@ class ExamplesNBullets {
     return true;
   }
 
+  // TODO: test for GameScene constructors
+  boolean testGameScene(Tester t) {
+    return true;
+  }
+
   boolean testBigBang(Tester t) {
     GameScene game = new GameScene();
     int worldWidth = 500;
