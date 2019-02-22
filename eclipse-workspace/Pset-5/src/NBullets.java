@@ -11,12 +11,11 @@ import tester.Tester;
 // general utils class for the project
 class Utils {
   // initiates a random variable
-  Random rand = new Random();
   int screenWidth = 500;
   int screenHeight = 300;
 
   // returns a random number between the given min and max values
-  public int randomNumber(int min, int max) {
+  public int randomNumber(int min, int max, Random rand) {
     return (rand.nextInt(max - min) + min);
   }
 
@@ -180,7 +179,7 @@ interface ILoShip {
   public ILoShip moveLOS();
 
   // spawns ships on the screen
-  public ILoShip spawn(int currentClock);
+  public ILoShip spawn(int currentClock, Random rand);
 
   // determines if the passed in bullet has hit any ships
   boolean anyHits(Bullet bullet);
@@ -206,9 +205,9 @@ class MtLoShip implements ILoShip {
   }
 
   // checks if its time to spawn a ship, and does so
-  public ILoShip spawn(int currentClock) {
+  public ILoShip spawn(int currentClock, Random rand) {
     if (currentClock % 14 == 0) {
-      return this.spawnShip();
+      return this.spawnShip(rand);
     }
     else {
       return this;
@@ -216,14 +215,16 @@ class MtLoShip implements ILoShip {
   }
 
   // spawns a new ship if time is right
-  public ILoShip spawnShip() {
-    if (new Random().nextBoolean()) {
+  public ILoShip spawnShip(Random rand) {
+    if (rand.nextBoolean()) {
       return new ConsLoShip(
-          new Ship(20, 0, new Utils().randomNumber(50, 250), 180.0, 5, Color.pink), new MtLoShip());
+          new Ship(20, 0, new Utils().randomNumber(50, 250, rand), 180.0, 5, Color.pink),
+          new MtLoShip());
     }
     else {
       return new ConsLoShip(
-          new Ship(20, 500, new Utils().randomNumber(50, 250), 0.0, 5, Color.pink), new MtLoShip());
+          new Ship(20, 500, new Utils().randomNumber(50, 250, rand), 0.0, 5, Color.pink),
+          new MtLoShip());
     }
   }
 
@@ -270,9 +271,9 @@ class ConsLoShip implements ILoShip {
   }
 
   // checks if its time to spawn a ship, and does so
-  public ILoShip spawn(int currentClock) {
+  public ILoShip spawn(int currentClock, Random rand) {
     if (currentClock % 14 == 0) {
-      return this.spawnShip();
+      return this.spawnShip(rand);
     }
     else {
       return this;
@@ -280,14 +281,14 @@ class ConsLoShip implements ILoShip {
   }
 
   // spawns a ship onto this non empty list of ships
-  public ILoShip spawnShip() {
-    if (new Random().nextBoolean()) {
+  public ILoShip spawnShip(Random rand) {
+    if (rand.nextBoolean()) {
       return new ConsLoShip(
-          new Ship(20, 0, new Utils().randomNumber(50, 250), 180.0, 5, Color.pink), this);
+          new Ship(20, 0, new Utils().randomNumber(50, 250, rand), 180.0, 5, Color.pink), this);
     }
     else {
       return new ConsLoShip(
-          new Ship(20, 500, new Utils().randomNumber(50, 250), 0.0, 5, Color.pink), this);
+          new Ship(20, 500, new Utils().randomNumber(50, 250, rand), 0.0, 5, Color.pink), this);
     }
   }
 
@@ -450,17 +451,17 @@ class GameScene extends World {
   Random random;
   int clock;
 
-  // convenience constructor representing the start of the game
+  //convenience constructor representing the start of the game
   public GameScene() {
     this(10);
   }
 
-  // convenience constructor representing the start of the game, for use by grader
+  //convenience constructor representing the start of the game, for use by grader
   public GameScene(int bullets) {
     this(new Random(), bullets);
   }
 
-  // convenience constructor after having initialized a random
+  //convenience constructor after having initialized a random
   public GameScene(Random rand, int bullets) {
     this(bullets, 0, new MtLoShip(), new MtLoBullet(), rand, 0);
   }
@@ -483,11 +484,12 @@ class GameScene extends World {
     int collisionCount = this.loShips.countCollisions(this.loBullets);
     if (collisionCount > 0) {
       return new GameScene(this.bulletsLeft, this.destroyed + collisionCount,
-          this.loShips.spawn(clock).removeCollisions(this.loBullets).moveLOS(),
+          this.loShips.spawn(clock, this.random).removeCollisions(this.loBullets).moveLOS(),
           this.loBullets.moveLOB(this.loShips), this.random, this.clock + 1);
     }
     else {
-      return new GameScene(this.bulletsLeft, this.destroyed, this.loShips.spawn(clock).moveLOS(),
+      return new GameScene(this.bulletsLeft, this.destroyed,
+          this.loShips.spawn(clock, this.random).moveLOS(),
           this.loBullets.moveLOB(this.loShips), this.random, this.clock + 1);
     }
   }
