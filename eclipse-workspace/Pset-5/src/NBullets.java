@@ -529,6 +529,7 @@ class GameScene extends World {
 class ExamplesNBullets {
 
   GameScene world = new GameScene();
+  Random rand = new Random(10);
 
   Bullet defaultBullet = new Bullet(2, 250, 300, 270, 8, Color.blue, 1);
   Bullet secondBullet = new Bullet(2, 250, 292, 270, 8, Color.blue, 1);
@@ -548,7 +549,7 @@ class ExamplesNBullets {
 
   // TODO: test for randomNumber
   boolean testRandomNumber(Tester t) {
-    return true;
+    return t.checkExpect(new Utils().randomNumber(0, 20, this.rand), 13);
   }
 
   // TODO: test for onScreen
@@ -671,12 +672,14 @@ class ExamplesNBullets {
     return true;
   }
 
-  boolean testBigBang(Tester t) {
-    GameScene game = new GameScene();
-    int worldWidth = 500;
-    int worldHeight = 300;
-    double tickRate = 1.0 / 40.0;
-    return game.bigBang(worldWidth, worldHeight, tickRate);
-  }
+  /*
+   * boolean testBigBang(Tester t) {
+   * GameScene game = new GameScene();
+   * int worldWidth = 500;
+   * int worldHeight = 300;
+   * double tickRate = 1.0 / 40.0;
+   * return game.bigBang(worldWidth, worldHeight, tickRate);
+   * }
+   */
 
 }
