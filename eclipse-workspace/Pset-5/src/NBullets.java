@@ -214,15 +214,12 @@ class MtLoShip implements ILoShip {
 
   // spawns a new ship if time is right
   public ILoShip spawnShip(Random rand) {
+    int randomY = rand.nextInt(200) + 50;
     if (rand.nextInt() % 2 == 0) {
-      return new ConsLoShip(
-          new Ship(20, 0, rand.nextInt(200) + 50, 180.0, 5, Color.pink),
-          new MtLoShip());
+      return new ConsLoShip(new Ship(20, 0, randomY, 180.0, 5, Color.pink), new MtLoShip());
     }
     else {
-      return new ConsLoShip(
-          new Ship(20, 500, rand.nextInt(200) + 50, 0.0, 5, Color.pink),
-          new MtLoShip());
+      return new ConsLoShip(new Ship(20, 500, randomY, 0.0, 5, Color.pink), new MtLoShip());
     }
   }
 
@@ -280,13 +277,12 @@ class ConsLoShip implements ILoShip {
 
   // spawns a ship onto this non empty list of ships
   public ILoShip spawnShip(Random rand) {
+    int randomY = rand.nextInt(200) + 50;
     if (rand.nextInt() % 2 == 0) {
-      return new ConsLoShip(
-          new Ship(20, 0, rand.nextInt(200) + 50, 180.0, 5, Color.pink), this);
+      return new ConsLoShip(new Ship(20, 0, randomY, 180.0, 5, Color.pink), this);
     }
     else {
-      return new ConsLoShip(
-          new Ship(20, 500, rand.nextInt(200) + 50, 0.0, 5, Color.pink), this);
+      return new ConsLoShip(new Ship(20, 500, randomY, 0.0, 5, Color.pink), this);
     }
   }
 
@@ -375,7 +371,6 @@ class Bullet extends AObjects {
     this(2, 250, 300, 270, 8, Color.blue, 1);
   }
 
-
   // determines if this bullet is hitting any ships
   public boolean isColliding(ILoShip los) {
     return los.anyHits(this);
@@ -449,17 +444,17 @@ class GameScene extends World {
   Random random;
   int clock;
 
-  //convenience constructor representing the start of the game
+  // convenience constructor representing the start of the game
   public GameScene() {
     this(10);
   }
 
-  //convenience constructor representing the start of the game, for use by grader
+  // convenience constructor representing the start of the game, for use by grader
   public GameScene(int bullets) {
     this(new Random(), bullets);
   }
 
-  //convenience constructor after having initialized a random
+  // convenience constructor after having initialized a random
   public GameScene(Random rand, int bullets) {
     this(bullets, 0, new MtLoShip(), new MtLoBullet(), rand, 0);
   }
@@ -475,19 +470,17 @@ class GameScene extends World {
     this.clock = clock;
   }
 
-
-
   // updates the game very tick
   public GameScene onTick() {
     int collisionCount = this.loShips.countCollisions(this.loBullets);
     if (collisionCount > 0) {
       return new GameScene(this.bulletsLeft, this.destroyed + collisionCount,
-          this.loShips.spawn(clock, this.random).removeCollisions(this.loBullets).moveLOS(),
+          this.loShips.removeCollisions(this.loBullets).spawn(this.clock, this.random).moveLOS(),
           this.loBullets.moveLOB(this.loShips), this.random, this.clock + 1);
     }
     else {
       return new GameScene(this.bulletsLeft, this.destroyed,
-          this.loShips.spawn(clock, this.random).moveLOS(),
+          this.loShips.spawn(this.clock, this.random).moveLOS(),
           this.loBullets.moveLOB(this.loShips), this.random, this.clock + 1);
     }
   }
@@ -527,8 +520,8 @@ class GameScene extends World {
 class ExamplesNBullets {
 
   // default world view
-  Random seeded1 = new Random(1);
-  GameScene world = new GameScene(seeded1, 10);
+  public Random seeded1 = new Random(1);
+  GameScene world = new GameScene(this.seeded1, 10);
 
   Bullet defaultBullet = new Bullet(2, 250, 300, 270, 8, Color.blue, 1);
   Bullet secondBullet = new Bullet(2, 250, 292, 270, 8, Color.blue, 1);
@@ -554,11 +547,10 @@ class ExamplesNBullets {
   ILoBullet exlodeList = new ConsLoBullet(explodeBullet1, new ConsLoBullet(explodeBullet2,
       new ConsLoBullet(explodeBullet3, new ConsLoBullet(explodeBullet4, new MtLoBullet()))));
   GameScene sceneAfterKeyEvent = new GameScene(9, 0, new MtLoShip(),
-      new ConsLoBullet(this.explodeBullet3, new MtLoBullet()), seeded1, 0);
+      new ConsLoBullet(this.explodeBullet3, new MtLoBullet()), this.seeded1, 0);
   GameScene sceneAfterOnTick = new GameScene(10, 0,
-      new ConsLoShip(new Ship(20, 5, 154, 180.0, 5.0, Color.pink), new MtLoShip()),
-      new MtLoBullet(),
-      seeded1, 1);
+      new ConsLoShip(new Ship(20, 5, 235, 180.0, 5.0, Color.pink), new MtLoShip()),
+      new MtLoBullet(), this.seeded1, 1);
   Ship offScreenShip = new Ship(20, 1000, 1000, 180.0, 10.0, Color.blue);
 
   ILoBullet mtBullet = new MtLoBullet();
@@ -575,19 +567,24 @@ class ExamplesNBullets {
 
   // test for spawn
   boolean testSpawn(Tester t) {
-    return t.checkExpect(new MtLoShip().spawn(0, seeded1),
-        new ConsLoShip(new Ship(20, 500, 238, 0.0, 5.0, Color.pink), new MtLoShip()))
+    Random seeded2 = new Random(2);
+    return t.checkExpect(new MtLoShip().spawn(0, seeded2),
+        new ConsLoShip(new Ship(20, 0, 158, 180.0, 5.0, Color.pink), new MtLoShip()))
         && t.checkExpect(
             new ConsLoShip(new Ship(20, 500, 238, 0.0, 5.0, Color.pink), new MtLoShip()).spawn(0,
-                seeded1),
-            new ConsLoShip(new Ship(20, 500, 163, 0.0, 5.0, Color.pink),
+                this.seeded1),
+            new ConsLoShip(new Ship(20, 0, 235, 180.0, 5.0, Color.pink),
                 new ConsLoShip(new Ship(20, 500, 238, 0.0, 5.0, Color.pink), new MtLoShip())))
-        && t.checkExpect(new MtLoShip().spawn(13, seeded1), new MtLoShip());
+        && t.checkExpect(new MtLoShip().spawn(13, this.seeded1), new MtLoShip());
   }
 
-  // TODO: test for spawnShip
+  // test for spawnShip
   boolean testSpawnShip(Tester t) {
-    return t.checkExpect(this.sList1.spawnShip(this.seeded1), );
+    Random seededSpawnShip = new Random(1);
+    return t.checkExpect(this.sList1.spawnShip(seededSpawnShip),
+        new ConsLoShip(new Ship(20, 0, 235, 180.0, 5.0, Color.pink),
+            new ConsLoShip(new Ship(2, 250, 300, 180.0, 8.0, Color.blue),
+                new ConsLoShip(new Ship(2, 250, 290, 180.0, 8.0, Color.blue), new MtLoShip()))));
   }
 
   // test for distanceX
@@ -653,15 +650,14 @@ class ExamplesNBullets {
     return t.checkExpect(new MtLoBullet().explodeHelper(180.0, 1, 0, 0, 1, 10, new MtLoBullet()),
         new ConsLoBullet(new Bullet(12, 0, 0, 180.0, 10, Color.blue, 2), new MtLoBullet()))
         && t.checkExpect(new MtLoBullet().explodeHelper(180.0, 2, 0, 0, 1, 10, new MtLoBullet()),
-            new ConsLoBullet(new Bullet(12, 0, 0, 360.0, 10, Color.blue, 2), new ConsLoBullet(
-                new Bullet(12, 0, 0, 180.0, 10, Color.blue, 2), new MtLoBullet())))
+            new ConsLoBullet(new Bullet(12, 0, 0, 360.0, 10, Color.blue, 2),
+                new ConsLoBullet(new Bullet(12, 0, 0, 180.0, 10, Color.blue, 2), new MtLoBullet())))
         && t.checkExpect(
             new MtLoBullet().explodeHelper(180.0, 1, 0, 0, 1, 10,
                 new ConsLoBullet(new Bullet(12, 0, 0, 360.0, 10, Color.blue, 2), new MtLoBullet())),
             new ConsLoBullet(new Bullet(12, 0, 0, 180.0, 10, Color.blue, 2), new ConsLoBullet(
                 new Bullet(12, 0, 0, 360.0, 10, Color.blue, 2), new MtLoBullet())));
   }
-
 
   // test for isEmpty
   boolean testIsEmpty(Tester t) {
@@ -692,29 +688,24 @@ class ExamplesNBullets {
     return t.checkExpect(this.sList1.removeCollisions(this.bList1), this.mtShip);
   }
 
-
-  /*
-   * // TODO: test for onTick
-   * boolean testOnTick(Tester t) {
-   * return t.checkExpect(world.onTick(), this.sceneAfterOnTick);
-   * }
-   */
+  // test for onTick
+  boolean testOnTick(Tester t) {
+    Random seeded3 = new Random(1);
+    return t.checkExpect(new GameScene(seeded3, 10).onTick(), this.sceneAfterOnTick);
+  }
 
   // test for onKeyEvent
   boolean testOnKeyEvent(Tester t) {
-    return t.checkExpect(world.onKeyEvent(" "), this.sceneAfterKeyEvent);
+    return t.checkExpect(this.world.onKeyEvent(" "), this.sceneAfterKeyEvent);
   }
 
-
   // Renders the world
-  /*
-   * boolean testBigBang(Tester t) {
-   * GameScene game = new GameScene();
-   * int worldWidth = 500;
-   * int worldHeight = 300;
-   * double tickRate = 1.0 / 40.0;
-   * return game.bigBang(worldWidth, worldHeight, tickRate);
-   * }
-   */
+  boolean testBigBang(Tester t) {
+    GameScene game = new GameScene();
+    int worldWidth = 500;
+    int worldHeight = 300;
+    double tickRate = 1.0 / 40.0;
+    return game.bigBang(worldWidth, worldHeight, tickRate);
+  }
 
 }
