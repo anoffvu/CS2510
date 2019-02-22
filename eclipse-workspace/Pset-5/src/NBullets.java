@@ -610,6 +610,12 @@ class ExamplesNBullets {
     return true;
   }
 
+  // TODO: test for explodeHelper
+  boolean testExplodeHelper(Tester t) {
+    return true;
+  }
+
+
   // test for isEmpty
   boolean testIsEmpty(Tester t) {
     return t.checkExpect(this.bList1.isEmpty(), false)
@@ -626,6 +632,16 @@ class ExamplesNBullets {
   boolean testExplodeCount(Tester t) {
     return t.checkExpect(new Bullet().explodeCount(), 2)
         && t.checkExpect(new Bullet(20, 0, 0, 180.0, 10, Color.blue, 9).explodeCount(), 10);
+  }
+
+  // TODO: test for countCollisions
+  boolean testCountCollisions(Tester t) {
+    return true;
+  }
+
+  // TODO: test for removeCollisions
+  boolean testRemoveCollisions(Tester t) {
+    return true;
   }
 
   // TODO: test for onTick
