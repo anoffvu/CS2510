@@ -610,19 +610,22 @@ class ExamplesNBullets {
     return true;
   }
 
-  // TODO: test for isEmpty
+  // test for isEmpty
   boolean testIsEmpty(Tester t) {
-    return true;
+    return t.checkExpect(this.bList1.isEmpty(), false)
+        && t.checkExpect(new MtLoBullet().isEmpty(), true);
   }
 
-  // TODO: test for explodeAngles
+  // test for explodeAngles
   boolean testExplodeAngles(Tester t) {
-    return true;
+    return t.checkExpect(new Bullet().explodeAngles(), 180.0)
+        && t.checkExpect(new Bullet(20, 0, 0, 180.0, 10, Color.blue, 9).explodeAngles(), 36.0);
   }
 
-  // TODO: test for explodeCount
+  // test for explodeCount
   boolean testExplodeCount(Tester t) {
-    return true;
+    return t.checkExpect(new Bullet().explodeCount(), 2)
+        && t.checkExpect(new Bullet(20, 0, 0, 180.0, 10, Color.blue, 9).explodeCount(), 10);
   }
 
   // TODO: test for onTick
