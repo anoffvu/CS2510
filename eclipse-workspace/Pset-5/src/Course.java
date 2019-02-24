@@ -11,6 +11,9 @@ interface IList<T> {
 
   // implementation of foldr
   <U> U foldr(IFunc2<T, U, U> func, U base);
+
+  // implementation of ormap on generic lists
+  Boolean ormap(IPred<T> predicate);
 }
 
 // generic cons list
@@ -37,6 +40,11 @@ class ConsList<T> implements IList<T> {
   public <U> U foldr(IFunc2<T, U, U> func, U base) {
     return func.apply(this.first, this.rest.foldr(func, base));
   }
+
+  // determines if any item in a list passes a predicate
+  public Boolean ormap(IPred<T> predicate) {
+    return predicate.apply(this.first) || this.rest.ormap(predicate);
+  }
 }
 
 // generic empty list
@@ -56,6 +64,11 @@ class MtList<T> implements IList<T> {
   public <U> U foldr(IFunc2<T, U, U> func, U base) {
     return base;
   }
+
+  // implements ormap on an empty list
+  public Boolean ormap(IPred<T> predicate) {
+    return false;
+  }
 }
 
 // interface for a 1 input function
@@ -63,6 +76,7 @@ interface IFunc<A, R> {
   R apply(A arg);
 }
 
+// visitors for generic lists
 interface IListVisitor<T, R> extends IFunc<IList<T>, R> {
 
   // applies an operation to a empty list of courses
@@ -73,10 +87,12 @@ interface IListVisitor<T, R> extends IFunc<IList<T>, R> {
 
 }
 
+// interface for predicate functions
 interface IPred<T> extends IFunc<T, Boolean> {
   Boolean apply(T t);
 }
 
+// A course with a name and prerequisite courses
 class Course {
   String name;
   IList<Course> prereqs;
@@ -89,6 +105,11 @@ class Course {
   // gets the deepest path length to an empty list of prereqs
   int getDeepestPathLength() {
     return new DeepestPathLengthVisitor().apply(this.prereqs);
+  }
+
+  // determines if this course or any courses in its prereqs have a passed in prereq
+  boolean hasPrereq(String desired) {
+    return new HasPrereq(desired).apply(this);
   }
 
 }
@@ -108,19 +129,20 @@ class DeepestPathLengthVisitor implements IListVisitor<Course, Integer> {
 
   // visits the ConsList
   public Integer visitCons(ConsList<Course> arg) {
-    return 1 + arg.map(new DeepestPathFuncObj()).foldr(new FindMax(), 0);
+    return 1 + arg.map(new DeepestPathLength()).foldr(new FindMax(), 0);
   }
 
 }
 
 // a direct function object for deepest path
-class DeepestPathFuncObj implements IFunc<Course, Integer> {
+class DeepestPathLength implements IFunc<Course, Integer> {
   // applies the get deepest path length method on a passed in course
   public Integer apply(Course arg) {
     return arg.getDeepestPathLength();
   }
 }
 
+// interface for a functio that takes in 2 inputs
 interface IFunc2<A1, A2, R> {
   R apply(A1 input1, A2 input2);
 }
@@ -147,8 +169,22 @@ class HasPrereq implements IPred<Course> {
   }
 
   public Boolean apply(Course arg) {
-    return true;
+    return arg.prereqs.ormap(new SameName(name)) || arg.prereqs.ormap(new HasPrereq(name));
   }
+}
+
+// Predicate that determines if the course has the same name as the passed in string
+class SameName implements IPred<Course> {
+  String name;
+
+  SameName(String name) {
+    this.name = name;
+  }
+
+  public Boolean apply(Course course) {
+    return course.name.equals(this.name);
+  }
+
 }
 
 class ExamplesCourse {
@@ -156,6 +192,8 @@ class ExamplesCourse {
   Course math100 = new Course("Math 100", new MtList<Course>());
   Course math101 = new Course("Math 101", new MtList<Course>());
   Course art100 = new Course("Art 100", new MtList<Course>());
+  Course bio200 = new Course("Biology 200",
+      new ConsList<Course>(this.bio100, new MtList<Course>()));
   Course math200 = new Course("Math 200", new ConsList<Course>(this.math100, new MtList<Course>()));
   Course CS200 = new Course("Computer Science 200",
       new ConsList<Course>(this.math100, new ConsList<Course>(this.bio100, new MtList<Course>())));
@@ -165,7 +203,12 @@ class ExamplesCourse {
   Course mathArt300 = new Course("Math and Art 300",
       new ConsList<Course>(this.math200, new ConsList<Course>(this.art100, new MtList<Course>())));
   Course math400 = new Course("Math 400", new ConsList<Course>(this.math300, new MtList<Course>()));
+  Course mathArt500 = new Course("Math and Art 500", new ConsList<Course>(this.mathArt300,
+      new ConsList<Course>(this.math300, new MtList<Course>())));
+  Course bioMath300 = new Course("Bio and Math 300",
+      new ConsList<Course>(this.bio200, new ConsList<Course>(this.math200, new MtList<Course>())));
 
+  // tests for getDeepestPathLength
   void testDeepestPathLength(Tester t) {
     t.checkExpect(this.bio100.getDeepestPathLength(), 0);
     t.checkExpect(this.math200.getDeepestPathLength(), 1);
@@ -174,11 +217,24 @@ class ExamplesCourse {
     t.checkExpect(this.math400.getDeepestPathLength(), 3);
   }
 
+  // tests for getLargest
   void testGetLargest(Tester t) {
     FindMax findMax = new FindMax();
     t.checkExpect(findMax.apply(21, 0), 21);
     t.checkExpect(findMax.apply(0, 21), 21);
     t.checkExpect(findMax.apply(-4, 4), 4);
     t.checkExpect(findMax.apply(0, 0), 0);
+  }
+
+  // tests for hasPrereq
+  void testHasPrereq(Tester t) {
+    t.checkExpect(this.bio100.hasPrereq("Math 300"), false);
+    t.checkExpect(this.bioMath200.hasPrereq("Math 100"), true);
+    t.checkExpect(this.math300.hasPrereq("Math 300"), false);
+    t.checkExpect(this.mathArt300.hasPrereq("Art 100"), true);
+    t.checkExpect(this.mathArt500.hasPrereq("Art 100"), true);
+    t.checkExpect(this.bioMath300.hasPrereq("Math 100"), true);
+    t.checkExpect(this.bioMath300.hasPrereq("Art 100"), false);
+
   }
 }
