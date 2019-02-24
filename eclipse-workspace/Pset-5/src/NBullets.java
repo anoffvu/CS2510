@@ -54,7 +54,7 @@ class MtLoBullet implements ILoBullet {
     return this;
   }
 
-//explodes a bullet and adds it to this empty list of bullets
+  // explodes a bullet and adds it to this empty list of bullets
   public ILoBullet explode(Bullet hitBullet) {
     double explodeAngle = hitBullet.explodeAngles();
     int explodeCount = hitBullet.explodeCount();
@@ -386,7 +386,7 @@ class Bullet extends AObjects {
     return 360.00 / (this.bulletRound + 1);
   }
 
-//calculates the explosion angles if this bullet explodes
+  // calculates the explosion angles if this bullet explodes
   public int explodeCount() {
     return this.bulletRound + 1;
   }
@@ -434,9 +434,9 @@ class Ship extends AObjects {
 
 // world state of the game
 class GameScene extends World {
-  public static final int screenWidth = 500;
-  public static final int screenHeight = 300;
-  public static final double tickRate = 1.0 / 28.0;
+  public int screenWidth = 500;
+  public int screenHeight = 300;
+  public double tickRate = 1.0 / 28.0;
   int bulletsLeft;
   int destroyed;
   ILoShip loShips;
