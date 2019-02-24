@@ -12,8 +12,6 @@ interface IList<T> {
   // implementation of foldr
   <U> U foldr(IFunc2<T, U, U> func, U base);
 
-  // implementation of ormap on generic lists
-  Boolean ormap(IPred<T> predicate);
 }
 
 // generic cons list
@@ -41,10 +39,7 @@ class ConsList<T> implements IList<T> {
     return func.apply(this.first, this.rest.foldr(func, base));
   }
 
-  // determines if any item in a list passes a predicate
-  public Boolean ormap(IPred<T> predicate) {
-    return predicate.apply(this.first) || this.rest.ormap(predicate);
-  }
+
 }
 
 // generic empty list
@@ -65,10 +60,6 @@ class MtList<T> implements IList<T> {
     return base;
   }
 
-  // implements ormap on an empty list
-  public Boolean ormap(IPred<T> predicate) {
-    return false;
-  }
 }
 
 // interface for a 1 input function
@@ -169,7 +160,9 @@ class HasPrereq implements IPred<Course> {
   }
 
   public Boolean apply(Course arg) {
-    return arg.prereqs.ormap(new SameName(name)) || arg.prereqs.ormap(new HasPrereq(name));
+    // return arg.prereqs.ormap(new SameName(name)) || arg.prereqs.ormap(new HasPrereq(name));
+    return new Ormap<Course>(new SameName(this.name)).apply(arg.prereqs)
+        || new Ormap<Course>(new HasPrereq(name)).apply(arg.prereqs);
   }
 }
 
@@ -184,7 +177,30 @@ class SameName implements IPred<Course> {
   public Boolean apply(Course course) {
     return course.name.equals(this.name);
   }
+}
 
+// Ormap visitor
+class Ormap<T> implements IListVisitor<T, Boolean> {
+  IPred<T> predicate;
+
+  Ormap(IPred<T> predicate) {
+    this.predicate = predicate;
+  }
+
+  // applies the ormap
+  public Boolean apply(IList<T> arg) {
+    return arg.accept(this);
+  }
+
+  // ormaps over an empty list
+  public Boolean visitMt(MtList<T> arg) {
+    return false;
+  }
+
+  // ormaps over a non empty list
+  public Boolean visitCons(ConsList<T> arg) {
+    return this.predicate.apply(arg.first) || arg.rest.accept(this);
+  }
 }
 
 class ExamplesCourse {
