@@ -253,4 +253,12 @@ class ExamplesCourse {
     t.checkExpect(this.bioMath300.hasPrereq("Art 100"), false);
 
   }
+
+  // tests for ormap
+  void testOrMap(Tester t) {
+    t.checkExpect(new Ormap<Course>(new SameName("Math 100")).apply(this.bioMath200.prereqs), true);
+    t.checkExpect(new Ormap<Course>(new SameName("Math 100")).apply(this.math100.prereqs), false);
+    t.checkExpect(new Ormap<Course>(new SameName("Math 100")).apply(this.bioMath300.prereqs),
+        false);
+  }
 }
