@@ -118,4 +118,8 @@ class Student {
     this.ID = ID;
     this.courses = courses;
   }
+
+  void enroll(Course c) {
+    ;
+  }
 }
