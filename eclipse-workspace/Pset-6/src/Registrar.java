@@ -12,6 +12,9 @@ interface IList<T> {
   // implementation of foldr
   <U> U foldr(IFunc2<T, U, U> func, U base);
 
+  // determines if this list is empty
+  Boolean isEmpty();
+
 }
 
 // generic cons list
@@ -39,6 +42,10 @@ class ConsList<T> implements IList<T> {
     return func.apply(this.first, this.rest.foldr(func, base));
   }
 
+  // determines if this list is empty
+  public Boolean isEmpty() {
+    return false;
+  }
 
 }
 
@@ -58,6 +65,11 @@ class MtList<T> implements IList<T> {
   // implements foldr onto an empty list
   public <U> U foldr(IFunc2<T, U, U> func, U base) {
     return base;
+  }
+
+  // determines if this list is empty
+  public Boolean isEmpty() {
+    return true;
   }
 
 }
@@ -86,6 +98,29 @@ interface IListVisitor<T, R> extends IFunc<IList<T>, R> {
 // interface for predicate functions
 interface IPred<T> extends IFunc<T, Boolean> {
   Boolean apply(T t);
+}
+
+class Ormap<T> implements IListVisitor<T, Boolean> {
+  IPred<T> predicate;
+
+  Ormap(IPred<T> predicate) {
+    this.predicate = predicate;
+  }
+
+  // applies the ormap
+  public Boolean apply(IList<T> arg) {
+    return arg.accept(this);
+  }
+
+  // ormaps over an empty list
+  public Boolean visitMt(MtList<T> arg) {
+    return false;
+  }
+
+  // ormaps over a non empty list
+  public Boolean visitCons(ConsList<T> arg) {
+    return this.predicate.apply(arg.first) || arg.rest.accept(this);
+  }
 }
 
 
@@ -183,8 +218,60 @@ class SameCourse implements IPred<Course> {
   }
 
   public Boolean apply(Course thatCourse) {
-    return this.course.name.equals(thatCourse.name) && this.course.prof.sameProf(thatCourse.prof);
+    return this.course.name.equals(thatCourse.name)
+        && new SameProf(this.course.prof).apply(thatCourse.prof)
+        && new SameStudents(this.course.students).apply(thatCourse.students);
   }
+}
+
+class SameProf implements IPred<Instructor> {
+  Instructor prof;
+
+  SameProf(Instructor prof) {
+    this.prof = prof;
+  }
+
+  public Boolean apply(Instructor thatProf) {
+    return this.prof.name.equals(thatProf.name);
+  }
+}
+
+class SameStudent implements IPred<Student> {
+  Student student;
+
+  SameStudent(Student student) {
+    this.student = student;
+  }
+
+  public Boolean apply(Student thatStudent) {
+    return this.student.name.equals(thatStudent.name) && this.student.ID == thatStudent.ID;
+  }
+}
+
+// checks if this list of students is the same as that list of students
+class SameStudents implements IListVisitor<Student, Boolean> {
+  IList<Student> theseStudents;
+  
+  SameStudents(IList<Student> theseStudents) {
+    this.theseStudents = theseStudents;
+  }
+  
+  // accepts the visitor
+  public Boolean apply(IList<Student> arg) {
+    return arg.accept(this);
+  }
+
+  // checks if this list of
+  public Boolean visitMt(MtList<Student> arg) {
+    return theseStudents.isEmpty();
+    ;
+  }
+
+  // determines if both lists of students are equal
+  public Boolean visitCons(ConsList<Student> arg) {
+    return new SameStudent
+  }
+  IList<Student>
 }
 
 // tests
