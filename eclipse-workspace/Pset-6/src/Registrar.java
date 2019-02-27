@@ -108,16 +108,20 @@ class Ormap<T> implements IListVisitor<T, Boolean> {
   }
 }
 
-
 // class representing a university course
 class Course {
   String name;
   Instructor prof;
   IList<Student> students;
 
+  Course(String name, Instructor prof) {
+    this(name, prof, new MtList<Student>());
+  }
+
   Course(String name, Instructor prof, IList<Student> students) {
     this.name = name;
     this.prof = prof;
+    this.prof.updateCourses(this);
     this.students = students;
   }
 }
@@ -126,6 +130,15 @@ class Course {
 class Instructor {
   String name;
   IList<Course> courses;
+
+  Instructor(String name) {
+    this(name, new MtList<Course>());
+  }
+
+  public void updateCourses(Course course) {
+    this.courses = new ConsList<Course>(course, this.courses);
+
+  }
 
   Instructor(String name, IList<Course> courses) {
     this.name = name;
@@ -136,20 +149,24 @@ class Instructor {
     return this.name.equals(prof.name);
   }
 
-  public int dejavu(Student s) {
-    return new CountStudentAppearancesVisitor(s).apply(this.courses);
+  public boolean dejavu(Student s) {
+    return new CountStudentAppearancesVisitor(s).apply(this.courses) > 1;
   }
 }
 
 // represents a student
 class Student {
   String name;
-  int ID;
+  int id;
   IList<Course> courses;
 
-  Student(String name, int ID, IList<Course> courses) {
+  Student(String name, int id) {
+    this(name, id, new MtList<Course>());
+  }
+
+  Student(String name, int id, IList<Course> courses) {
     this.name = name;
-    this.ID = ID;
+    this.id = id;
     this.courses = courses;
   }
 
@@ -165,6 +182,8 @@ class Student {
   }
 }
 
+// counts the number of times a passed in student apppears as a student
+// in a list of courses
 class CountStudentAppearancesVisitor implements IListVisitor<Course, Integer> {
   Student student;
 
@@ -182,7 +201,7 @@ class CountStudentAppearancesVisitor implements IListVisitor<Course, Integer> {
     return 0;
   }
 
-  //
+  // counts how many times the student appears in a list of courses's students list
   public Integer visitCons(ConsList<Course> arg) {
     if (new Ormap<Student>(new SameStudent(this.student)).apply(arg.first.students)) {
       return 1 + new CountStudentAppearancesVisitor(this.student).apply(arg.rest);
@@ -194,67 +213,6 @@ class CountStudentAppearancesVisitor implements IListVisitor<Course, Integer> {
 
 }
 
-/*
- * class NumSharedCoursesVisitor implements IListVisitor<Course, Integer> {
- * IList<Course> courses;
- * 
- * NumSharedCoursesVisitor(IList<Course> courses) {
- * this.courses = courses;
- * }
- * 
- * // accepts the visitor
- * public Integer apply(IList<Course> arg) {
- * return arg.accept(this);
- * }
- * 
- * // visits an empty list of Courses;
- * public Integer visitMt(MtList<Course> arg) {
- * return 0;
- * }
- * 
- * //
- * public Integer visitCons(ConsList<Course> arg) {
- * if (new Ormap<Course>(new SameCourse(arg.first)).apply(this.courses)) {
- * return 1 + new NumSharedCoursesVisitor(this.courses).apply(arg.rest);
- * }
- * else {
- * return new NumSharedCoursesVisitor(this.courses).apply(arg.rest);
- * }
- * }
- * 
- * }
- */
-
-/*
- * class SameCourse implements IPred<Course> {
- * Course course;
- * 
- * SameCourse(Course course) {
- * this.course = course;
- * }
- * 
- * public Boolean apply(Course thatCourse) {
- * return this.course.name.equals(thatCourse.name)
- * && new SameProf(this.course.prof).apply(thatCourse.prof)
- * && new SameStudents(this.course.students).apply(thatCourse.students);
- * }
- * }
- */
-
-/*
- * class SameProf implements IPred<Instructor> {
- * Instructor prof;
- * 
- * SameProf(Instructor prof) {
- * this.prof = prof;
- * }
- * 
- * public Boolean apply(Instructor thatProf) {
- * return this.prof.name.equals(thatProf.name);
- * }
- * }
- */
-
 class SameStudent implements IPred<Student> {
   Student student;
 
@@ -263,36 +221,9 @@ class SameStudent implements IPred<Student> {
   }
 
   public Boolean apply(Student thatStudent) {
-    return this.student.name.equals(thatStudent.name) && this.student.ID == thatStudent.ID;
+    return this.student.name.equals(thatStudent.name) && this.student.id == thatStudent.id;
   }
 }
-
-/*
- * // checks if this list of students is the same as that list of students
- * class SameStudents implements IListVisitor<Student, Boolean> {
- * IList<Student> theseStudents;
- * 
- * SameStudents(IList<Student> theseStudents) {
- * this.theseStudents = theseStudents;
- * }
- * 
- * // accepts the visitor
- * public Boolean apply(IList<Student> arg) {
- * return arg.accept(this);
- * }
- * 
- * // checks if this list of
- * public Boolean visitMt(MtList<Student> arg) {
- * return theseStudents.isEmpty();
- * 
- * }
- * 
- * // TODO: determines if both lists of students are equal
- * public Boolean visitCons(ConsList<Student> arg) {
- * return true;
- * }
- * }
- */
 
 // tests
 class ExamplesRegistrar {
@@ -305,26 +236,26 @@ class ExamplesRegistrar {
   Instructor i1 = new Instructor("i1", new MtList<Course>());
   Instructor i2 = new Instructor("i2", new MtList<Course>());
 
-  Course c1 = new Course("c1", null, new MtList<Student>());
-  Course c2 = new Course("c2", null, new MtList<Student>());
-  Course c3 = new Course("c3", null, new MtList<Student>());
-  Course c4 = new Course("c4", null, new MtList<Student>());
+  Course c1 = new Course("c1", this.i1, new MtList<Student>());
+  Course c2 = new Course("c2", this.i1, new MtList<Student>());
+  Course c3 = new Course("c3", this.i2, new MtList<Student>());
+  Course c4 = new Course("c4", this.i2, new MtList<Student>());
 
   public void reset() {
-    s1 = new Student("s1", 01, new MtList<Course>());
-    s2 = new Student("s2", 02, new MtList<Course>());
+    this.s1 = new Student("s1", 01, new MtList<Course>());
+    this.s2 = new Student("s2", 02, new MtList<Course>());
     this.s3 = new Student("s3", 03, new MtList<Course>());
     this.s4 = new Student("s4", 04, new MtList<Course>());
     this.s5 = new Student("s5", 05, new MtList<Course>());
 
-    i1 = new Instructor("i1",
-        new ConsList<Course>(c1, new ConsList<Course>(c2, new MtList<Course>())));
-    i2 = new Instructor("i2", new MtList<Course>());
-
-    c1 = new Course("c1", i1, new MtList<Student>());
-    c2 = new Course("c2", i1, new MtList<Student>());
+    this.c1 = new Course("c1", i1, new MtList<Student>());
+    this.c2 = new Course("c2", i1, new MtList<Student>());
     this.c3 = new Course("c3", i2, new MtList<Student>());
     this.c4 = new Course("c4", i2, new MtList<Student>());
+
+    this.i1 = new Instructor("i1",
+        new ConsList<Course>(c1, new ConsList<Course>(c2, new MtList<Course>())));
+    this.i2 = new Instructor("i2", new MtList<Course>());
   }
 
   // TODO: make sure to retstrain the data constraints
@@ -333,23 +264,22 @@ class ExamplesRegistrar {
   // studnt appears in the studnet lists
 
   // tests for enroll
+
   void testEnroll(Tester t) {
     reset();
-    IList<Course> s1Courses = s1.courses;
-    t.checkExpect(s1Courses, new MtList<Course>());
+    t.checkExpect(s1.courses, new MtList<Course>());
     t.checkExpect(c1.students, new MtList<Student>());
     this.s1.enroll(this.c1);
-    t.checkExpect(s1Courses, new ConsList<Course>(c1, new MtList<Course>()));
+    t.checkExpect(s1.courses, new ConsList<Course>(c1, new MtList<Course>()));
     t.checkExpect(c1.students, new ConsList<Student>(s1, new MtList<Student>()));
     this.s1.enroll(this.c2);
-    t.checkExpect(s1Courses,
+    t.checkExpect(s1.courses,
         new ConsList<Course>(c2, new ConsList<Course>(c1, new MtList<Course>())));
     t.checkExpect(c2.students, new ConsList<Student>(s1, new MtList<Student>()));
     this.s2.enroll(this.c1);
     t.checkExpect(s2.courses, new ConsList<Course>(c1, new MtList<Course>()));
     t.checkExpect(c1.students,
         new ConsList<Student>(s2, new ConsList<Student>(s1, new MtList<Student>())));
-    reset();
   }
 
   // test for SameProf
@@ -357,7 +287,6 @@ class ExamplesRegistrar {
     reset();
     t.checkExpect(this.i1.sameProf(this.i1), true);
     t.checkExpect(this.i1.sameProf(this.i2), false);
-    reset();
   }
 
   // tests for classmates
@@ -399,8 +328,15 @@ class ExamplesRegistrar {
         .apply(new ConsList<Course>(c2, new MtList<Course>())), 1);
     t.checkExpect(new CountStudentAppearancesVisitor(s1)
         .apply(new ConsList<Course>(c1, new MtList<Course>())), 1);
-    t.checkExpect(new CountStudentAppearancesVisitor(s1)
-        .apply(new ConsList<Course>(c2, new ConsList<Course>(c1, new MtList<Course>()))), 2);
+    t.checkExpect(
+        new CountStudentAppearancesVisitor(s1)
+            .apply(
+                new ConsList<Course>(c4,
+                    new ConsList<Course>(c3,
+                        new ConsList<Course>(c2, new ConsList<Course>(c1, new MtList<Course>()))))),
+        2);
+    t.checkExpect(new CountStudentAppearancesVisitor(s2)
+        .apply(new ConsList<Course>(c2, new ConsList<Course>(c1, new MtList<Course>()))), 0);
     reset();
   }
 
@@ -419,11 +355,11 @@ class ExamplesRegistrar {
   // tests for dejavu
   void testDejavu(Tester t) {
     reset();
-    t.checkExpect(i1.dejavu(s1), false);
-    s1.enroll(c1);
-    t.checkExpect(i1.dejavu(s1), false);
-    s1.enroll(c2);
-    t.checkExpect(i1.dejavu(s1), true);
+    t.checkExpect(this.i1.dejavu(this.s1), false);
+    this.s1.enroll(this.c1);
+    t.checkExpect(this.i1.dejavu(this.s1), false);
+    this.s1.enroll(this.c2);
+    t.checkExpect(this.i1.dejavu(this.s1), true);
     reset();
   }
 }
