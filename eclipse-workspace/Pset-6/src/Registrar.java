@@ -12,9 +12,6 @@ interface IList<T> {
   // implementation of foldr
   <U> U foldr(IFunc2<T, U, U> func, U base);
 
-  // determines if this list is empty
-  Boolean isEmpty();
-
 }
 
 // generic cons list
@@ -41,12 +38,6 @@ class ConsList<T> implements IList<T> {
   public <U> U foldr(IFunc2<T, U, U> func, U base) {
     return func.apply(this.first, this.rest.foldr(func, base));
   }
-
-  // determines if this list is empty
-  public Boolean isEmpty() {
-    return false;
-  }
-
 }
 
 // generic empty list
@@ -66,12 +57,6 @@ class MtList<T> implements IList<T> {
   public <U> U foldr(IFunc2<T, U, U> func, U base) {
     return base;
   }
-
-  // determines if this list is empty
-  public Boolean isEmpty() {
-    return true;
-  }
-
 }
 
 // interface for a 1 input function
@@ -151,8 +136,8 @@ class Instructor {
     return this.name.equals(prof.name);
   }
 
-  public Boolean dejavu(Student s) {
-    return new CountStudentAppearancesVisitor(s).apply(this.courses) > 1;
+  public int dejavu(Student s) {
+    return new CountStudentAppearancesVisitor(s).apply(this.courses);
   }
 }
 
@@ -175,7 +160,7 @@ class Student {
   }
 
   // checks if the passed in student is classmates with this student
-  public Boolean classmates(Student s) {
+  public boolean classmates(Student s) {
     return new CountStudentAppearancesVisitor(s).apply(this.courses) >= 1;
   }
 }
@@ -326,18 +311,18 @@ class ExamplesRegistrar {
   Course c4 = new Course("c4", null, new MtList<Student>());
 
   public void reset() {
-    this.s1 = new Student("s1", 01, new MtList<Course>());
-    this.s2 = new Student("s2", 02, new MtList<Course>());
+    s1 = new Student("s1", 01, new MtList<Course>());
+    s2 = new Student("s2", 02, new MtList<Course>());
     this.s3 = new Student("s3", 03, new MtList<Course>());
     this.s4 = new Student("s4", 04, new MtList<Course>());
     this.s5 = new Student("s5", 05, new MtList<Course>());
 
-    this.i1 = new Instructor("i1",
+    i1 = new Instructor("i1",
         new ConsList<Course>(c1, new ConsList<Course>(c2, new MtList<Course>())));
-    this.i2 = new Instructor("i2", new MtList<Course>());
+    i2 = new Instructor("i2", new MtList<Course>());
 
-    this.c1 = new Course("c1", i1, new MtList<Student>());
-    this.c2 = new Course("c2", i1, new MtList<Student>());
+    c1 = new Course("c1", i1, new MtList<Student>());
+    c2 = new Course("c2", i1, new MtList<Student>());
     this.c3 = new Course("c3", i2, new MtList<Student>());
     this.c4 = new Course("c4", i2, new MtList<Student>());
   }
@@ -350,19 +335,21 @@ class ExamplesRegistrar {
   // tests for enroll
   void testEnroll(Tester t) {
     reset();
-    t.checkExpect(s1.courses, new MtList<Course>());
+    IList<Course> s1Courses = s1.courses;
+    t.checkExpect(s1Courses, new MtList<Course>());
     t.checkExpect(c1.students, new MtList<Student>());
     this.s1.enroll(this.c1);
-    t.checkExpect(s1.courses, new ConsList<Course>(c1, new MtList<Course>()));
+    t.checkExpect(s1Courses, new ConsList<Course>(c1, new MtList<Course>()));
     t.checkExpect(c1.students, new ConsList<Student>(s1, new MtList<Student>()));
     this.s1.enroll(this.c2);
-    t.checkExpect(s1.courses,
+    t.checkExpect(s1Courses,
         new ConsList<Course>(c2, new ConsList<Course>(c1, new MtList<Course>())));
     t.checkExpect(c2.students, new ConsList<Student>(s1, new MtList<Student>()));
     this.s2.enroll(this.c1);
     t.checkExpect(s2.courses, new ConsList<Course>(c1, new MtList<Course>()));
     t.checkExpect(c1.students,
         new ConsList<Student>(s2, new ConsList<Student>(s1, new MtList<Student>())));
+    reset();
   }
 
   // test for SameProf
@@ -370,6 +357,7 @@ class ExamplesRegistrar {
     reset();
     t.checkExpect(this.i1.sameProf(this.i1), true);
     t.checkExpect(this.i1.sameProf(this.i2), false);
+    reset();
   }
 
   // tests for classmates
@@ -392,6 +380,7 @@ class ExamplesRegistrar {
     this.s1.enroll(this.c1);
     t.checkExpect(this.s1.classmates(this.s2), true);
     t.checkExpect(this.s2.classmates(this.s1), true);
+    reset();
   }
 
   // test for CountStudentAppearancesVisitor
@@ -412,6 +401,7 @@ class ExamplesRegistrar {
         .apply(new ConsList<Course>(c1, new MtList<Course>())), 1);
     t.checkExpect(new CountStudentAppearancesVisitor(s1)
         .apply(new ConsList<Course>(c2, new ConsList<Course>(c1, new MtList<Course>()))), 2);
+    reset();
   }
 
   // tests for SameStudent
@@ -423,6 +413,7 @@ class ExamplesRegistrar {
         false);
     t.checkExpect(new SameStudent(this.s1).apply(new Student("s2", 01, new MtList<Course>())),
         false);
+    reset();
   }
 
   // tests for dejavu
@@ -433,5 +424,6 @@ class ExamplesRegistrar {
     t.checkExpect(i1.dejavu(s1), false);
     s1.enroll(c2);
     t.checkExpect(i1.dejavu(s1), true);
+    reset();
   }
 }
