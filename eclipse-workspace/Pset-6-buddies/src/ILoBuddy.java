@@ -9,6 +9,18 @@ interface ILoBuddy {
   int countBuddiesHelper(Person that);
 
   // determines if that is a buddy to anyone in this list
-  boolean friendOfFriend(Person that);
+  boolean friendOfFriend(Person that, ILoBuddy visited);
+
+
+  // counts the number of uncounted
+  ILoBuddy visitUnvisited(ILoBuddy visited);
+
+  // grabs the size of this ILoBuddy
+  int length();
+
+  // returns the max likelihood that a message could be conveyed to
+  // that person through this list of buddies
+  double checkLikelihoods(double diction, double currentScore, Person that,
+      ILoBuddy visited);
 
 }
