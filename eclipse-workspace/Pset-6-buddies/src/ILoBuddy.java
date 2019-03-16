@@ -11,7 +11,6 @@ interface ILoBuddy {
   // determines if that is a buddy to anyone in this list
   boolean friendOfFriend(Person that, ILoBuddy visited);
 
-
   // counts the number of uncounted
   ILoBuddy visitUnvisited(ILoBuddy visited);
 
@@ -20,7 +19,6 @@ interface ILoBuddy {
 
   // returns the max likelihood that a message could be conveyed to
   // that person through this list of buddies
-  double checkLikelihoods(double diction, double currentScore, Person that,
-      ILoBuddy visited);
+  double maxLikelihood(Person startPerson, Person that, ILoBuddy visited);
 
 }

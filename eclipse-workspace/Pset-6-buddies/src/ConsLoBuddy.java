@@ -11,12 +11,7 @@ class ConsLoBuddy implements ILoBuddy {
 
   // returns true if that person is in this list of buddies
   public boolean personInList(Person that) {
-    if (this.first.samePerson(that) || this.rest.personInList(that)) {
-      return true;
-    }
-    else {
-      return false;
-    }
+    return this.first.samePerson(that) || this.rest.personInList(that);
   }
 
   // counts the number of common buddies in this non empty list of buddies
@@ -62,33 +57,15 @@ class ConsLoBuddy implements ILoBuddy {
 
   // returns the max likelihood that a message could be conveyed to
   // that person through this non empty list of buddies
-  public double checkLikelihoods(double diction, double currentScore, Person that,
-      ILoBuddy visited) {
-    if (this.first.hasDirectBuddy(that)) {
-    return that.newScore(diction, currentScore);
-    } else if (!visited.personInList(this.first) && this.first.hasExtendedBuddy(that)) {
-      if (this.first.maxLikelihoodHelper(this.first.newScore(diction, currentScore), that, new ConsLoBuddy(this.first, visited))
-      > currentScore) {
-        return this.first.maxLikelihoodHelper(this.first.newScore(diction, currentScore), that, new ConsLoBuddy(this.first, visited));
-    } else {
-      return currentScore;
-      }
+  public double maxLikelihood(Person startPerson, Person that, ILoBuddy visited) {
+    if (visited.personInList(this.first)) {
+      return this.rest.maxLikelihood(startPerson, that, visited);
     }
     else {
-      return this.rest.checkLikelihoods(diction, currentScore, that,
-          new ConsLoBuddy(this.first, visited));
+      return Math.max(
+          startPerson.calcScore(this.first)
+              * this.first.maxLikelihoodAcc(that, new ConsLoBuddy(this.first, visited)),
+          this.rest.maxLikelihood(startPerson, that, new ConsLoBuddy(this.first, visited)));
     }
-    /*
-     * double deepestScore = this.first.maxLikelihoodHelper(currentScore * diction, that,
-     * new ConsLoBuddy(this.first, visited));
-     * if (!visited.personInList(this.first) && this.first.hasExtendedBuddy(that)
-     * && deepestScore > currentScore) {
-     * return this.rest.checkLikelihoods(diction, deepestScore, that,
-     * new ConsLoBuddy(this.first, visited));
-     * }
-     * else {
-     * return this.rest.checkLikelihoods(diction, currentScore, that, visited);
-     * }
-     */
   }
 }

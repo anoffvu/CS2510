@@ -1,4 +1,3 @@
-
 // represents a Person with a user name and a list of buddies
 class Person {
 
@@ -78,20 +77,35 @@ class Person {
     return this.username.equals(that.username);
   }
 
-  // returns the maximum likelihood of getting a message to another person
-  // by word of mouth
+  // determines the maximum likelihood that
+  // this person can correctly convey a
+  // message to the given person
   public double maxLikelihood(Person that) {
-    return maxLikelihoodHelper(0, that, new MTLoBuddy());
+    return this.maxLikelihoodAcc(that, new ConsLoBuddy(this, new MTLoBuddy()));
+
   }
 
-  // returns the maximum likelihood of getting a message to another person
-  // by word of mouth
-  public double maxLikelihoodHelper(double currentScore, Person that, ILoBuddy visited) {
-    return this.buddies.checkLikelihoods(this.diction, currentScore, that, visited);
+  // determines the maximum likelihood that
+  // this person can correctly convey a
+  // message to the given person
+  // ACC: people we have visited so far
+  public double maxLikelihoodAcc(Person that, ILoBuddy visited) {
+    if (this.samePerson(that)) {
+      return 1.0;
+    }
+    else if (this.hasDirectBuddy(that)) {
+      return this.calcScore(that);
+    }
+    else if (this.hasExtendedBuddy(that)) {
+      return this.buddies.maxLikelihood(this, that, visited);
+    }
+    else {
+      return 0.0;
+    }
   }
 
-  // calculates the new running score
-  public double newScore(double diction2, double currentScore) {
-    return diction2 * currentScore * this.hearing;
+  // calculates the score of passing on a message to that person
+  public double calcScore(Person that) {
+    return this.diction * that.hearing;
   }
 }

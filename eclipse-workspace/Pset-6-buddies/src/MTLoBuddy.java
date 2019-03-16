@@ -36,4 +36,10 @@ class MTLoBuddy implements ILoBuddy {
     return 0;
   }
 
+  // returns the max likelihood that a message could be conveyed to
+  // that person through this empty list of buddies
+  public double maxLikelihood(Person startPerson, Person that, ILoBuddy visited) {
+    return 0;
+  }
+
 }
