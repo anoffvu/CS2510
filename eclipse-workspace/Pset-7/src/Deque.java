@@ -127,6 +127,8 @@ class Sentinal<T> extends ANode<T> {
       // field of field is okay here because we know that next will be a node, and we know how
       // that acts
       ANode<T> temp = this.next;
+      // this.next.updateNext(this.next.next);
+      // this.next.next.updatePrev(this);
       this.next = this.next.next;
       this.next.next.prev = this;
       return temp;
@@ -317,8 +319,7 @@ class ExamplesDeque {
     this.deque3.removeAtHead();
     t.checkExpect(this.deque3.header.next, this.nodeSecond);
     t.checkExpect(this.deque3.header.next.next, this.nodeThird);
-    // this test isnt passing
-    t.checkExpect(this.deque3.header.prev.prev.prev.prev, this.nodeSecond);
+    t.checkExpect(this.deque3.header.prev.prev.prev.prev, this.deque3.header);
 
   }
 
