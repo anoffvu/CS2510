@@ -1,5 +1,34 @@
 import tester.Tester;
 
+//Represents a boolean-valued question over values of type T
+interface IPred<T> {
+  boolean apply(T t);
+}
+
+class SameString implements IPred<String> {
+  String s;
+
+  SameString(String s) {
+    this.s = s;
+  }
+
+  public boolean apply(String that) {
+    return this.s.equals(that);
+  }
+}
+
+class SameInt implements IPred<Integer> {
+  Integer num;
+
+  SameInt(Integer num) {
+    this.num = num;
+  }
+
+  public boolean apply(Integer that) {
+    return this.num == that;
+  }
+}
+
 //represents a list that can add things on at both ends
 class Deque<T> {
   Sentinal<T> header;
@@ -26,7 +55,7 @@ class Deque<T> {
 
   // adds that data to the tail of this deque
   public void addAtTail(T that) {
-    this.header.next = new Node<T>(that, this.header, this.header.prev);
+    this.header.prev = new Node<T>(that, this.header, this.header.prev);
   }
 
   // adds that data to the head of this deque
@@ -51,13 +80,14 @@ abstract class ANode<T> {
     this.prev = prev;
   }
 
-  abstract T removeThis();
-
   // convenience constructor for no arguments
   ANode() {
     this.next = null;
     this.prev = null;
   }
+
+  // removes this ANode
+  abstract T removeThis();
 
   /*
    * // links the next node
