@@ -14,30 +14,29 @@ class Deque<T> {
     this.header = header;
   }
 
+  // returns the size of this
+  public int size() {
+    return this.header.calcSize(0);
+  }
+
   // adds that data to the head of this deque
   public void addAtHead(T that) {
-    // ANode<T> newNode = new Node<T>(that);
     this.header.next = new Node<T>(that, this.header.next, this.header);
   }
 
   // adds that data to the tail of this deque
   public void addAtTail(T that) {
-    this.header.addAtTail(that);
+    this.header.next = new Node<T>(that, this.header, this.header.prev);
   }
 
   // adds that data to the head of this deque
   public T removeAtHead() {
-    return this.header.removeAtHead();
+    return this.header.next.removeThis();
   }
 
   // adds that data to the tail of this deque
   public T removeAtTail() {
-    return this.header.removeAtTail();
-  }
-
-  // returns the size of this
-  public int size() {
-    return this.header.calcSize(0);
+    return this.header.prev.removeThis();
   }
 }
 
@@ -52,21 +51,25 @@ abstract class ANode<T> {
     this.prev = prev;
   }
 
+  abstract T removeThis();
+
   // convenience constructor for no arguments
   ANode() {
     this.next = null;
     this.prev = null;
   }
 
-  // links the next node
-  public void updateNext(ANode<T> node) {
-    this.prev = node;
-  }
-
-  // links the previous node
-  public void updatePrev(ANode<T> node) {
-    this.next = node;
-  }
+  /*
+   * // links the next node
+   * public void updateNext(ANode<T> node) {
+   * this.prev = node;
+   * }
+   * 
+   * // links the previous node
+   * public void updatePrev(ANode<T> node) {
+   * this.next = node;
+   * }
+   */
 
   // tests if this ANode is a sentinal
   public boolean isSentinal() {
@@ -82,15 +85,15 @@ abstract class ANode<T> {
       return this.next.calcSize(count + 1);
     }
   }
-
-//adds a new node with that data at the head
-  public void addAtHead(ANode<T> that) {
-    that.updateNext(this);
-    that.updatePrev(this);
-    this.updateNext(that);
-    // this.next = new Node<T>(that, this.next, this);
-  }
-
+  /*
+   * //adds a new node with that data at the head
+   * public void addAtHead(ANode<T> that) {
+   * that.updateNext(this);
+   * that.updatePrev(this);
+   * this.updateNext(that);
+   * // this.next = new Node<T>(that, this.next, this);
+   * }
+   */
 }
 
 // a sentinal of a list
@@ -105,57 +108,57 @@ class Sentinal<T> extends ANode<T> {
     this.prev = this;
   }
 
-
-
-  // adds a new node with that data at the tail
-  public void addAtTail(T that) {
-    this.prev = new Node<T>(that, this, this.prev);
-
-  }
+  /*
+   * // adds a new node with that data at the tail
+   * public void addAtTailHelp(T that) {
+   * this.prev = new Node<T>(that, this, this.prev);
+   * 
+   * }
+   */
 
   // tests if this sentinal is a sentinal
   public boolean isSentinal() {
     return true;
   }
 
-  // removes the node at the head of this list
-  public T removeAtHead() {
-    if (this.next.isSentinal() || this.prev.isSentinal()) {
-      throw new RuntimeException("Can't remove any nodes from an empty list!");
-    }
-    else {
-      // field of field is okay here because we know that next will be a node, and we know how
-      // that acts
-      Node<T> temp = (Node<T>) this.next;
-      // this.next.updateNext(this.next.next);
-      // this.next.next.updatePrev(this);
-      this.next.next.prev = this;
-      this.next = this.next.next;
-      return temp.data;
-    }
-  }
-
-  // removes the node at the tail of this list
-  public T removeAtTail() {
-    if (this.next.isSentinal() || this.prev.isSentinal()) {
-      throw new RuntimeException("Can't remove any nodes from an empty list!");
-    }
-    else {
-      Node<T> temp = (Node<T>) this.prev;
-      // field of field is okay here because we know that next will be a node, and we know how
-      // that acts
-      this.prev = this.prev.prev;
-      this.prev.prev.next = this;
-      return temp.data;
-    }
+  /*
+   * // removes the node at the head of this list
+   * public T removeAtHead() {
+   * if (this.next.isSentinal() || this.prev.isSentinal()) {
+   * throw new RuntimeException("Can't remove any nodes from an empty list!");
+   * }
+   * else {
+   * Node<T> temp = (Node<T>) this.next;
+   * this.next.next.prev = this;
+   * this.next = this.next.next;
+   * return temp.data;
+   * }
+   * }
+   * 
+   * // removes the node at the tail of this list
+   * public T removeAtTail() {
+   * if (this.next.isSentinal() || this.prev.isSentinal()) {
+   * throw new RuntimeException("Can't remove any nodes from an empty list!");
+   * }
+   * else {
+   * Node<T> temp = (Node<T>) this.prev;
+   * // field of field is okay here because we know that next will be a node, and we know
+   * how
+   * // that acts
+   * this.prev = this.prev.prev;
+   * this.prev.prev.next = this;
+   * return temp.data;
+   * }
+   * }
+   */
+  public T removeThis() {
+    throw new RuntimeException("Cannot remove items from an empty list!");
   }
 }
 
 // a node inside a deque
 class Node<T> extends ANode<T> {
   T data;
-  ANode<T> next;
-  ANode<T> prev;
 
   // default node constructor, next and prev are set to null
   Node(T data) {
@@ -171,11 +174,19 @@ class Node<T> extends ANode<T> {
     }
     else {
       this.data = data;
-      next.prev = this;
-      prev.next = this;
-      //next.updateNext(this);
-      //prev.updatePrev(this);
+      this.next.prev = this;
+      this.prev.next = this;
+      // next.updateNext(this);
+      // prev.updatePrev(this);
     }
+  }
+
+  public T removeThis() {
+    ANode<T> tempNext = this.next;
+    ANode<T> tempPrev = this.prev;
+    this.prev.next = tempNext;
+    this.next.prev = tempPrev;
+    return this.data;
   }
 
 }
@@ -292,7 +303,6 @@ class ExamplesDeque {
         new Node<String>("hello", this.nodeFirst, this.deque3.header));
   }
 
-
   // tests for addAtTail
   void testaddAtTail(Tester t) {
     initData();
@@ -305,7 +315,6 @@ class ExamplesDeque {
         new Node<String>("hello", this.deque3.header, this.nodeFifth));
     t.checkExpect(this.nodeFifth.next,
         new Node<String>("hello", this.deque3.header, this.nodeFifth));
-
   }
 
   // tests for removeAtHead
