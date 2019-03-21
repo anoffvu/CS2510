@@ -39,7 +39,7 @@ public class PermutationCode {
   // Initialize the encoding permutation of the characters
   ArrayList<Character> initEncoder() {
     ArrayList<Character> encoded = new ArrayList<Character>(alphabet);
-    for (int i = 0; i < encoded.size(); i++) {
+    for (int i = 0; i < ALPHABET_SIZE; i++) {
       char charHolder = encoded.get(i);
       int randIndex = (int) (Math.random() * ALPHABET_SIZE);
       encoded.set(i, encoded.get(randIndex));
@@ -62,7 +62,7 @@ public class PermutationCode {
   String decode(String code) {
     ArrayList<Character> codeChars = stringToAList(code);
     int codeLength = codeChars.size();
-    for (int i = 0; i < codeLength; i++) {
+    for (int i = 0; i < code.length(); i++) {
       codeChars.set(i, (char) (code.indexOf(codeChars.get(i)) + CHAR_TO_LOWER));
     }
     return AListToString(codeChars);
@@ -70,10 +70,10 @@ public class PermutationCode {
 
   // converts a string to an ArrayList of chars
   ArrayList<Character> stringToAList(String s) {
-    int sLength = s.length();
-    ArrayList<Character> charAList = new ArrayList<Character>(sLength);
-    for (int i = 0; i < sLength; i++) {
-      charAList.set(i, s.charAt(i));
+    int stringLength = s.length();
+    ArrayList<Character> charAList = new ArrayList<Character>();
+    for (int i = 0; i < stringLength; i++) {
+      charAList.add(s.charAt(i));
     }
     return charAList;
   }
@@ -130,5 +130,27 @@ class ExamplesPerm {
     // code that is exactly the same as the alphabet, but it is incredibly unlikely
     t.checkExpect(p1.encode("abcdefghijklmnopqrstuvwxyz").equals("abcdefghijklmnopqrstuvwxyz"),
         false);
+
+    t.checkExpect(p2.stringToAList("test"),
+        new ArrayList<Character>(Arrays.asList('t', 'e', 's', 't')));
+    t.checkExpect(p2.stringToAList(""), new ArrayList<Character>());
+
+    t.checkExpect(p2.AListToString(new ArrayList<Character>(Arrays.asList('t', 'e', 's', 't'))),
+        "test");
+    t.checkExpect(p2.AListToString(new ArrayList<Character>()), "");
+  }
+
+  // tests encode
+  void testEncode(Tester t) {
+    t.checkExpect(p2.encode("test"), "test");
+    t.checkExpect(p3.encode("cba"), "cab");
+    t.checkExpect(p1.encode(""), "");
+  }
+
+  // tests decode
+  void testDecode(Tester t) {
+    t.checkExpect(p2.decode("cheese"), "cheese");
+    t.checkExpect(p3.decode("cab"), "cba");
+    t.checkExpect(p2.decode(""), "");
   }
 }
