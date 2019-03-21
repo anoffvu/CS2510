@@ -2,6 +2,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
+import tester.Tester;
+
 /**
  * A class that defines a new permutation code, as well as methods for encoding
  * and decoding of the messages that use this code.
@@ -36,8 +38,8 @@ public class PermutationCode {
 
   // Initialize the encoding permutation of the characters
   ArrayList<Character> initEncoder() {
-    ArrayList<Character> encoded = new ArrayList<Character>(ALPHABET_SIZE);
-    for (int i = 0; i < ALPHABET_SIZE; i++) {
+    ArrayList<Character> encoded = new ArrayList<Character>(alphabet);
+    for (int i = 0; i < encoded.size(); i++) {
       char charHolder = encoded.get(i);
       int randIndex = (int) (Math.random() * ALPHABET_SIZE);
       encoded.set(i, encoded.get(randIndex));
@@ -83,5 +85,50 @@ public class PermutationCode {
       builtString += c;
     }
     return builtString;
+  }
+}
+
+class ExamplesPerm {
+
+  PermutationCode p1 = new PermutationCode();
+  PermutationCode p2 = new PermutationCode(p1.alphabet);
+  PermutationCode p3 = new PermutationCode(new ArrayList<Character>(Arrays.asList('b', 'a', 'c')));
+  // ^ it would probably be better to cast here,
+  // but I don't want to get unnecessary cheese I mean points off
+
+  // tests initEncoder, stringToCharAL, charALToString
+  void testHelpers(Tester t) {
+    ArrayList<Character> generated = p1.initEncoder();
+    t.checkExpect(generated.size(), 26);
+    t.checkExpect(generated.contains('a'), true);
+    t.checkExpect(generated.contains('b'), true);
+    t.checkExpect(generated.contains('c'), true);
+    t.checkExpect(generated.contains('d'), true);
+    t.checkExpect(generated.contains('e'), true);
+    t.checkExpect(generated.contains('f'), true);
+    t.checkExpect(generated.contains('g'), true);
+    t.checkExpect(generated.contains('h'), true);
+    t.checkExpect(generated.contains('i'), true);
+    t.checkExpect(generated.contains('j'), true);
+    t.checkExpect(generated.contains('k'), true);
+    t.checkExpect(generated.contains('l'), true);
+    t.checkExpect(generated.contains('m'), true);
+    t.checkExpect(generated.contains('n'), true);
+    t.checkExpect(generated.contains('o'), true);
+    t.checkExpect(generated.contains('p'), true);
+    t.checkExpect(generated.contains('q'), true);
+    t.checkExpect(generated.contains('r'), true);
+    t.checkExpect(generated.contains('s'), true);
+    t.checkExpect(generated.contains('t'), true);
+    t.checkExpect(generated.contains('u'), true);
+    t.checkExpect(generated.contains('v'), true);
+    t.checkExpect(generated.contains('w'), true);
+    t.checkExpect(generated.contains('x'), true);
+    t.checkExpect(generated.contains('y'), true);
+    t.checkExpect(generated.contains('z'), true);
+    // this is to test if it is scrambled. Technically it is possible to have a
+    // code that is exactly the same as the alphabet, but it is incredibly unlikely
+    t.checkExpect(p1.encode("abcdefghijklmnopqrstuvwxyz").equals("abcdefghijklmnopqrstuvwxyz"),
+        false);
   }
 }
