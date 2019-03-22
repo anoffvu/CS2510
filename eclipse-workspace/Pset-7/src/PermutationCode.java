@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Random;
 
 import tester.Tester;
 
@@ -16,15 +15,15 @@ public class PermutationCode {
           'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'));
 
   // size of the given alphabet
-  int ALPHABET_SIZE = alphabet.size();
+  public final int ALPHABET_SIZE = alphabet.size();
 
   // moves the ascii code to lowercase letters
-  int CHAR_TO_LOWER = 97;
+  public static final int CHAR_TO_LOWER = 97;
 
   ArrayList<Character> code = new ArrayList<Character>(ALPHABET_SIZE);
 
   // A random number generator
-  Random rand = new Random();
+  // Random rand = new Random();
 
   // Create a new instance of the encoder/decoder with a new permutation code
   PermutationCode() {
@@ -44,28 +43,28 @@ public class PermutationCode {
       int randIndex = (int) (Math.random() * ALPHABET_SIZE);
       encoded.set(i, encoded.get(randIndex));
       encoded.set(randIndex, charHolder);
-      }
-    return encoded;
     }
+    return encoded;
+  }
 
   // produce an encoded String from the given String
-  String encode(String source) {
-    ArrayList<Character> sourceChars = stringToAList(source);
-    int stringSize = sourceChars.size();
-    for (int i = 0; i < stringSize; i++) {
-      sourceChars.set(i, code.get(sourceChars.get(i) - CHAR_TO_LOWER));
+  String encode(String toEncode) {
+    int toEncodeLength = toEncode.length();
+    ArrayList<Character> toEncodeChars = stringToAList(toEncode);
+    for (int i = 0; i < toEncodeLength; i++) {
+      toEncodeChars.set(i, code.get(toEncodeChars.get(i) - CHAR_TO_LOWER));
     }
-    return AListToString(sourceChars);
+    return arrayListToString(toEncodeChars);
   }
 
   // produce a decoded String from the given String
-  String decode(String code) {
-    ArrayList<Character> codeChars = stringToAList(code);
-    int codeLength = codeChars.size();
-    for (int i = 0; i < code.length(); i++) {
+  String decode(String toDecode) {
+    int toDecodeLength = toDecode.length();
+    ArrayList<Character> codeChars = stringToAList(toDecode);
+    for (int i = 0; i < toDecodeLength; i++) {
       codeChars.set(i, (char) (code.indexOf(codeChars.get(i)) + CHAR_TO_LOWER));
     }
-    return AListToString(codeChars);
+    return arrayListToString(codeChars);
   }
 
   // converts a string to an ArrayList of chars
@@ -79,7 +78,7 @@ public class PermutationCode {
   }
 
   // converts an ArrayList of chars to a string
-  String AListToString(ArrayList<Character> chars) {
+  String arrayListToString(ArrayList<Character> chars) {
     String builtString = "";
     for (Character c : chars) {
       builtString += c;
@@ -88,69 +87,75 @@ public class PermutationCode {
   }
 }
 
+//"perm" stands for permasan cheese
 class ExamplesPerm {
 
+  // a random alphabet
   PermutationCode p1 = new PermutationCode();
+  // just the normal alphabet
   PermutationCode p2 = new PermutationCode(p1.alphabet);
-  PermutationCode p3 = new PermutationCode(new ArrayList<Character>(Arrays.asList('b', 'a', 'c')));
-  // ^ it would probably be better to cast here,
-  // but I don't want to get unnecessary cheese I mean points off
+  // a 3 letter permutation code
+  PermutationCode p3 = new PermutationCode(new ArrayList<Character>(Arrays.asList('d', 'e', 'f')));
 
   // tests initEncoder, stringToCharAL, charALToString
   void testHelpers(Tester t) {
-    ArrayList<Character> generated = p1.initEncoder();
-    t.checkExpect(generated.size(), 26);
-    t.checkExpect(generated.contains('a'), true);
-    t.checkExpect(generated.contains('b'), true);
-    t.checkExpect(generated.contains('c'), true);
-    t.checkExpect(generated.contains('d'), true);
-    t.checkExpect(generated.contains('e'), true);
-    t.checkExpect(generated.contains('f'), true);
-    t.checkExpect(generated.contains('g'), true);
-    t.checkExpect(generated.contains('h'), true);
-    t.checkExpect(generated.contains('i'), true);
-    t.checkExpect(generated.contains('j'), true);
-    t.checkExpect(generated.contains('k'), true);
-    t.checkExpect(generated.contains('l'), true);
-    t.checkExpect(generated.contains('m'), true);
-    t.checkExpect(generated.contains('n'), true);
-    t.checkExpect(generated.contains('o'), true);
-    t.checkExpect(generated.contains('p'), true);
-    t.checkExpect(generated.contains('q'), true);
-    t.checkExpect(generated.contains('r'), true);
-    t.checkExpect(generated.contains('s'), true);
-    t.checkExpect(generated.contains('t'), true);
-    t.checkExpect(generated.contains('u'), true);
-    t.checkExpect(generated.contains('v'), true);
-    t.checkExpect(generated.contains('w'), true);
-    t.checkExpect(generated.contains('x'), true);
-    t.checkExpect(generated.contains('y'), true);
-    t.checkExpect(generated.contains('z'), true);
-    // this is to test if it is scrambled. Technically it is possible to have a
-    // code that is exactly the same as the alphabet, but it is incredibly unlikely
+    ArrayList<Character> dummy = p1.initEncoder();
+    t.checkExpect(dummy.size(), 26);
+    t.checkExpect(dummy.contains('a'), true);
+    t.checkExpect(dummy.contains('b'), true);
+    t.checkExpect(dummy.contains('c'), true);
+    t.checkExpect(dummy.contains('d'), true);
+    t.checkExpect(dummy.contains('e'), true);
+    t.checkExpect(dummy.contains('f'), true);
+    t.checkExpect(dummy.contains('g'), true);
+    t.checkExpect(dummy.contains('h'), true);
+    t.checkExpect(dummy.contains('i'), true);
+    t.checkExpect(dummy.contains('j'), true);
+    t.checkExpect(dummy.contains('k'), true);
+    t.checkExpect(dummy.contains('l'), true);
+    t.checkExpect(dummy.contains('m'), true);
+    t.checkExpect(dummy.contains('n'), true);
+    t.checkExpect(dummy.contains('o'), true);
+    t.checkExpect(dummy.contains('p'), true);
+    t.checkExpect(dummy.contains('q'), true);
+    t.checkExpect(dummy.contains('r'), true);
+    t.checkExpect(dummy.contains('s'), true);
+    t.checkExpect(dummy.contains('t'), true);
+    t.checkExpect(dummy.contains('u'), true);
+    t.checkExpect(dummy.contains('v'), true);
+    t.checkExpect(dummy.contains('w'), true);
+    t.checkExpect(dummy.contains('x'), true);
+    t.checkExpect(dummy.contains('y'), true);
+    t.checkExpect(dummy.contains('z'), true);
     t.checkExpect(p1.encode("abcdefghijklmnopqrstuvwxyz").equals("abcdefghijklmnopqrstuvwxyz"),
         false);
-
-    t.checkExpect(p2.stringToAList("test"),
-        new ArrayList<Character>(Arrays.asList('t', 'e', 's', 't')));
-    t.checkExpect(p2.stringToAList(""), new ArrayList<Character>());
-
-    t.checkExpect(p2.AListToString(new ArrayList<Character>(Arrays.asList('t', 'e', 's', 't'))),
-        "test");
-    t.checkExpect(p2.AListToString(new ArrayList<Character>()), "");
   }
 
-  // tests encode
+  // test for stringToAList
+  void testStringToAList(Tester t) {
+    t.checkExpect(p2.stringToAList("hello"),
+        new ArrayList<Character>(Arrays.asList('h', 'e', 'l', 'l', 'o')));
+    t.checkExpect(p2.stringToAList(""), new ArrayList<Character>());
+  }
+
+  // tests for arrayListToString
+  void testArrayListToString(Tester t) {
+    t.checkExpect(p2.arrayListToString(
+        new ArrayList<Character>(Arrays.asList('h', 'i', 't', 'h', 'e', 'r', 'e'))), "hithere");
+    t.checkExpect(p2.arrayListToString(new ArrayList<Character>()), "");
+  }
+
+  // tests for encode
   void testEncode(Tester t) {
-    t.checkExpect(p2.encode("test"), "test");
-    t.checkExpect(p3.encode("cba"), "cab");
+    t.checkExpect(p2.encode("hello"), "hello");
+    t.checkExpect(p3.encode("abc"), "def");
     t.checkExpect(p1.encode(""), "");
   }
 
-  // tests decode
+  // tests for decode
   void testDecode(Tester t) {
-    t.checkExpect(p2.decode("cheese"), "cheese");
-    t.checkExpect(p3.decode("cab"), "cba");
+    t.checkExpect(p2.decode("hello"), "hello");
+    t.checkExpect(p3.decode("def"), "abc");
     t.checkExpect(p2.decode(""), "");
   }
 }
