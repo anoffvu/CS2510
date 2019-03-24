@@ -29,8 +29,15 @@ public class Cell {
     this.neighbors.add(c);
   }
 
+  // counts the number of neighbors that are mines
+  // part 2 of assignement says we should make operating over neighbors modular?
   public int countMines() {
-    // TODO figure out how to do modularly computer over neighbors
-    return 0;
+    int mineCount = 0;
+    for (Cell c : neighbors) {
+      if (c.isMine) {
+        mineCount++;
+      }
+    }
+    return mineCount;
   }
 }
