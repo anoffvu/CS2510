@@ -29,4 +29,8 @@ public class Cell {
     this.neighbors.add(c);
   }
 
+  public int countMines() {
+    // TODO figure out how to do modularly computer over neighbors
+    return 0;
+  }
 }
