@@ -4,13 +4,19 @@
 	<item value="0" key="org.eclipse.jdt.uiformatter_pagemodify_dialog.preferred_x"/>
 	<item value="23" key="org.eclipse.jdt.uiformatter_pagemodify_dialog.preferred_y"/>
 	<item value="100" key="org.eclipse.jdt.ui.codeformatter.line_wrapping_tab_page.preview_line_width"/>
+	<item value="23" key="org.eclipse.jdt.uicleanup_pagemodify_dialog.preferred_y"/>
+	<item value="151" key="org.eclipse.jdt.uicleanup_pagemodify_dialog.preferred_x"/>
+	<item value="-1" key="org.eclipse.jdt.uiformatter_page.modify_dialog_tab_page.last_focus_index"/>
 	<item value="00.0..0.0.000.0.0.0.0.0.0.0.0.0..00.0.0.0.0.0.0.0.0.0.0..00.0.0.0.0.0..00.0.0.0..00.0.0.0...00.0..010.0..0.0..110.0.0.0.0.0.0.0.0.0...10.0..0.." key="org.eclipse.jdt.uiformatter_page.preference_tree_expansion"/>
 	<item value="501" key="org.eclipse.jdt.uiformatter_pagemodify_dialog.sash_form_left_width"/>
 	<item value="1209" key="org.eclipse.jdt.uiformatter_pagemodify_dialog.preferred_width"/>
 	<item value="708" key="org.eclipse.jdt.uiformatter_pagemodify_dialog.preferred_height"/>
+	<item value="899" key="org.eclipse.jdt.uicleanup_pagemodify_dialog.preferred_width"/>
 	<item value="/Users/An/Documents/CCCollege/Spring 2019/cs-2510/EclipseJars" key="org.eclipse.jdt.ui.lastextjar"/>
 	<item value="481" key="org.eclipse.jdt.uiformatter_page.preference_scroll_position"/>
 	<item value="352" key="org.eclipse.jdt.uiformatter_page.last_focus_index"/>
+	<item value="705" key="org.eclipse.jdt.uicleanup_pagemodify_dialog.preferred_height"/>
+	<item value="4" key="org.eclipse.jdt.uicleanup_pagemodify_dialog.last_focus"/>
 	<item value="683" key="org.eclipse.jdt.uiformatter_pagemodify_dialog.sash_form_rigth_width"/>
 	<item value="/Users/An/Documents/CCCollege/Spring 2019/cs-2510/eclipse-workspace/Lecture Notes" key="org.eclipse.jdt.ui.last.external.project"/>
 	<section name="RefactoringWizard.preview">
