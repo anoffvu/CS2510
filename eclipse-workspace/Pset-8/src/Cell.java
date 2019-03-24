@@ -16,12 +16,12 @@ public class Cell {
 
   // convenience constructor that doesn't have neighbors
   Cell(boolean isMine, boolean isFlagged, boolean isShown) {
-    this(isMine, isFlagged, isShown, null);
+    this(isMine, isFlagged, isShown, new ArrayList<Cell>());
   }
 
 //convenience constructor that doesn't have neighbors
   Cell() {
-    this(false, false, false, null);
+    this(false, false, false, new ArrayList<Cell>());
   }
 
   // adds a cell to the neighbor list of this cell
