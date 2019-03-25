@@ -1,6 +1,14 @@
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Random;
 
+import javalib.worldimages.CircleImage;
+import javalib.worldimages.EmptyImage;
+import javalib.worldimages.EquilateralTriangleImage;
+import javalib.worldimages.OutlineMode;
+import javalib.worldimages.OverlayImage;
+import javalib.worldimages.RectangleImage;
+import javalib.worldimages.TextImage;
 import tester.Tester;
 
 public class ExamplesMinesweeper {
@@ -139,7 +147,7 @@ public class ExamplesMinesweeper {
     t.checkExpect(this.cell9.neighbors.get(1), this.cell6);
     t.checkExpect(this.cell9.neighbors.get(2), this.cell8);
   }
-  
+
   // tests for countMines
   public void testCountMines(Tester t) {
     initData();
@@ -161,6 +169,63 @@ public class ExamplesMinesweeper {
     Cell dummy3 = new Cell(false, false, false, this.game1.generateAllCells());
     t.checkExpect(dummy3.countMines(), 4);
 
+  }
+
+  // tests for drawCell
+  public void testDrawCell(Tester t) {
+    initData();
+    Cell zeroHidden = new Cell(false, false, false);
+    Cell zeroRevealed = new Cell(false, false, true);
+    Cell zeroFlaggedHidden = new Cell(false, true, false);
+    Cell zeroFlaggedRevealed = new Cell(false, true, true);
+    Cell zeroMineHidden = new Cell(true, false, false);
+    Cell zeroMineRevealed = new Cell(true, false, true);
+
+    // TODO these tests
+    Cell threeHidden = new Cell(false, false, false);
+    threeHidden.addCellNeighbors(1, 1, this.grid1);
+    Cell threeRevealed = new Cell(false, false, true);
+    threeRevealed.addCellNeighbors(1, 1, this.grid1);
+    Cell threeFlaggedHidden = new Cell(false, true, false);
+    threeFlaggedHidden.addCellNeighbors(1, 1, this.grid1);
+    Cell threeFlaggedRevealed = new Cell(false, true, true);
+    threeFlaggedRevealed.addCellNeighbors(1, 1, this.grid1);
+    Cell threeMineHidden = new Cell(true, false, false);
+    threeMineHidden.addCellNeighbors(1, 1, this.grid1);
+    Cell threeMineRevealed = new Cell(true, false, true);
+    threeMineRevealed.addCellNeighbors(1, 1, this.grid1);
+
+    t.checkExpect(zeroHidden.drawCell(),
+        new RectangleImage(18, 18, OutlineMode.SOLID, Color.lightGray));
+    t.checkExpect(zeroMineHidden.drawCell(),
+        new RectangleImage(18, 18, OutlineMode.SOLID, Color.lightGray));
+    t.checkExpect(zeroRevealed.drawCell(), new OverlayImage(new EmptyImage(),
+        new RectangleImage(18, 18, OutlineMode.SOLID, Color.darkGray)));
+    t.checkExpect(zeroFlaggedHidden.drawCell(),
+        new OverlayImage(new EquilateralTriangleImage(10, OutlineMode.SOLID, Color.red),
+            new RectangleImage(18, 18, OutlineMode.SOLID, Color.lightGray)));
+    t.checkExpect(zeroFlaggedRevealed.drawCell(), new OverlayImage(new EmptyImage(),
+        new RectangleImage(18, 18, OutlineMode.SOLID, Color.darkGray)));
+    t.checkExpect(zeroMineRevealed.drawCell(),
+        new OverlayImage(new CircleImage(6, OutlineMode.SOLID, Color.black),
+            new RectangleImage(18, 18, OutlineMode.SOLID, Color.darkGray)));
+
+    t.checkExpect(threeHidden.drawCell(),
+        new RectangleImage(18, 18, OutlineMode.SOLID, Color.lightGray));
+    t.checkExpect(threeRevealed.drawCell(),
+        new OverlayImage(new TextImage("3", 12, new Color(95, 255, 253)),
+            new RectangleImage(18, 18, OutlineMode.SOLID, Color.darkGray)));
+    t.checkExpect(threeFlaggedHidden.drawCell(),
+        new OverlayImage(new EquilateralTriangleImage(10, OutlineMode.SOLID, Color.red),
+            new RectangleImage(18, 18, OutlineMode.SOLID, Color.lightGray)));
+    t.checkExpect(threeFlaggedRevealed.drawCell(),
+        new OverlayImage(new TextImage("3", 12, new Color(95, 255, 253)),
+            new RectangleImage(18, 18, OutlineMode.SOLID, Color.darkGray)));
+    t.checkExpect(threeMineHidden.drawCell(),
+        new RectangleImage(18, 18, OutlineMode.SOLID, Color.lightGray));
+    t.checkExpect(threeMineRevealed.drawCell(),
+        new OverlayImage(new CircleImage(6, OutlineMode.SOLID, Color.black),
+            new RectangleImage(18, 18, OutlineMode.SOLID, Color.darkGray)));
   }
 
   /*

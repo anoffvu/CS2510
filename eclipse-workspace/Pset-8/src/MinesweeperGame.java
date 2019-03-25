@@ -90,7 +90,6 @@ public class MinesweeperGame extends World {
   public void addAllNeighbors(ArrayList<ArrayList<Cell>> placedCells) {
     for (int i = 0; i < this.rowCount; i++) {
       for (int j = 0; j < this.colCount; j++) {
-        // TODO this shouldnt have access to row and column count but its ok for now
         placedCells.get(i).get(j).addCellNeighbors(i, j, placedCells);
       }
     }
