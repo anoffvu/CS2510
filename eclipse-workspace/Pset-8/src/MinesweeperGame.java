@@ -8,39 +8,77 @@ import javalib.worldimages.RectangleImage;
 
 public class MinesweeperGame extends World {
 
-  Random defaultGameRand = new Random(10);
+  int rowCount;
+  int colCount;
+  int mineCount;
+  Random rand;
 
   Color red = Color.red;
   RectangleImage test = null;
 
-  MinesweeperGame(int rows, int cols, int mineCount, Random rand) {
-    buildBoard(rows, cols, mineCount, rand);
+  MinesweeperGame(int rowCount, int colCount, int mineCount, Random rand) {
+    this.rowCount = rowCount;
+    this.colCount = colCount;
+    this.mineCount = mineCount;
+    this.rand = rand;
   }
 
-  MinesweeperGame(int rows, int cols, int mineCount) {
-    buildBoard(rows, cols, mineCount, defaultGameRand);
+  MinesweeperGame(int rowCount, int colCount, int mineCount) {
+    this(rowCount, colCount, mineCount, new Random());
   }
 
   // this will build the game board
-  public ArrayList<ArrayList<Cell>> buildBoard(int rowCount, int colCount, int mineCount,
-      Random rand) {
-    int totalCells = rowCount * colCount;
+  public ArrayList<ArrayList<Cell>> buildBoard() {
     // makes all the cells, non-mines and mines
-    ArrayList<Cell> allCells = generateAllCells(totalCells, mineCount, rand);
+    ArrayList<Cell> allCells = generateAllCells();
     // puts the cells inside the grid
-    ArrayList<ArrayList<Cell>> placedCells = placeCells(rowCount, colCount, allCells);
+    ArrayList<ArrayList<Cell>> placedCells = placeCells(allCells);
     // adds neighbors to each cell
-    ArrayList<ArrayList<Cell>> cellsWithNeighbors = addAllNeighbors(placedCells);
-    return cellsWithNeighbors;
+    addAllNeighbors(placedCells);
+    return placedCells;
+  }
+
+  // will generate all the cells in one list, adding mines where necessary
+  public ArrayList<Cell> generateAllCells() {
+    int totalCells = this.rowCount * this.colCount;
+    ArrayList<Cell> allCells = new ArrayList<Cell>();
+    for (int i = 0; i < totalCells; i++) {
+      allCells.add(new Cell());
+    }
+    addMines(allCells);
+    return allCells;
+  }
+
+  // adds the mines in randomly
+  public void addMines(ArrayList<Cell> cells) {
+    // creates a list of indices of every cell in the that we can place mines
+    ArrayList<Integer> safeIndices = new ArrayList<Integer>();
+    for (int i = 0; i < cells.size(); i++) {
+      safeIndices.add(i);
+    }
+    // creates a list of indices of where the mines should be placed
+    ArrayList<Integer> mineIndices = new ArrayList<Integer>();
+    for (int i = 0; i < this.mineCount; i++) {
+      // picks a random index up to the size of the indices list
+      int randomIndex = this.rand.nextInt(safeIndices.size());
+      // adds a random number from "indices" to mineIndices
+      mineIndices.add(safeIndices.get(randomIndex));
+      // removes the added number from the list of possible indices to place mines
+      safeIndices.remove(randomIndex);
+    }
+
+    // converts the cells at those indices to mines
+    for (Integer i : mineIndices) {
+      cells.get(i).isMine = true;
+    }
   }
 
   // places the given list of cells into a grid with these dimensions
-  private ArrayList<ArrayList<Cell>> placeCells(int rowCount, int colCount,
-      ArrayList<Cell> allCells) {
-    ArrayList<ArrayList<Cell>> rows = new ArrayList<ArrayList<Cell>>(rowCount);
-    for (int i = 0; i < rowCount; i++) {
-      ArrayList<Cell> cols = new ArrayList<Cell>(colCount);
-      for (int j = 0; j < colCount; j++) {
+  public ArrayList<ArrayList<Cell>> placeCells(ArrayList<Cell> allCells) {
+    ArrayList<ArrayList<Cell>> rows = new ArrayList<ArrayList<Cell>>(this.rowCount);
+    for (int i = 0; i < this.rowCount; i++) {
+      ArrayList<Cell> cols = new ArrayList<Cell>(this.colCount);
+      for (int j = 0; j < this.colCount; j++) {
         cols.add(allCells.get(0));
         allCells.remove(0);
       }
@@ -48,49 +86,19 @@ public class MinesweeperGame extends World {
     return rows;
   }
 
-  // will generate all the cells in one list, adding mines where necessary
-  private ArrayList<Cell> generateAllCells(int totalCells, int mineCount, Random rand) {
-    ArrayList<Cell> allCells = new ArrayList<Cell>();
-    for (int i = 0; i < totalCells; i++) {
-      allCells.add(new Cell());
-    }
-    addMines(allCells, mineCount, rand);
-    return allCells;
-  }
-
-  // adds the mines in randomly
-  private void addMines(ArrayList<Cell> cells, int mineCount, Random rand) {
-    // creates a list of indices of every cell in the that we can place mines
-    ArrayList<Integer> indices = new ArrayList<Integer>();
-    for (int i = 0; i < cells.size(); i++) {
-      indices.add(i);
-    }
-    // creates a list of indices of where the mines should be placed
-    ArrayList<Integer> mineIndices = new ArrayList<Integer>();
-    for (int i = 0; i < mineCount; i++) {
-      // picks a random index up to the size of the indices list
-      int randomIndex = rand.nextInt(indices.size());
-      // adds a random number from "indices" to mineIndices
-      mineIndices.add(indices.get(randomIndex));
-      // removes the added number from the list of possible indices to place mines
-      indices.remove(randomIndex);
-    }
-
-    // assigns the cells at those indices to mines
-    for (Integer i : mineIndices) {
-      cells.get(i).isMine = true;
-    }
-  }
-
   // adds neighbors to the cells of the grid of cells passed in
-  private ArrayList<ArrayList<Cell>> addAllNeighbors(ArrayList<ArrayList<Cell>> placedCells) {
-    // TODO Auto-generated method stub
-    return null;
+  public void addAllNeighbors(ArrayList<ArrayList<Cell>> placedCells) {
+    for (int i = 0; i < this.rowCount; i++) {
+      for (int j = 0; j < this.colCount; j++) {
+        // TODO this shouldnt have access to row and column count but its ok for now
+        placedCells.get(i).get(j).addCellNeighbors(i, j, placedCells);
+      }
+    }
   }
 
   @Override
   public WorldScene makeScene() {
-    // TODO Auto-generated method stu
+    // TODO Auto-generated method stub
     return null;
   }
 

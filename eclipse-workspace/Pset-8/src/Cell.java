@@ -24,20 +24,33 @@ public class Cell {
     this(false, false, false, new ArrayList<Cell>());
   }
 
-  // adds a cell to the neighbor list of this cell
-  public void addNeighbor(Cell c) {
-    this.neighbors.add(c);
-  }
-
   // counts the number of neighbors that are mines
-  // part 2 of assignement says we should make operating over neighbors modular?
+  // part 2 of assignment says we should make operating over neighbors modular?
   public int countMines() {
     int mineCount = 0;
-    for (Cell c : neighbors) {
+    for (Cell c : this.neighbors) {
       if (c.isMine) {
         mineCount++;
       }
     }
     return mineCount;
+  }
+
+  // adds all the neighbors to this cell
+  public void addCellNeighbors(int i, int j, ArrayList<ArrayList<Cell>> placedCells) {
+    for (int y = (i - 1); y <= (i + 1); y++) {
+      for (int z = (j - 1); z <= (j + 1); z++) {
+        if (validCoordinates(y, z, placedCells)
+            && !(i == y && j == z)) {
+          this.neighbors.add(placedCells.get(y).get(z));
+        }
+      }
+    }
+  }
+
+  // determines if these are valid index values within this board
+  public boolean validCoordinates(int rowNum, int colNum, ArrayList<ArrayList<Cell>> placedCells) {
+    return (0 <= rowNum && rowNum < placedCells.size())
+        && (0 <= colNum && colNum < placedCells.get(0).size());
   }
 }
