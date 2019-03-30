@@ -49,10 +49,10 @@ class Cell {
 
   // EFFECT: adds all the neighbors to this cell
   public void addCellNeighbors(int i, int j, ArrayList<ArrayList<Cell>> placedCells) {
-    for (int y = (i - 1); y <= (i + 1); y++) {
-      for (int z = (j - 1); z <= (j + 1); z++) {
-        if (validCoordinates(y, z, placedCells) && !(i == y && j == z)) {
-          this.neighbors.add(placedCells.get(y).get(z));
+    for (int x = (i - 1); x <= (i + 1); x++) {
+      for (int y = (j - 1); y <= (j + 1); y++) {
+        if (validCoordinates(x, y, placedCells) && !(i == x && j == y)) {
+          this.neighbors.add(placedCells.get(x).get(y));
         }
       }
     }
@@ -70,11 +70,10 @@ class Cell {
         MinesweeperGame.CELL_SIZE, OutlineMode.SOLID, Color.darkGray);
     WorldImage cellCovered = new RectangleImage(MinesweeperGame.CELL_SIZE,
         MinesweeperGame.CELL_SIZE, OutlineMode.SOLID, Color.lightGray);
-    WorldImage flag = new EquilateralTriangleImage(10, OutlineMode.SOLID, Color.red);
-    WorldImage mine = new CircleImage(6, OutlineMode.SOLID, Color.black);
-    // nested logic here because if we kicked out to helpers it wouldn't add anything, would
-    // actually
-    // be more lines of code for these 1/2 liner helper functions
+    WorldImage flag = new EquilateralTriangleImage(MinesweeperGame.CELL_SIZE / 2.5,
+        OutlineMode.SOLID, Color.red);
+    WorldImage mine = new CircleImage((int) (MinesweeperGame.CELL_SIZE / 3), OutlineMode.SOLID,
+        Color.black);
     if (this.isShown) { // if the cell is revealed
       if (this.isMine) { // if the cell is a revealed mine
         return new FrameImage(new OverlayImage(mine, cellRevealed));
@@ -103,6 +102,22 @@ class Cell {
     }
     else {
       return new TextImage(Integer.toString(this.countMines()), 12, numColor);
+    }
+  }
+
+  // EFFECT: adds all the neighbors to this cell
+  public void floodFill() {
+    this.isShown = true;
+    if (this.isMine) {
+      // TODO: end game
+    }
+    for (Cell c : this.neighbors) {
+      if (!c.isShown && (c.countMines() == 0)) {
+        c.floodFill();
+      }
+      else if (!c.isShown) {
+        c.isShown = true;
+      }
     }
   }
 }

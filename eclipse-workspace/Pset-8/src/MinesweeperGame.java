@@ -3,29 +3,29 @@ import java.util.Random;
 
 import javalib.impworld.World;
 import javalib.impworld.WorldScene;
+import javalib.worldimages.Posn;
 
 // game class, represents the world state
 class MinesweeperGame extends World {
 
-  int rowCount;
   int colCount;
+  int rowCount;
   int mineCount;
   Random rand;
   ArrayList<ArrayList<Cell>> cells = this.buildBoard();
 
-  public static int CELL_SIZE = 18;
+  public static int CELL_SIZE = 20;
 
-
-  MinesweeperGame(int rowCount, int colCount, int mineCount, Random rand) {
-    this.rowCount = rowCount;
+  MinesweeperGame(int colCount, int rowCount, int mineCount, Random rand) {
     this.colCount = colCount;
+    this.rowCount = rowCount;
     this.mineCount = mineCount;
     this.rand = rand;
     this.cells = this.buildBoard();
   }
 
-  MinesweeperGame(int rowCount, int colCount, int mineCount) {
-    this(rowCount, colCount, mineCount, new Random());
+  MinesweeperGame(int colCount, int rowCount, int mineCount) {
+    this(colCount, rowCount, mineCount, new Random());
   }
 
   // this will build the game board
@@ -41,7 +41,7 @@ class MinesweeperGame extends World {
 
   // will generate all the cells in one list, adding mines where necessary
   public ArrayList<Cell> generateAllCells() {
-    int totalCells = this.rowCount * this.colCount;
+    int totalCells = this.colCount * this.rowCount;
     ArrayList<Cell> allCells = new ArrayList<Cell>();
     for (int i = 0; i < totalCells; i++) {
       allCells.add(new Cell());
@@ -78,11 +78,11 @@ class MinesweeperGame extends World {
   public ArrayList<ArrayList<Cell>> placeCells(ArrayList<Cell> allCells) {
     int allCellsIndex = 0;
     ArrayList<ArrayList<Cell>> rows = new ArrayList<ArrayList<Cell>>();
-    for (int i = 0; i < this.rowCount; i++) {
+    for (int x = 0; x < this.colCount; x++) {
       rows.add(new ArrayList<Cell>());
-      // ArrayList<Cell> cols = new ArrayList<Cell>(this.colCount);
-      for (int j = 0; j < this.colCount; j++) {
-        rows.get(i).add(allCells.get(allCellsIndex));
+      // ArrayList<Cell> cols = new ArrayList<Cell>(this.rowCount);
+      for (int y = 0; y < this.rowCount; y++) {
+        rows.get(x).add(allCells.get(allCellsIndex));
         allCellsIndex++;
       }
     }
@@ -91,26 +91,60 @@ class MinesweeperGame extends World {
 
   // EFFECT: adds neighbors to the cells of the grid of cells passed in
   public void addAllNeighbors(ArrayList<ArrayList<Cell>> placedCells) {
-    for (int i = 0; i < this.rowCount; i++) {
-      for (int j = 0; j < this.colCount; j++) {
-        placedCells.get(i).get(j).addCellNeighbors(i, j, placedCells);
+    for (int x = 0; x < this.colCount; x++) {
+      for (int y = 0; y < this.rowCount; y++) {
+        placedCells.get(x).get(y).addCellNeighbors(x, y, placedCells);
       }
     }
   }
 
   // big bang
   public WorldScene makeScene() {
-    WorldScene scene = new WorldScene(this.rowCount * CELL_SIZE, this.colCount * CELL_SIZE);
-    ArrayList<ArrayList<Cell>> gameBoard = this.buildBoard();
-    for (int i = 0; i < this.rowCount; i++) {
-      for (int j = 0; j < this.colCount; j++) {
+    WorldScene scene = new WorldScene(this.colCount * CELL_SIZE, this.rowCount * CELL_SIZE);
+    for (int x = 0; x < this.colCount; x++) {
+      for (int y = 0; y < this.rowCount; y++) {
         scene.placeImageXY(
-            gameBoard.get(i).get(j).drawCell().movePinhole((-.5 * MinesweeperGame.CELL_SIZE),
+            this.cells.get(x).get(y).drawCell().movePinhole((-.5 * MinesweeperGame.CELL_SIZE),
                 (-.5 * MinesweeperGame.CELL_SIZE)),
-            (i * MinesweeperGame.CELL_SIZE), (j * MinesweeperGame.CELL_SIZE));
+            (x * MinesweeperGame.CELL_SIZE), (y * MinesweeperGame.CELL_SIZE));
       }
     }
     return scene;
+  }
+
+  // handles the clicks for the world, interacts with the cells that the moust is over
+  public void onMouseClicked(Posn mouse, String button) {
+    Cell clicked = locateCell(mouse);
+    if (button == "LeftButton") { // left click
+      if (clicked.countMines() == 0 && !clicked.isMine) { // if its a fillable cell
+        clicked.floodFill();
+      }
+      else if (clicked.isMine) { // if its a mine
+        clicked.isShown = true;
+        this.makeScene();
+        this.endOfWorld("game over!");
+      }
+      else { // if its a cell you don't want to floodfill, but still show
+        clicked.isShown = true;
+      }
+    }
+
+    if (button == "RightButton") { // right click
+      if (clicked.isFlagged) {
+        clicked.isFlagged = false;
+      }
+      else {
+        clicked.isFlagged = true;
+      }
+    }
+    this.makeScene();
+  }
+
+  // finds the cell at the given posn
+  public Cell locateCell(Posn mouse) {
+    int colNum = (int) Math.floor(mouse.x / MinesweeperGame.CELL_SIZE);
+    int rowNum = (int) Math.floor(mouse.y / MinesweeperGame.CELL_SIZE);
+    return cells.get(colNum).get(rowNum);
   }
 
 }
