@@ -108,9 +108,6 @@ class Cell {
   // EFFECT: adds all the neighbors to this cell
   public void floodFill() {
     this.isShown = true;
-    if (this.isMine) {
-      // TODO: end game
-    }
     for (Cell c : this.neighbors) {
       if (!c.isShown && (c.countMines() == 0)) {
         c.floodFill();

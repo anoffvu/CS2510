@@ -243,20 +243,20 @@ class ExamplesMinesweeper {
     t.checkExpect(zeroMineHidden.drawCell(),
         new FrameImage(new RectangleImage(MinesweeperGame.CELL_SIZE, MinesweeperGame.CELL_SIZE,
             OutlineMode.SOLID, Color.lightGray)));
-    t.checkExpect(zeroRevealed.drawCell(), new FrameImage(new OverlayImage(new EmptyImage(),
-        new RectangleImage(MinesweeperGame.CELL_SIZE, MinesweeperGame.CELL_SIZE, OutlineMode.SOLID,
-            Color.darkGray))));
-    t.checkExpect(zeroFlaggedHidden.drawCell(), new FrameImage(
-        new OverlayImage(
+    t.checkExpect(zeroRevealed.drawCell(),
+        new FrameImage(
+            new OverlayImage(new EmptyImage(), new RectangleImage(MinesweeperGame.CELL_SIZE,
+                MinesweeperGame.CELL_SIZE, OutlineMode.SOLID, Color.darkGray))));
+    t.checkExpect(zeroFlaggedHidden.drawCell(), new FrameImage(new OverlayImage(
             new EquilateralTriangleImage(MinesweeperGame.CELL_SIZE / 2.5, OutlineMode.SOLID,
                 Color.red),
             new RectangleImage(MinesweeperGame.CELL_SIZE, MinesweeperGame.CELL_SIZE,
                 OutlineMode.SOLID, Color.lightGray))));
-    t.checkExpect(zeroFlaggedRevealed.drawCell(), new FrameImage(new OverlayImage(new EmptyImage(),
-        new RectangleImage(MinesweeperGame.CELL_SIZE, MinesweeperGame.CELL_SIZE, OutlineMode.SOLID,
-            Color.darkGray))));
-    t.checkExpect(zeroMineRevealed.drawCell(), new FrameImage(
-        new OverlayImage(
+    t.checkExpect(zeroFlaggedRevealed.drawCell(),
+        new FrameImage(
+            new OverlayImage(new EmptyImage(), new RectangleImage(MinesweeperGame.CELL_SIZE,
+                MinesweeperGame.CELL_SIZE, OutlineMode.SOLID, Color.darkGray))));
+    t.checkExpect(zeroMineRevealed.drawCell(), new FrameImage(new OverlayImage(
             new CircleImage(MinesweeperGame.CELL_SIZE / 3, OutlineMode.SOLID, Color.black),
             new RectangleImage(MinesweeperGame.CELL_SIZE, MinesweeperGame.CELL_SIZE,
                 OutlineMode.SOLID, Color.darkGray))));
@@ -264,25 +264,24 @@ class ExamplesMinesweeper {
     t.checkExpect(threeHidden.drawCell(),
         new FrameImage(new RectangleImage(MinesweeperGame.CELL_SIZE, MinesweeperGame.CELL_SIZE,
             OutlineMode.SOLID, Color.lightGray)));
-    t.checkExpect(threeRevealed.drawCell(), new FrameImage(
-        new OverlayImage(new TextImage("3", 12, new Color(95, 255, 253)),
+    t.checkExpect(threeRevealed.drawCell(),
+        new FrameImage(new OverlayImage(new TextImage("3", 12, new Color(95, 255, 253)),
             new RectangleImage(MinesweeperGame.CELL_SIZE, MinesweeperGame.CELL_SIZE,
                 OutlineMode.SOLID, Color.darkGray))));
-    t.checkExpect(threeFlaggedHidden.drawCell(), new FrameImage(
-        new OverlayImage(
+    t.checkExpect(threeFlaggedHidden.drawCell(), new FrameImage(new OverlayImage(
             new EquilateralTriangleImage(MinesweeperGame.CELL_SIZE / 2.5, OutlineMode.SOLID,
                 Color.red),
             new RectangleImage(MinesweeperGame.CELL_SIZE, MinesweeperGame.CELL_SIZE,
                 OutlineMode.SOLID, Color.lightGray))));
-    t.checkExpect(threeFlaggedRevealed.drawCell(), new FrameImage(
-        new OverlayImage(new TextImage("3", 12, new Color(95, 255, 253)),
+    t.checkExpect(threeFlaggedRevealed.drawCell(),
+        new FrameImage(new OverlayImage(new TextImage("3", 12, new Color(95, 255, 253)),
             new RectangleImage(MinesweeperGame.CELL_SIZE, MinesweeperGame.CELL_SIZE,
                 OutlineMode.SOLID, Color.darkGray))));
     t.checkExpect(threeMineHidden.drawCell(),
         new FrameImage(new RectangleImage(MinesweeperGame.CELL_SIZE, MinesweeperGame.CELL_SIZE,
             OutlineMode.SOLID, Color.lightGray)));
-    t.checkExpect(threeMineRevealed.drawCell(), new FrameImage(
-        new OverlayImage(new CircleImage(6, OutlineMode.SOLID, Color.black),
+    t.checkExpect(threeMineRevealed.drawCell(),
+        new FrameImage(new OverlayImage(new CircleImage(6, OutlineMode.SOLID, Color.black),
             new RectangleImage(MinesweeperGame.CELL_SIZE, MinesweeperGame.CELL_SIZE,
                 OutlineMode.SOLID, Color.darkGray))));
 
@@ -365,6 +364,21 @@ class ExamplesMinesweeper {
     t.checkExpect(this.nineNonMinesCell.drawMineCount(), new EmptyImage());
     t.checkExpect(this.nineCellsCell.drawMineCount(),
         new TextImage("4", 12, new Color(127, 255, 252)));
+  }
+
+  // TODO tests for floodFill
+  void testFloodFill(Tester t) {
+
+  }
+
+  // TODO tests for onMouseClicked
+  void testOnMouseClicked(Tester t) {
+
+  }
+
+  // TODO tests for locateCell
+  void testLocateCell(Tester t) {
+
   }
 
   // tests for big bang

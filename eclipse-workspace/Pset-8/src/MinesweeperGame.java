@@ -122,7 +122,7 @@ class MinesweeperGame extends World {
       else if (clicked.isMine) { // if its a mine
         clicked.isShown = true;
         this.makeScene();
-        this.endOfWorld("game over!");
+        this.endOfWorld("Game over!");
       }
       else { // if its a cell you don't want to floodfill, but still show
         clicked.isShown = true;
