@@ -381,10 +381,15 @@ class ExamplesMinesweeper {
 
   }
 
+  // TODO tests for checkWin
+  void testCheckWin(Tester t) {
+
+  }
+
   // tests for big bang
   void testBigBang(Tester t) {
     initData();
-    MinesweeperGame game = new MinesweeperGame(50, 15, 60);
+    MinesweeperGame game = new MinesweeperGame(50, 20, 80);
     game.bigBang(game.colCount * MinesweeperGame.CELL_SIZE,
         game.rowCount * MinesweeperGame.CELL_SIZE);
   }

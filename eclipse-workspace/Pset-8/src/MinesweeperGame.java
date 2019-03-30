@@ -122,7 +122,7 @@ class MinesweeperGame extends World {
       else if (clicked.isMine) { // if its a mine
         clicked.isShown = true;
         this.makeScene();
-        this.endOfWorld("Game over!");
+        this.endOfWorld("You hit a mine!");
       }
       else { // if its a cell you don't want to floodfill, but still show
         clicked.isShown = true;
@@ -138,6 +138,25 @@ class MinesweeperGame extends World {
       }
     }
     this.makeScene();
+    this.checkWin();
+  }
+
+  // checks for a game win
+  private void checkWin() {
+    int nonMineCount = (this.colCount * this.rowCount) - this.mineCount;
+    int revealedNonMines = 0;
+    for (int x = 0; x < this.colCount; x++) {
+      for (int y = 0; y < this.rowCount; y++) {
+        if (this.cells.get(x).get(y).isShown) {
+          revealedNonMines += 1;
+        }
+      }
+    }
+    
+    if (revealedNonMines >= nonMineCount) {
+      this.endOfWorld("You won!");
+    }
+
   }
 
   // finds the cell at the given posn
