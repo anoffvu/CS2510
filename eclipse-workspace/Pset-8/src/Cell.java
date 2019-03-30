@@ -4,13 +4,15 @@ import java.util.ArrayList;
 import javalib.worldimages.CircleImage;
 import javalib.worldimages.EmptyImage;
 import javalib.worldimages.EquilateralTriangleImage;
+import javalib.worldimages.FrameImage;
 import javalib.worldimages.OutlineMode;
 import javalib.worldimages.OverlayImage;
 import javalib.worldimages.RectangleImage;
 import javalib.worldimages.TextImage;
 import javalib.worldimages.WorldImage;
 
-public class Cell {
+// a cell inside Minesweeper
+class Cell {
   boolean isMine;
   boolean isFlagged;
   boolean isShown;
@@ -29,7 +31,7 @@ public class Cell {
     this(isMine, isFlagged, isShown, new ArrayList<Cell>());
   }
 
-//convenience constructor that doesn't have neighbors
+  // convenience constructor that doesn't have neighbors
   Cell() {
     this(false, false, false, new ArrayList<Cell>());
   }
@@ -45,7 +47,7 @@ public class Cell {
     return mineCount;
   }
 
-  // adds all the neighbors to this cell
+  // EFFECT: adds all the neighbors to this cell
   public void addCellNeighbors(int i, int j, ArrayList<ArrayList<Cell>> placedCells) {
     for (int y = (i - 1); y <= (i + 1); y++) {
       for (int z = (j - 1); z <= (j + 1); z++) {
@@ -64,8 +66,10 @@ public class Cell {
 
   // draws the cell
   public WorldImage drawCell() {
-    WorldImage cellRevealed = new RectangleImage(18, 18, OutlineMode.SOLID, Color.darkGray);
-    WorldImage cellCovered = new RectangleImage(18, 18, OutlineMode.SOLID, Color.lightGray);
+    WorldImage cellRevealed = new RectangleImage(MinesweeperGame.CELL_SIZE,
+        MinesweeperGame.CELL_SIZE, OutlineMode.SOLID, Color.darkGray);
+    WorldImage cellCovered = new RectangleImage(MinesweeperGame.CELL_SIZE,
+        MinesweeperGame.CELL_SIZE, OutlineMode.SOLID, Color.lightGray);
     WorldImage flag = new EquilateralTriangleImage(10, OutlineMode.SOLID, Color.red);
     WorldImage mine = new CircleImage(6, OutlineMode.SOLID, Color.black);
     // nested logic here because if we kicked out to helpers it wouldn't add anything, would
@@ -73,24 +77,24 @@ public class Cell {
     // be more lines of code for these 1/2 liner helper functions
     if (this.isShown) { // if the cell is revealed
       if (this.isMine) { // if the cell is a revealed mine
-        return new OverlayImage(mine, cellRevealed);
+        return new FrameImage(new OverlayImage(mine, cellRevealed));
       }
       else { // if the cell is a revealed non mine
-        return new OverlayImage(this.drawMineCount(), cellRevealed);
+        return new FrameImage(new OverlayImage(this.drawMineCount(), cellRevealed));
       }
     }
     else { // if the cell is hidden
       if (this.isFlagged) { // if the non revealed cell is flagged
-        return new OverlayImage(flag, cellCovered);
+        return new FrameImage(new OverlayImage(flag, cellCovered));
       }
       else { // if the non revealed cell is not flagged
-        return cellCovered;
+        return new FrameImage(cellCovered);
       }
     }
   }
 
   // draws the mine count with a different color depending on how many mines there are
-  private WorldImage drawMineCount() {
+  public WorldImage drawMineCount() {
     int evenDivisor = 0xFFFFFF / 8;
     int newCode = this.countMines() * evenDivisor;
     Color numColor = new Color(newCode);

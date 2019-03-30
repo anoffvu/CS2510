@@ -1,53 +1,117 @@
-import java.awt.Color;
+import java.util.ArrayList;
 
-import javalib.impworld.World;
-import javalib.impworld.WorldScene;
-import javalib.worldimages.CircleImage;
-import javalib.worldimages.OutlineMode;
-import javalib.worldimages.Posn;
 import tester.Tester;
 
-class BallGame extends World {
-  public static final int GAME_WIDTH = 500;
-  public static final int GAME_HEIGHT = 500;
-  public static final int BALL_X_VEL = 1;
+class Office {
+  String building;
+  int room;
+  String occupant;
 
-  Posn ballPosn;
-  Color ballColor;
-
-  BallGame() {
-    this.ballPosn = new Posn(BallGame.GAME_WIDTH / 2, BallGame.GAME_HEIGHT / 2);
-    this.ballColor = Color.BLUE;
+  Office(String building, int room, String occupant) {
+    this.building = building;
+    this.room = room;
+    this.occupant = occupant;
   }
 
-  public WorldScene makeScene() {
-    WorldScene scene = this.getEmptyScene();
-    scene.placeImageXY(new CircleImage(30, OutlineMode.SOLID, this.ballColor), this.ballPosn.x,
-        this.ballPosn.y);
-    return scene;
-    }
+  void F1(Office forOffice, String toOccupant) {
+    forOffice = new Office(forOffice.building, forOffice.room, toOccupant);
+  }
 
-  public void onTick() {
-    this.ballPosn = new Posn(this.ballPosn.x + BallGame.BALL_X_VEL, this.ballPosn.y);
-    }
+  public String question1() {
+    Office carmenOffice = new Office("CS", 176, "Carmen");
+    F1(carmenOffice, "Fred");
+    return carmenOffice.occupant;
+  }
 
-  public void onMouseClicked(Posn pos) {
-    this.ballPosn = pos;
-    }
+  void F2(Office o1, Office o2) {
+    o2 = o1;
+    o2.room = 63;
+  }
 
-  public void onKeyEvent(String key) {
-    if (key.equals("r")) {
-      this.ballColor = Color.RED;
+  String question2() {
+    Office labOffice = new Office("CS", 130, "Tyler Smith");
+    Office commonOffice = new Office("CS", 275, "everyone");
+    F2(labOffice, commonOffice);
+    return labOffice.room + ", " + commonOffice.room;
+  }
+
+  void F4(Office o1) {
+    Office o = o1;
+    o = new Office("CS", 640, "Walter");
+  }
+
+  String question4() {
+    Office dillonOffice = new Office("CS", 808, "Dillon");
+    F4(dillonOffice);
+    return dillonOffice.occupant;
+  }
+
+  public int f() {
+    int x = 17;
+    return g();
+  }
+
+  public int g() {
+    int y = 4;
+    return x / y;
+  }
+
+  public int question5() {
+    return f();
+  }
+
+  boolean positivePartialSums(ArrayList<Integer> arr) {
+    boolean isNeg = false;
+    int acc = 0;
+    for (int i = 0; i < arr.size(); i++) {
+      acc += arr.get(i);
+      if (acc < 0) {
+        isNeg = true;
+      }
+
     }
-    else if (key.equals("b")) {
-      this.ballColor = Color.BLUE;
-    }
-    }
+    return isNeg;
+  }
+
 }
 
-class Examples {
-  void testGame(Tester t) {
-    BallGame game = new BallGame();
-    game.bigBang(500, 500, .01);
-    }
+class Building {
+  Office office;
+
+  Building(Office office) {
+    this.office = office;
+  }
+
+  void F3(Office o1) {
+    Building bill = new Building(o1);
+    bill.office.room = 999;
+  }
+
+  int question3() {
+    Office peterOffice = new Office("CS", 37, "Peter Gibbons");
+    Building cs = new Building(peterOffice);
+    F3(peterOffice);
+    return cs.office.room;
+  }
+
+}
+
+class ExamplesSandbox {
+  Office office;
+  Building building;
+
+  void initData() {
+    this.office = new Office("CS", 176, "Carmen");
+    this.building = new Building(office);
+
+  }
+  void testQuestion(Tester t) {
+    initData();
+    t.checkExpect(new Office("CS", 176, "Carmen").question1(), "Carmen");
+    t.checkExpect(new Office("CS", 176, "Carmen").question2(), "63, 275");
+    t.checkExpect(building.question3(), 999); // confusing because you edit the field of a void
+                                              // object
+    t.checkExpect(new Office("CS", 176, "Carmen").question4(), "Dillon");
+    t.checkExpect(new Office("CS", 176, "Carmen").question5(), "Dillon");
+  }
 }

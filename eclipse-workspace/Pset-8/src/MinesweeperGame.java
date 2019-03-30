@@ -1,26 +1,27 @@
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Random;
 
 import javalib.impworld.World;
 import javalib.impworld.WorldScene;
-import javalib.worldimages.RectangleImage;
 
-public class MinesweeperGame extends World {
+// game class, represents the world state
+class MinesweeperGame extends World {
 
   int rowCount;
   int colCount;
   int mineCount;
   Random rand;
+  ArrayList<ArrayList<Cell>> cells = this.buildBoard();
 
-  Color red = Color.red;
-  RectangleImage test = null;
+  public static int CELL_SIZE = 18;
+
 
   MinesweeperGame(int rowCount, int colCount, int mineCount, Random rand) {
     this.rowCount = rowCount;
     this.colCount = colCount;
     this.mineCount = mineCount;
     this.rand = rand;
+    this.cells = this.buildBoard();
   }
 
   MinesweeperGame(int rowCount, int colCount, int mineCount) {
@@ -49,7 +50,7 @@ public class MinesweeperGame extends World {
     return allCells;
   }
 
-  // adds the mines in randomly
+  // EFFECT: adds the mines in randomly
   public void addMines(ArrayList<Cell> cells) {
     // creates a list of indices of every cell in the that we can place mines
     ArrayList<Integer> safeIndices = new ArrayList<Integer>();
@@ -75,18 +76,20 @@ public class MinesweeperGame extends World {
 
   // places the given list of cells into a grid with these dimensions
   public ArrayList<ArrayList<Cell>> placeCells(ArrayList<Cell> allCells) {
-    ArrayList<ArrayList<Cell>> rows = new ArrayList<ArrayList<Cell>>(this.rowCount);
+    int allCellsIndex = 0;
+    ArrayList<ArrayList<Cell>> rows = new ArrayList<ArrayList<Cell>>();
     for (int i = 0; i < this.rowCount; i++) {
-      ArrayList<Cell> cols = new ArrayList<Cell>(this.colCount);
+      rows.add(new ArrayList<Cell>());
+      // ArrayList<Cell> cols = new ArrayList<Cell>(this.colCount);
       for (int j = 0; j < this.colCount; j++) {
-        cols.add(allCells.get(0));
-        allCells.remove(0);
+        rows.get(i).add(allCells.get(allCellsIndex));
+        allCellsIndex++;
       }
     }
     return rows;
   }
 
-  // adds neighbors to the cells of the grid of cells passed in
+  // EFFECT: adds neighbors to the cells of the grid of cells passed in
   public void addAllNeighbors(ArrayList<ArrayList<Cell>> placedCells) {
     for (int i = 0; i < this.rowCount; i++) {
       for (int j = 0; j < this.colCount; j++) {
@@ -95,10 +98,19 @@ public class MinesweeperGame extends World {
     }
   }
 
-  @Override
+  // big bang
   public WorldScene makeScene() {
-    // TODO Auto-generated method stub
-    return null;
+    WorldScene scene = new WorldScene(this.rowCount * CELL_SIZE, this.colCount * CELL_SIZE);
+    ArrayList<ArrayList<Cell>> gameBoard = this.buildBoard();
+    for (int i = 0; i < this.rowCount; i++) {
+      for (int j = 0; j < this.colCount; j++) {
+        scene.placeImageXY(
+            gameBoard.get(i).get(j).drawCell().movePinhole((-.5 * MinesweeperGame.CELL_SIZE),
+                (-.5 * MinesweeperGame.CELL_SIZE)),
+            (i * MinesweeperGame.CELL_SIZE), (j * MinesweeperGame.CELL_SIZE));
+      }
+    }
+    return scene;
   }
 
 }
