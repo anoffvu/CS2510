@@ -26,7 +26,7 @@ public class LightEmAll extends World {
 
   // maybe make a hashmap of neighbors // connectedness
 
-  public static int CELL_SIZE = 30;
+  public static int CELL_SIZE = 40;
 
   LightEmAll(int width, int height) {
     this.rand = new Random();
@@ -115,19 +115,19 @@ public class LightEmAll extends World {
 
   // finds the cell at the given posn
   public GamePiece locatePiece(Posn mouse) {
-    int colNum = (int) Math.floor(mouse.x / LightEmAll.CELL_SIZE);
-    int rowNum = (int) Math.floor(mouse.y / LightEmAll.CELL_SIZE);
-    return board.get(colNum).get(rowNum);
+    int row = (int) Math.floor(mouse.y / LightEmAll.CELL_SIZE);
+    int col = (int) Math.floor(mouse.x / LightEmAll.CELL_SIZE);
+    return board.get(row).get(col);
   }
 
   // draws the scene
   public WorldScene makeScene() {
     WorldScene scene = new WorldScene(this.width * LightEmAll.CELL_SIZE,
         this.height * LightEmAll.CELL_SIZE);
-    for (int x = 0; x < this.width; x++) {
-      for (int y = 0; y < this.height; y++) {
+    for (int y = 0; y < this.height; y++) {
+      for (int x = 0; x < this.width; x++) {
         scene.placeImageXY(
-            this.board.get(x).get(y).drawPiece().movePinhole((-.5 * LightEmAll.CELL_SIZE),
+            this.board.get(y).get(x).drawPiece().movePinhole((-.5 * LightEmAll.CELL_SIZE),
                 (-.5 * LightEmAll.CELL_SIZE)),
             (x * LightEmAll.CELL_SIZE), (y * LightEmAll.CELL_SIZE));
       }

@@ -3,6 +3,7 @@ import java.awt.Color;
 import javalib.worldimages.OutlineMode;
 import javalib.worldimages.OverlayImage;
 import javalib.worldimages.RectangleImage;
+import javalib.worldimages.RotateImage;
 import javalib.worldimages.WorldImage;
 
 public class GamePiece {
@@ -51,12 +52,27 @@ public class GamePiece {
     WorldImage base = new RectangleImage(LightEmAll.CELL_SIZE, LightEmAll.CELL_SIZE,
         OutlineMode.SOLID, Color.darkGray);
     WorldImage connection = new RectangleImage((int) LightEmAll.CELL_SIZE / 6,
-        (int) LightEmAll.CELL_SIZE / 2, OutlineMode.SOLID, Color.BLUE)
-            .movePinhole((int) LightEmAll.CELL_SIZE / 2, (int) LightEmAll.CELL_SIZE / 2);
+        (int) LightEmAll.CELL_SIZE / 2, OutlineMode.SOLID, Color.BLUE).movePinhole(0,
+            (int) LightEmAll.CELL_SIZE / 4);
+
     // TODO draw the correct connections by rotating shit
-    if (true) {
+    if (this.top) {
       base = new OverlayImage(connection, base);
     }
+    base = new RotateImage(base, 90.0);
+    if (this.left) {
+      base = new OverlayImage(connection, base);
+    }
+    base = new RotateImage(base, 90.0);
+    if (this.bottom) {
+      base = new OverlayImage(connection, base);
+    }
+    base = new RotateImage(base, 90.0);
+    if (this.right) {
+      base = new OverlayImage(connection, base);
+    }
+    base = new RotateImage(base, 90.0);
+
     return base;
   }
 
