@@ -1,9 +1,12 @@
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Random;
 
 import javalib.impworld.World;
 import javalib.impworld.WorldScene;
 import javalib.worldimages.Posn;
+import javalib.worldimages.TextImage;
+import javalib.worldimages.WorldEnd;
 
 // game class, represents the world state
 class MinesweeperGame extends World {
@@ -12,16 +15,28 @@ class MinesweeperGame extends World {
   int rowCount;
   int mineCount;
   Random rand;
-  ArrayList<ArrayList<Cell>> cells = this.buildBoard();
+  ArrayList<ArrayList<Cell>> cells;
+  boolean theGameIsOver;
+  boolean wonGame;
 
   public static int CELL_SIZE = 20;
 
-  MinesweeperGame(int colCount, int rowCount, int mineCount, Random rand) {
+  // extra constructor for manually inputting game end and game win states
+  MinesweeperGame(int colCount, int rowCount, int mineCount, Random rand, boolean theGameIsOver,
+      boolean wonGame) {
     this.colCount = colCount;
     this.rowCount = rowCount;
     this.mineCount = mineCount;
     this.rand = rand;
     this.cells = this.buildBoard();
+    this.theGameIsOver = theGameIsOver;
+    this.wonGame = wonGame;
+
+  }
+
+  MinesweeperGame(int colCount, int rowCount, int mineCount, Random rand) {
+    this(colCount, rowCount, mineCount, rand, false, false);
+
   }
 
   MinesweeperGame(int colCount, int rowCount, int mineCount) {
@@ -115,21 +130,21 @@ class MinesweeperGame extends World {
   // handles the clicks for the world, interacts with the cells that the moust is over
   public void onMouseClicked(Posn mouse, String button) {
     Cell clicked = locateCell(mouse);
-    if (button == "LeftButton") { // left click
+    if (button.equals("LeftButton")) { // left click
       if (clicked.countMines() == 0 && !clicked.isMine) { // if its a fillable cell
         clicked.floodFill();
       }
-      else if (clicked.isMine) { // if its a mine
+      else if (clicked.isMine) { // if its a mine, it'll end the game
         clicked.isShown = true;
         this.makeScene();
-        this.endOfWorld("You hit a mine!");
+        this.theGameIsOver = true;
       }
       else { // if its a cell you don't want to floodfill, but still show
         clicked.isShown = true;
       }
     }
 
-    if (button == "RightButton") { // right click
+    if (button.equals("RightButton")) { // right click
       if (clicked.isFlagged) {
         clicked.isFlagged = false;
       }
@@ -142,7 +157,7 @@ class MinesweeperGame extends World {
   }
 
   // checks for a game win
-  private void checkWin() {
+  public void checkWin() {
     int nonMineCount = (this.colCount * this.rowCount) - this.mineCount;
     int revealedNonMines = 0;
     for (int x = 0; x < this.colCount; x++) {
@@ -152,11 +167,28 @@ class MinesweeperGame extends World {
         }
       }
     }
-    
     if (revealedNonMines >= nonMineCount) {
-      this.endOfWorld("You won!");
+      this.theGameIsOver = true;
+      this.wonGame = true;
     }
+  }
 
+  // ends the world and checks win/loss
+  public WorldEnd worldEnds() {
+    int middleX = (int) (this.colCount * MinesweeperGame.CELL_SIZE) / 2;
+    int middleY = (int) (this.rowCount * MinesweeperGame.CELL_SIZE) / 2;
+    WorldScene end = this.getEmptyScene();
+    if (this.theGameIsOver && this.wonGame) {
+      end.placeImageXY(new TextImage("You Win!", (int) middleY / 2, Color.GREEN), middleX, middleY);
+      return new WorldEnd(true, end);
+    }
+    else if (this.theGameIsOver && !this.wonGame) {
+      end.placeImageXY(new TextImage("You Lose!", (int) middleY / 2, Color.RED), middleX, middleY);
+      return new WorldEnd(true, end);
+    }
+    else {
+      return new WorldEnd(false, this.makeScene());
+    }
   }
 
   // finds the cell at the given posn

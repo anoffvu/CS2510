@@ -2,14 +2,17 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Random;
 
+import javalib.impworld.WorldScene;
 import javalib.worldimages.CircleImage;
 import javalib.worldimages.EmptyImage;
 import javalib.worldimages.EquilateralTriangleImage;
 import javalib.worldimages.FrameImage;
 import javalib.worldimages.OutlineMode;
 import javalib.worldimages.OverlayImage;
+import javalib.worldimages.Posn;
 import javalib.worldimages.RectangleImage;
 import javalib.worldimages.TextImage;
+import javalib.worldimages.WorldEnd;
 import tester.Tester;
 
 // class for testing
@@ -47,7 +50,16 @@ class ExamplesMinesweeper {
   Cell nineCellsCell;
   ArrayList<Cell> nineNonMines;
   MinesweeperGame game3;
+  MinesweeperGame game4 = new MinesweeperGame(1, 1, 1);
+  MinesweeperGame game5 = new MinesweeperGame(1, 1, 1);
   Cell nineNonMinesCell;
+  MinesweeperGame tinyGame = new MinesweeperGame(1, 1, 1);
+  MinesweeperGame smallGame = new MinesweeperGame(2, 2, 1);
+  Cell smallGameNeighbor1 = new Cell(true, false, false);
+  Cell smallGameNeighbor2 = new Cell(true, false, false);
+  Cell smallGameNeighbor3 = new Cell(false, false, false);
+  ArrayList<Cell> smallGameNeighbors = new ArrayList<Cell>();
+  ArrayList<Cell> gameFiveNeighbors = new ArrayList<Cell>();
 
   public void initData() {
     this.mt = new ArrayList<Cell>();
@@ -76,6 +88,7 @@ class ExamplesMinesweeper {
     this.grid1.add(row1);
     this.grid1.add(row2);
     this.grid1.add(row3);
+    this.gameFiveNeighbors.add(this.smallGameNeighbor1);
     this.game1 = new MinesweeperGame(3, 3, 4, new Random(10));
     this.game2 = new MinesweeperGame(10, 10, 80, new Random(10));
     this.dummy = new Cell();
@@ -120,6 +133,9 @@ class ExamplesMinesweeper {
     this.nineNonMines.add(new Cell());
     this.nineNonMinesCell = new Cell(false, false, false, this.nineNonMines);
     this.game3 = new MinesweeperGame(3, 3, 4);
+    this.smallGameNeighbors.add(this.smallGameNeighbor1);
+    this.smallGameNeighbors.add(this.smallGameNeighbor3);
+
   }
 
   // tests for validCoordinates
@@ -223,7 +239,8 @@ class ExamplesMinesweeper {
     t.checkExpect(this.game1.generateAllCells().size(), 9);
     t.checkExpect(this.game2.generateAllCells().size(), 100);
     initData();
-    // just adds the list of cells to neighbors so we can check mine count with existing
+    // just adds the list of cells to neighbors so we can check mine count with
+    // existing
     // functions
     Cell dummy2 = new Cell(false, false, false, this.game2.generateAllCells());
     t.checkExpect(dummy2.countMines(), 80);
@@ -268,7 +285,8 @@ class ExamplesMinesweeper {
         new FrameImage(new OverlayImage(new TextImage("3", 12, new Color(95, 255, 253)),
             new RectangleImage(MinesweeperGame.CELL_SIZE, MinesweeperGame.CELL_SIZE,
                 OutlineMode.SOLID, Color.darkGray))));
-    t.checkExpect(threeFlaggedHidden.drawCell(), new FrameImage(new OverlayImage(
+    t.checkExpect(threeFlaggedHidden.drawCell(),
+        new FrameImage(new OverlayImage(
             new EquilateralTriangleImage(MinesweeperGame.CELL_SIZE / 2.5, OutlineMode.SOLID,
                 Color.red),
             new RectangleImage(MinesweeperGame.CELL_SIZE, MinesweeperGame.CELL_SIZE,
@@ -306,7 +324,8 @@ class ExamplesMinesweeper {
 
   // tests for buildBoard
   public void testBuildBoard(Tester t) {
-    // checks size, that there are 4 mines, and that neighbors are fetched correctly
+    // checks size, that there are 4 mines, and that neighbors are fetched
+    // correctly
     initData();
     // constructing a game calls buildBoard() and puts it into the cells field
     t.checkExpect(this.game1.cells.size(), 3);
@@ -366,32 +385,168 @@ class ExamplesMinesweeper {
         new TextImage("4", 12, new Color(127, 255, 252)));
   }
 
-  // TODO tests for floodFill
+  // tests for floodFill
   void testFloodFill(Tester t) {
-
+    initData();
+    this.game1.addAllNeighbors(grid1);
+    t.checkExpect(this.cell1.neighbors.get(0).isShown, false);
+    t.checkExpect(this.cell1.neighbors.get(1).isShown, true);
+    t.checkExpect(this.cell1.neighbors.get(2).isShown, false);
+    this.cell1.floodFill();
+    t.checkExpect(this.cell1.isShown, true);
+    t.checkExpect(this.cell1.neighbors.get(0).isShown, true);
+    t.checkExpect(this.cell1.neighbors.get(1).isShown, true);
+    t.checkExpect(this.cell1.neighbors.get(2).isShown, true);
+    initData();
+    this.game1.addAllNeighbors(grid1);
+    t.checkExpect(this.cell3.neighbors.get(0).isShown, false);
+    t.checkExpect(this.cell3.neighbors.get(1).isShown, false);
+    t.checkExpect(this.cell3.neighbors.get(2).isShown, true);
+    this.cell3.floodFill();
+    t.checkExpect(this.cell3.isShown, true);
+    t.checkExpect(this.cell3.neighbors.get(0).isShown, true);
+    t.checkExpect(this.cell3.neighbors.get(1).isShown, true);
+    t.checkExpect(this.cell3.neighbors.get(2).isShown, true);
+    initData();
+    this.game1.addAllNeighbors(grid1);
+    t.checkExpect(this.cell5.neighbors.get(0).isShown, false);
+    t.checkExpect(this.cell5.neighbors.get(1).isShown, false);
+    t.checkExpect(this.cell5.neighbors.get(2).isShown, false);
+    t.checkExpect(this.cell5.neighbors.get(3).isShown, true);
+    this.cell5.floodFill();
+    t.checkExpect(this.cell5.isShown, true);
+    t.checkExpect(this.cell5.neighbors.get(0).isShown, true);
+    t.checkExpect(this.cell5.neighbors.get(1).isShown, true);
+    t.checkExpect(this.cell5.neighbors.get(2).isShown, true);
+    t.checkExpect(this.cell5.neighbors.get(3).isShown, true);
   }
 
-  // TODO tests for onMouseClicked
+  // tests for onMouseClicked
   void testOnMouseClicked(Tester t) {
+    // left click a mine
+    initData();
+    this.game1.addAllNeighbors(grid1);
+    t.checkExpect(this.game1.cells.get(0).get(0).isShown, false);
+    t.checkExpect(this.game1.cells.get(0).get(0).isMine, true);
+    t.checkExpect(this.game1.cells.get(0).get(0).isFlagged, false);
+    t.checkExpect(this.game1.theGameIsOver, false);
+    this.game1.onMouseClicked(new Posn(1, 1), "LeftButton");
+    t.checkExpect(this.game1.cells.get(0).get(0).isShown, true);
+    t.checkExpect(this.game1.cells.get(0).get(0).isMine, true);
+    t.checkExpect(this.game1.cells.get(0).get(0).isFlagged, false);
+    t.checkExpect(this.game1.theGameIsOver, true);
+    // right click a mine
+    initData();
+    this.game1.addAllNeighbors(grid1);
+    t.checkExpect(this.game1.cells.get(0).get(0).isShown, false);
+    t.checkExpect(this.game1.cells.get(0).get(0).isMine, true);
+    t.checkExpect(this.game1.cells.get(0).get(0).isFlagged, false);
+    t.checkExpect(this.game1.theGameIsOver, false);
+    this.game1.onMouseClicked(new Posn(1, 1), "RightButton");
+    t.checkExpect(this.game1.cells.get(0).get(0).isShown, false);
+    t.checkExpect(this.game1.cells.get(0).get(0).isMine, true);
+    t.checkExpect(this.game1.cells.get(0).get(0).isFlagged, true);
+    t.checkExpect(this.game1.theGameIsOver, false);
 
+    // left click a nonMine
+    initData();
+    this.game1.addAllNeighbors(grid1);
+    t.checkExpect(this.game1.cells.get(2).get(0).isShown, false);
+    t.checkExpect(this.game1.cells.get(2).get(0).isMine, false);
+    t.checkExpect(this.game1.cells.get(2).get(0).isFlagged, false);
+    t.checkExpect(this.game1.theGameIsOver, false);
+    this.game1.onMouseClicked(new Posn(40, 1), "LeftButton");
+    t.checkExpect(this.game1.cells.get(2).get(0).isShown, true);
+    t.checkExpect(this.game1.cells.get(2).get(0).isMine, false);
+    t.checkExpect(this.game1.cells.get(2).get(0).isFlagged, false);
+    t.checkExpect(this.game1.theGameIsOver, false);
+
+    // right click a nonMine
+    initData();
+    this.game1.addAllNeighbors(grid1);
+    t.checkExpect(this.game1.cells.get(2).get(0).isShown, false);
+    t.checkExpect(this.game1.cells.get(2).get(0).isMine, false);
+    t.checkExpect(this.game1.cells.get(2).get(0).isFlagged, false);
+    t.checkExpect(this.game1.theGameIsOver, false);
+    this.game1.onMouseClicked(new Posn(40, 1), "RightButton");
+    t.checkExpect(this.game1.cells.get(2).get(0).isShown, false);
+    t.checkExpect(this.game1.cells.get(2).get(0).isMine, false);
+    t.checkExpect(this.game1.cells.get(2).get(0).isFlagged, true);
+    t.checkExpect(this.game1.theGameIsOver, false);
   }
 
-  // TODO tests for locateCell
+  // tests for locateCell
   void testLocateCell(Tester t) {
-
+    this.game1.addAllNeighbors(grid1);
+    t.checkExpect(this.tinyGame.locateCell(new Posn(1, 1)), new Cell(true, false, false));
+    t.checkExpect(this.game4.locateCell(new Posn(0, 0)), new Cell(true, false, false));
+    t.checkExpect(this.tinyGame.locateCell(new Posn(10, 10)), new Cell(true, false, false));
+    t.checkExpect(this.tinyGame.locateCell(new Posn(5, 5)), new Cell(true, false, false));
+    t.checkExpect(this.game5.locateCell(new Posn(3, 3)), new Cell(true, false, false));
+    t.checkExpect(this.game5.locateCell(new Posn(0, 0)), new Cell(true, false, false));
   }
 
-  // TODO tests for checkWin
   void testCheckWin(Tester t) {
-
+    // finding location of the mines
+    initData();
+    t.checkExpect(this.game1.cells.get(0).get(0).isMine, true);
+    t.checkExpect(this.game1.cells.get(0).get(1).isMine, true);
+    t.checkExpect(this.game1.cells.get(0).get(2).isMine, false);
+    t.checkExpect(this.game1.cells.get(1).get(0).isMine, true);
+    t.checkExpect(this.game1.cells.get(1).get(1).isMine, true);
+    t.checkExpect(this.game1.cells.get(1).get(2).isMine, false);
+    t.checkExpect(this.game1.cells.get(2).get(0).isMine, false);
+    t.checkExpect(this.game1.cells.get(2).get(1).isMine, false);
+    t.checkExpect(this.game1.cells.get(2).get(2).isMine, false);
+    this.game1.checkWin();
+    t.checkExpect(this.game1.wonGame, false);
+    this.game1.cells.get(0).get(2).isShown = true;
+    this.game1.checkWin();
+    t.checkExpect(this.game1.wonGame, false);
+    this.game1.cells.get(1).get(2).isShown = true;
+    this.game1.checkWin();
+    t.checkExpect(this.game1.wonGame, false);
+    this.game1.cells.get(2).get(0).isShown = true;
+    this.game1.checkWin();
+    t.checkExpect(this.game1.wonGame, false);
+    this.game1.cells.get(2).get(1).isShown = true;
+    this.game1.checkWin();
+    t.checkExpect(this.game1.wonGame, false);
+    this.game1.cells.get(2).get(2).isShown = true;
+    this.game1.checkWin();
+    t.checkExpect(this.game1.wonGame, true);
   }
+
+  // tests for worldEnds
+  void testWorldEnds(Tester t) {
+    initData();
+    int middleX = (int) (this.game1.colCount * MinesweeperGame.CELL_SIZE) / 2;
+    int middleY = (int) (this.game1.rowCount * MinesweeperGame.CELL_SIZE) / 2;
+    WorldScene winScene = this.game1.getEmptyScene();
+    winScene.placeImageXY(new TextImage("You Win!", (int) middleY / 2, Color.GREEN), middleX,
+        middleY);
+    WorldScene loseScene = this.game1.getEmptyScene();
+    loseScene.placeImageXY(new TextImage("You Lose!", (int) middleY / 2, Color.GREEN), middleX,
+        middleY);
+    t.checkExpect(this.game1.worldEnds(), new WorldEnd(false, this.game1.makeScene()));
+    this.game1.wonGame = true;
+    this.game1.theGameIsOver = true;
+    t.checkExpect(this.game1.worldEnds(), new WorldEnd(true, winScene));
+    initData();
+    t.checkExpect(this.game1.worldEnds(), new WorldEnd(false, this.game1.makeScene()));
+    this.game1.wonGame = false;
+    this.game1.theGameIsOver = true;
+    t.checkExpect(this.game1.worldEnds(), new WorldEnd(true, loseScene));
+  }
+
+  // can we get extra credit for doing 200 tests pretty please
 
   // tests for big bang
   void testBigBang(Tester t) {
     initData();
     MinesweeperGame game = new MinesweeperGame(50, 20, 80);
     game.bigBang(game.colCount * MinesweeperGame.CELL_SIZE,
-        game.rowCount * MinesweeperGame.CELL_SIZE);
+        game.rowCount * MinesweeperGame.CELL_SIZE, 0.25);
   }
 
 }

@@ -84,8 +84,8 @@ class Deque<T> {
   public void filter(IPred<T> pred) {
     this.header.next.filterHelp(this.header, pred);
   }
-
 }
+
 
 // abstract class for deque nodes
 abstract class ANode<T> {
