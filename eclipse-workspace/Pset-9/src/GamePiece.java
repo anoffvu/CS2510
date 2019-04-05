@@ -83,21 +83,21 @@ public class GamePiece {
 
   // rotates the GamePiece
   public void rotatePiece(int dir) {
-    boolean pos1 = this.left;
-    boolean pos2 = this.right;
-    boolean pos3 = this.top;
-    boolean pos4 = this.bottom;
-    if (dir == 1) {
-      this.left = pos2;
-      this.right = pos3;
-      this.top = pos4;
-      this.bottom = pos1;
+    boolean ogLeft = this.left;
+    boolean ogRight = this.right;
+    boolean ogTop = this.top;
+    boolean ogBottom = this.bottom;
+    if (dir == 1) { // rotate clockwise
+      this.top = ogLeft;
+      this.right = ogTop;
+      this.bottom = ogRight;
+      this.left = ogBottom;
     }
-    else if (dir == 2) {
-      this.left = pos4;
-      this.right = pos1;
-      this.top = pos2;
-      this.bottom = pos3;
+    else if (dir == 2) { // rotate counter
+      this.top = ogRight;
+      this.right = ogBottom;
+      this.bottom = ogLeft;
+      this.left = ogTop;
     }
 
   }
