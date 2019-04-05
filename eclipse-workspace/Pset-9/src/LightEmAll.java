@@ -127,7 +127,7 @@ public class LightEmAll extends World {
     for (int x = 0; x < this.width; x++) {
       for (int y = 0; y < this.height; y++) {
         scene.placeImageXY(
-            this.board.get(x).get(y).drawCell().movePinhole((-.5 * LightEmAll.CELL_SIZE),
+            this.board.get(x).get(y).drawPiece().movePinhole((-.5 * LightEmAll.CELL_SIZE),
                 (-.5 * LightEmAll.CELL_SIZE)),
             (x * LightEmAll.CELL_SIZE), (y * LightEmAll.CELL_SIZE));
       }

@@ -1,7 +1,7 @@
 import java.awt.Color;
 
 import javalib.worldimages.OutlineMode;
-import javalib.worldimages.OverlayOffsetImage;
+import javalib.worldimages.OverlayImage;
 import javalib.worldimages.RectangleImage;
 import javalib.worldimages.WorldImage;
 
@@ -19,7 +19,6 @@ public class GamePiece {
   // whether the power station is on this piece
   boolean powerStation;
   int powerLevel;
-
 
   GamePiece(int row, int col, boolean left, boolean right, boolean top, boolean bottom,
       boolean powerStation, int powerLevel) {
@@ -48,16 +47,17 @@ public class GamePiece {
     this(row, col, false, false, true, true, false);
   }
 
-  public WorldImage drawCell() {
+  public WorldImage drawPiece() {
     WorldImage base = new RectangleImage(LightEmAll.CELL_SIZE, LightEmAll.CELL_SIZE,
         OutlineMode.SOLID, Color.darkGray);
-    WorldImage connection = new RectangleImage(LightEmAll.CELL_SIZE / 6, LightEmAll.CELL_SIZE / 2,
-        OutlineMode.SOLID, calcColor());
+    WorldImage connection = new RectangleImage((int) LightEmAll.CELL_SIZE / 6,
+        (int) LightEmAll.CELL_SIZE / 2, OutlineMode.SOLID, Color.BLUE)
+            .movePinhole((int) LightEmAll.CELL_SIZE / 2, (int) LightEmAll.CELL_SIZE / 2);
     // TODO draw the correct connections by rotating shit
     if (true) {
-      base = new OverlayOffsetImage(connection, 0, 0, base);
+      base = new OverlayImage(connection, base);
     }
-      return base;
+    return base;
   }
 
   // TODO gradient color functionality
