@@ -1,4 +1,6 @@
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import javalib.worldimages.OutlineMode;
 import javalib.worldimages.OverlayImage;
@@ -20,9 +22,10 @@ public class GamePiece {
   // whether the power station is on this piece
   boolean powerStation;
   int powerLevel;
+  HashMap<String, GamePiece> neighbors;
 
-  GamePiece(int row, int col, boolean left, boolean right, boolean top, boolean bottom,
-      boolean powerStation, int powerLevel) {
+  GamePiece(int row, int col, ArrayList<GamePiece> neighbors, boolean left, boolean right,
+      boolean top, boolean bottom, boolean powerStation, int powerLevel) {
     this.row = row;
     this.col = col;
     this.left = left;
@@ -31,11 +34,18 @@ public class GamePiece {
     this.bottom = bottom;
     this.powerStation = powerStation;
     this.powerLevel = powerLevel;
+    this.neighbors = new HashMap<String, GamePiece>();
+    this.neighbors.put("left", null);
+    this.neighbors.put("right", null);
+    this.neighbors.put("top", null);
+    this.neighbors.put("bottom", null);
+
   }
 
   GamePiece(int row, int col, boolean left, boolean right, boolean top, boolean bottom,
       boolean powerStation) {
-    this(row, col, left, right, top, bottom, powerStation, 0);
+    this(row, col, new ArrayList<GamePiece>(), left, right, top, bottom, powerStation, 0);
+
   }
 
   // convenience constructor for all inputs but powerStation
@@ -100,5 +110,44 @@ public class GamePiece {
       this.left = ogTop;
     }
 
+    System.out.println(this.isConnected());
   }
+
+  // determines if a cell is connected to other cells by checking the sides of
+  // the neighbors cells
+  boolean isConnected() {
+
+    if (this.right && !(this.neighbors.get("right") != null && this.neighbors.get("right").left)) {
+      return false;
+    }
+
+    if (this.bottom
+        && !(this.neighbors.get("bottom") != null && this.neighbors.get("bottom").top)) {
+      return false;
+    }
+
+    if (this.top && !(this.neighbors.get("top") != null && this.neighbors.get("top").bottom)) {
+      return false;
+    }
+
+    if (this.left && !(this.neighbors.get("left") != null && this.neighbors.get("left").right)) {
+      return false;
+    }
+
+    return true;
+
+  }
+
+  // adds this gamepiece to the neighbors
+  void addNeighbor(String location, GamePiece neighbor) {
+    this.neighbors.replace(location, neighbor);
+  }
+
+  // tests if the passed in piece is the same, mainly used for testing
+  public Object samePiece(GamePiece that) {
+    return this.row == that.row && this.col == that.col && this.left == that.left
+        && this.right == that.right && this.top == that.top && this.bottom == that.bottom
+        && this.powerStation == that.powerStation && this.powerLevel == that.powerLevel;
+  }
+
 }

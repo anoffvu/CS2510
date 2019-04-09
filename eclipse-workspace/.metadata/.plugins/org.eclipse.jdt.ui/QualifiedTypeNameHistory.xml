@@ -16,4 +16,6 @@
     <fullyQualifiedTypeName name="javalib.funworld.WorldScene"/>
     <fullyQualifiedTypeName name="javalib.impworld.WorldScene"/>
     <fullyQualifiedTypeName name="javalib.impworld.World"/>
+    <fullyQualifiedTypeName name="javalib.worldimages.VisiblePinholeImage"/>
+    <fullyQualifiedTypeName name="javalib.worldimages.RotateImage"/>
 </qualifiedTypeNameHistroy>

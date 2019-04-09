@@ -44,17 +44,18 @@ public class ExamplesLightEmAll {
   ArrayList<ArrayList<GamePiece>> grid3;
   ArrayList<GamePiece> grid3Nodes;
   LightEmAll game3;
+
   public void initData() {
     this.mt = new ArrayList<GamePiece>();
-    this.gamePiece1 = new GamePiece(0, 0, false, false, false, true);
-    this.gamePiece2 = new GamePiece(0, 1, false, false, false, true);
-    this.gamePiece3 = new GamePiece(0, 2, false, false, false, true);
-    this.gamePiece4 = new GamePiece(1, 0, true, true, true, true);
+    this.gamePiece1 = new GamePiece(0, 0, false, true, false, false);
+    this.gamePiece2 = new GamePiece(1, 0, true, true, true, true);
+    this.gamePiece3 = new GamePiece(2, 0, true, false, false, false);
+    this.gamePiece4 = new GamePiece(0, 1, false, true, false, false);
     this.gamePiece5 = new GamePiece(1, 1, true, true, true, true, true);
-    this.gamePiece6 = new GamePiece(1, 2, true, true, true, true);
-    this.gamePiece7 = new GamePiece(2, 0, false, false, true, false);
-    this.gamePiece8 = new GamePiece(2, 1, false, false, true, false);
-    this.gamePiece9 = new GamePiece(2, 2, false, false, true, false);
+    this.gamePiece6 = new GamePiece(2, 1, true, false, false, false);
+    this.gamePiece7 = new GamePiece(0, 2, false, true, false, false);
+    this.gamePiece8 = new GamePiece(1, 2, true, true, true, true);
+    this.gamePiece9 = new GamePiece(2, 2, true, false, false, false);
     this.row1 = new ArrayList<GamePiece>();
     this.row1.add(gamePiece1);
     this.row1.add(gamePiece2);
@@ -84,21 +85,21 @@ public class ExamplesLightEmAll {
     this.game1 = new LightEmAll(3, 3);
     this.game2 = new LightEmAll(10, 10);
 
-    this.gamePiece01 = new GamePiece(0, 0, false, false, false, true);
-    this.gamePiece02 = new GamePiece(0, 1, false, false, false, true);
-    this.gamePiece03 = new GamePiece(0, 2, false, false, false, true);
-    this.gamePiece04 = new GamePiece(0, 3, false, false, false, true);
-    this.gamePiece05 = new GamePiece(0, 4, false, false, false, true);
-    this.gamePiece06 = new GamePiece(1, 0, true, true, true, true);
-    this.gamePiece07 = new GamePiece(1, 0, true, true, true, true);
-    this.gamePiece08 = new GamePiece(1, 0, true, true, true, true);
-    this.gamePiece09 = new GamePiece(1, 0, true, true, true, true);
-    this.gamePiece10 = new GamePiece(1, 0, true, true, true, true);
-    this.gamePiece11 = new GamePiece(2, 0, false, false, true, false);
-    this.gamePiece12 = new GamePiece(2, 1, false, false, true, false);
-    this.gamePiece13 = new GamePiece(2, 2, false, false, true, false);
-    this.gamePiece14 = new GamePiece(2, 3, false, false, true, false);
-    this.gamePiece15 = new GamePiece(2, 4, false, false, true, false);
+    this.gamePiece01 = new GamePiece(0, 0, false, true, false, false);
+    this.gamePiece02 = new GamePiece(1, 0, true, true, false, false);
+    this.gamePiece03 = new GamePiece(2, 0, true, true, true, true);
+    this.gamePiece04 = new GamePiece(3, 0, true, true, false, false);
+    this.gamePiece05 = new GamePiece(4, 0, true, false, false, false);
+    this.gamePiece06 = new GamePiece(0, 1, false, true, false, false);
+    this.gamePiece07 = new GamePiece(1, 1, true, true, false, false);
+    this.gamePiece08 = new GamePiece(2, 1, true, true, true, true, true);
+    this.gamePiece09 = new GamePiece(3, 1, true, true, false, false);
+    this.gamePiece10 = new GamePiece(4, 1, true, false, false, false);
+    this.gamePiece11 = new GamePiece(0, 2, false, true, false, false);
+    this.gamePiece12 = new GamePiece(1, 2, true, true, false, false);
+    this.gamePiece13 = new GamePiece(2, 2, true, true, true, true);
+    this.gamePiece14 = new GamePiece(3, 2, true, true, false, false);
+    this.gamePiece15 = new GamePiece(4, 2, true, false, false, false);
     this.row01 = new ArrayList<GamePiece>();
     this.row01.add(gamePiece01);
     this.row01.add(gamePiece02);
@@ -148,16 +149,16 @@ public class ExamplesLightEmAll {
     t.checkExpect(this.game1.nodes.size(), 9);
     t.checkExpect(this.game1.nodes.get(4).powerStation, true);
     t.checkExpect(this.game1.nodes.get(1).left, false);
-    t.checkExpect(this.game1.nodes.get(1).right, false);
+    t.checkExpect(this.game1.nodes.get(1).right, true);
     t.checkExpect(this.game1.nodes.get(1).top, false);
-    t.checkExpect(this.game1.nodes.get(1).bottom, true);
+    t.checkExpect(this.game1.nodes.get(1).bottom, false);
     t.checkExpect(this.game1.nodes.get(4).left, true);
     t.checkExpect(this.game1.nodes.get(4).right, true);
     t.checkExpect(this.game1.nodes.get(4).top, true);
     t.checkExpect(this.game1.nodes.get(4).bottom, true);
-    t.checkExpect(this.game1.nodes.get(7).left, false);
+    t.checkExpect(this.game1.nodes.get(7).left, true);
     t.checkExpect(this.game1.nodes.get(7).right, false);
-    t.checkExpect(this.game1.nodes.get(7).top, true);
+    t.checkExpect(this.game1.nodes.get(7).top, false);
     t.checkExpect(this.game1.nodes.get(7).bottom, false);
     t.checkExpect(this.game2.generateAllNodes().size(), 100);
     t.checkExpect(this.game2.nodes.size(), 100);
@@ -166,6 +167,7 @@ public class ExamplesLightEmAll {
   }
 
   // tests for placeNodes
+
   public void testPlaceNodes(Tester t) {
     initData();
     t.checkExpect(this.game1.placeNodes().size(), 3);
@@ -173,23 +175,124 @@ public class ExamplesLightEmAll {
     t.checkExpect(this.game1.placeNodes().get(1).size(), 3);
     t.checkExpect(this.game1.placeNodes().get(2).size(), 3);
     t.checkExpect(this.game1.placeNodes().get(0).get(0), this.gamePiece1);
-    t.checkExpect(this.game1.placeNodes().get(0).get(1), this.gamePiece2);
-    t.checkExpect(this.game1.placeNodes().get(0).get(2), this.gamePiece3);
-    t.checkExpect(this.game1.placeNodes().get(1).get(0), this.gamePiece4);
+    t.checkExpect(this.game1.placeNodes().get(1).get(0), this.gamePiece2);
+    t.checkExpect(this.game1.placeNodes().get(2).get(0), this.gamePiece3);
+    t.checkExpect(this.game1.placeNodes().get(0).get(1), this.gamePiece4);
     t.checkExpect(this.game1.placeNodes().get(1).get(1), this.gamePiece5);
-    t.checkExpect(this.game1.placeNodes().get(1).get(2), this.gamePiece6);
-    t.checkExpect(this.game1.placeNodes().get(2).get(0), this.gamePiece7);
-    t.checkExpect(this.game1.placeNodes().get(2).get(1), this.gamePiece8);
+    t.checkExpect(this.game1.placeNodes().get(2).get(1), this.gamePiece6);
+    t.checkExpect(this.game1.placeNodes().get(0).get(2), this.gamePiece7);
+    t.checkExpect(this.game1.placeNodes().get(1).get(2), this.gamePiece8);
     t.checkExpect(this.game1.placeNodes().get(2).get(2), this.gamePiece9);
     t.checkExpect(this.game3.board.get(0).get(0), this.gamePiece01);
-    t.checkExpect(this.game3.board.get(0).get(4), this.gamePiece05);
-    t.checkExpect(this.game3.board.get(2).get(4), this.gamePiece15);
+    t.checkExpect(this.game3.board.get(4).get(0), this.gamePiece05);
+    t.checkExpect(this.game3.board.get(4).get(2), this.gamePiece15);
+  }
+
+  // tests for addNeighbors
+  public void testAddNeighbors(Tester t) {
+    initData();
+    t.checkExpect(this.gamePiece1.neighbors.get("top"), null);
+    t.checkExpect(this.gamePiece1.neighbors.get("left"), null);
+    t.checkExpect(this.gamePiece1.neighbors.get("right"), null);
+    t.checkExpect(this.gamePiece1.neighbors.get("bottom"), null);
+
+    t.checkExpect(this.gamePiece5.neighbors.get("top"), null);
+    t.checkExpect(this.gamePiece5.neighbors.get("left"), null);
+    t.checkExpect(this.gamePiece5.neighbors.get("right"), null);
+    t.checkExpect(this.gamePiece5.neighbors.get("bottom"), null);
+
+    this.game1.addNeighbors();
+
+    t.checkExpect(this.game1.board.get(0).get(0).neighbors.get("right").samePiece(this.gamePiece2),
+        true);
+    t.checkExpect(this.game1.board.get(0).get(0).neighbors.get("left"), null);
+    t.checkExpect(this.game1.board.get(0).get(0).neighbors.get("bottom").samePiece(this.gamePiece4),
+        true);
+    t.checkExpect(this.game1.board.get(0).get(0).neighbors.get("top"), null);
+
+    t.checkExpect(this.game1.board.get(1).get(1).neighbors.get("top").samePiece(this.gamePiece2),
+        true);
+    t.checkExpect(this.game1.board.get(1).get(1).neighbors.get("right").samePiece(this.gamePiece6),
+        true);
+    t.checkExpect(this.game1.board.get(1).get(1).neighbors.get("bottom").samePiece(this.gamePiece8),
+        true);
+    t.checkExpect(this.game1.board.get(1).get(1).neighbors.get("left").samePiece(this.gamePiece4),
+        true);
+
+    t.checkExpect(this.gamePiece01.neighbors.get("top"), null);
+    t.checkExpect(this.gamePiece01.neighbors.get("left"), null);
+    t.checkExpect(this.gamePiece01.neighbors.get("right"), null);
+    t.checkExpect(this.gamePiece01.neighbors.get("bottom"), null);
+
+    this.game3.addNeighbors();
+
+    t.checkExpect(this.game3.board.get(0).get(0).neighbors.get("top"), null);
+    t.checkExpect(this.game3.board.get(0).get(0).neighbors.get("right").samePiece(this.gamePiece02),
+        true);
+    t.checkExpect(
+        this.game3.board.get(0).get(0).neighbors.get("bottom").samePiece(this.gamePiece06), true);
+    t.checkExpect(this.game3.board.get(0).get(0).neighbors.get("left"), null);
+
+  }
+
+  // TODO tests for drawPiece
+  void testDrawPiece(Tester t) {
+
+  }
+
+  // TODO tests for calcColor
+  void testCalcColor(Tester t) {
+
+  }
+
+  // TODO tests for rotatePiece
+  void testRotatePiece(Tester t) {
+
+  }
+
+  // TODO tests for addNeighbor
+  void testAddNeighbor(Tester t) {
+
+  }
+
+  // TODO tests for samePiece
+  void testSamePiece(Tester t) {
+
+  }
+
+  // TODO tests for onMouseClicked
+  void testOnMouseClicked(Tester t) {
+
+  }
+
+  // TODO tests for locatePiece
+  void testLocatePiece(Tester t) {
+
+  }
+
+  // TODO tests for makeScene
+  void testMakeScene(Tester t) {
+
+  }
+
+  public void testIsConnected(Tester t) {
+    initData();
+
+    t.checkExpect(this.gamePiece1.isConnected(), false);
+    t.checkExpect(this.gamePiece5.isConnected(), false);
+    t.checkExpect(this.gamePiece9.isConnected(), false);
+
+    this.game1.addNeighbors();
+
+    t.checkExpect(this.gamePiece1.isConnected(), true);
+    t.checkExpect(this.gamePiece5.isConnected(), true);
+    t.checkExpect(this.gamePiece9.isConnected(), true);
   }
 
   // tests for big bang
   void testBigBang(Tester t) {
     initData();
-    LightEmAll game = new LightEmAll(20, 10);
+    LightEmAll game = new LightEmAll(19, 10);
     game.bigBang(game.width * LightEmAll.CELL_SIZE, game.height * LightEmAll.CELL_SIZE, 0.25);
   }
   /*

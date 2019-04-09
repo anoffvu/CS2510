@@ -41,25 +41,26 @@ public class LightEmAll extends World {
   }
 
   // will generate all the nodes in one flat list
-  // first row will only have connections down, the middle row will have all connections
+  // first row will only have connections down, the middle row will have all
+  // connections
   // the last row will only have connections up, all other rows have up and down
   // should we give these nodes a row and column count already?
   public ArrayList<GamePiece> generateAllNodes() {
-    int middleRowIndex = (int) this.height / 2;
+    int middleColIndex = (int) Math.floor(this.width / 2);
     ArrayList<GamePiece> allNodes = new ArrayList<GamePiece>();
-    for (int y = 0; y < this.height; y++) {
-      for (int x = 0; x < this.width; x++) {
-        if (y == 0) { // top row
-          allNodes.add(new GamePiece(y, x, false, false, false, true));
+    for (int c = 0; c < this.width; c++) {
+      for (int r = 0; r < this.height; r++) {
+        if (c == 0) { // left column
+          allNodes.add(new GamePiece(c, r, false, true, false, false));
         }
-        else if (y == middleRowIndex) { // middle row
-          allNodes.add(new GamePiece(middleRowIndex, x, true, true, true, true));
+        else if (c == middleColIndex) { // middle column
+          allNodes.add(new GamePiece(middleColIndex, r, true, true, true, true));
         }
-        else if ((y + 1) == this.height) { // bottom row
-          allNodes.add(new GamePiece(y, x, false, false, true, false));
+        else if ((c + 1) == this.width) { // right column
+          allNodes.add(new GamePiece(c, r, true, false, false, false));
         }
-        else { // all other rows
-          allNodes.add(new GamePiece(y, x, false, false, true, true));
+        else { // all other columns
+          allNodes.add(new GamePiece(c, r, true, true, false, false));
         }
       }
     }
@@ -72,21 +73,24 @@ public class LightEmAll extends World {
   public ArrayList<ArrayList<GamePiece>> placeNodes() {
     int nodesIndex = 0;
     // puts the cells inside the grid
-    ArrayList<ArrayList<GamePiece>> rows = new ArrayList<ArrayList<GamePiece>>();
-    for (int y = 0; y < this.height; y++) {
-      rows.add(new ArrayList<GamePiece>());
-      for (int x = 0; x < this.width; x++) {
-        rows.get(y).add(x, this.nodes.get(nodesIndex));
+    ArrayList<ArrayList<GamePiece>> columns = new ArrayList<ArrayList<GamePiece>>();
+    for (int c = 0; c < this.width; c++) {
+      columns.add(new ArrayList<GamePiece>());
+      for (int r = 0; r < this.height; r++) {
+        columns.get(c).add(r, this.nodes.get(nodesIndex));
         nodesIndex++;
       }
     }
-    return rows;
+    return columns;
   }
 
   // places the powerStation in the middle of the nodes
   public void placePowerStation(ArrayList<GamePiece> allNodes) {
-    int powerPlantIndex = (int) ((this.width * this.height) / 2); // on even number boards it'll
-                                                                  // round down
+    int powerPlantIndex = (int) ((this.width * this.height) / 2); // on even
+                                                                  // number
+                                                                  // boards
+                                                                  // it'll
+    // round down
     int totalNodes = this.width * this.height;
     for (int i = 0; i < totalNodes; i++) {
       if (i == powerPlantIndex) {
@@ -100,36 +104,57 @@ public class LightEmAll extends World {
     GamePiece clicked = locatePiece(mouse);
     if (button.equals("LeftButton")) { // rotate it clockwise
       clicked.rotatePiece(1);
-      this.updateConnections(clicked);
+      // this.updateConnections(clicked);
     }
     else if (button.equals("RightButton")) { // rotate it counter clockwise
       clicked.rotatePiece(2);
-      this.updateConnections(clicked);
+      // this.updateConnections(clicked);
     }
   }
 
-  private void updateConnections(GamePiece clicked) {
-    // TODO grab
-
+  // adds all the neighbors to each cell of the game board
+  public void addNeighbors() {
+    for (int c = 0; c < this.width; c++) {
+      // column value
+      int left = c - 1;
+      int right = c + 1;
+      for (int r = 0; r < this.height; r++) {
+        // row value
+        int top = r - 1;
+        int bottom = r + 1;
+        if (top >= 0) {
+          this.board.get(c).get(r).addNeighbor("top", this.board.get(c).get(top));
+        }
+        if (bottom < this.height) {
+          this.board.get(c).get(r).addNeighbor("bottom", this.board.get(c).get(bottom));
+        }
+        if (left >= 0) {
+          this.board.get(c).get(r).addNeighbor("left", this.board.get(left).get(r));
+        }
+        if (right < this.width) {
+          this.board.get(c).get(r).addNeighbor("right", this.board.get(right).get(r));
+        }
+      }
+    }
   }
 
   // finds the cell at the given posn
   public GamePiece locatePiece(Posn mouse) {
     int row = (int) Math.floor(mouse.y / LightEmAll.CELL_SIZE);
     int col = (int) Math.floor(mouse.x / LightEmAll.CELL_SIZE);
-    return board.get(row).get(col);
+    return board.get(col).get(row);
   }
 
   // draws the scene
   public WorldScene makeScene() {
     WorldScene scene = new WorldScene(this.width * LightEmAll.CELL_SIZE,
         this.height * LightEmAll.CELL_SIZE);
-    for (int y = 0; y < this.height; y++) {
-      for (int x = 0; x < this.width; x++) {
+    for (int c = 0; c < this.width; c++) {
+      for (int r = 0; r < this.height; r++) {
         scene.placeImageXY(
-            this.board.get(y).get(x).drawPiece().movePinhole((-.5 * LightEmAll.CELL_SIZE),
+            this.board.get(c).get(r).drawPiece().movePinhole((-.5 * LightEmAll.CELL_SIZE),
                 (-.5 * LightEmAll.CELL_SIZE)),
-            (x * LightEmAll.CELL_SIZE), (y * LightEmAll.CELL_SIZE));
+            (c * LightEmAll.CELL_SIZE), (r * LightEmAll.CELL_SIZE));
       }
     }
     return scene;
