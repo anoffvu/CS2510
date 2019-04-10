@@ -8,7 +8,8 @@ import javalib.worldimages.RectangleImage;
 import javalib.worldimages.RotateImage;
 import javalib.worldimages.WorldImage;
 
-public class GamePiece {
+// a piece in the game
+class GamePiece {
   // in logical coordinates, with the origin
   // at the top-left corner of the screen
   int row;
@@ -62,10 +63,8 @@ public class GamePiece {
     WorldImage base = new RectangleImage(LightEmAll.CELL_SIZE, LightEmAll.CELL_SIZE,
         OutlineMode.SOLID, Color.darkGray);
     WorldImage connection = new RectangleImage((int) LightEmAll.CELL_SIZE / 6,
-        (int) LightEmAll.CELL_SIZE / 2, OutlineMode.SOLID, Color.BLUE).movePinhole(0,
+        (int) LightEmAll.CELL_SIZE / 2, OutlineMode.SOLID, calcColor()).movePinhole(0,
             (int) LightEmAll.CELL_SIZE / 4);
-
-    // TODO draw the correct connections by rotating shit
     if (this.top) {
       base = new OverlayImage(connection, base);
     }
@@ -86,9 +85,14 @@ public class GamePiece {
     return base;
   }
 
-  // TODO gradient color functionality
+  // gradient color functionality
   public Color calcColor() {
-    return Color.yellow;
+    if (powerLevel > 0) {
+      return new Color(255, 255, 0, (255 / LightEmAll.radius * this.powerLevel));
+    }
+    else {
+      return Color.GRAY;
+    }
   }
 
   // rotates the GamePiece
@@ -97,49 +101,54 @@ public class GamePiece {
     boolean ogRight = this.right;
     boolean ogTop = this.top;
     boolean ogBottom = this.bottom;
-    if (dir == 1) { // rotate clockwise
+    if (dir > 0) { // rotate clockwise
       this.top = ogLeft;
       this.right = ogTop;
       this.bottom = ogRight;
       this.left = ogBottom;
     }
-    else if (dir == 2) { // rotate counter
+    else if (dir < 0) { // rotate counter
       this.top = ogRight;
       this.right = ogBottom;
       this.bottom = ogLeft;
       this.left = ogTop;
     }
 
-    System.out.println(this.isConnected());
+    // System.out.println(this.isConnected());
   }
 
   // determines if a cell is connected to other cells by checking the sides of
   // the neighbors cells
-  boolean isConnected() {
-
-    if (this.right && !(this.neighbors.get("right") != null && this.neighbors.get("right").left)) {
-      return false;
-    }
-
-    if (this.bottom
-        && !(this.neighbors.get("bottom") != null && this.neighbors.get("bottom").top)) {
-      return false;
-    }
-
-    if (this.top && !(this.neighbors.get("top") != null && this.neighbors.get("top").bottom)) {
-      return false;
-    }
-
-    if (this.left && !(this.neighbors.get("left") != null && this.neighbors.get("left").right)) {
-      return false;
-    }
-
-    return true;
-
-  }
+  /*
+   * boolean isConnected() {
+   * 
+   * if (this.right && !(this.neighbors.get("right") != null &&
+   * this.neighbors.get("right").left)) {
+   * return false;
+   * }
+   * 
+   * if (this.bottom
+   * && !(this.neighbors.get("bottom") != null && this.neighbors.get("bottom").top)) {
+   * return false;
+   * }
+   * 
+   * if (this.top && !(this.neighbors.get("top") != null &&
+   * this.neighbors.get("top").bottom)) {
+   * return false;
+   * }
+   * 
+   * if (this.left && !(this.neighbors.get("left") != null &&
+   * this.neighbors.get("left").right)) {
+   * return false;
+   * }
+   * 
+   * return true;
+   * 
+   * }
+   */
 
   // adds this gamepiece to the neighbors
-  void addNeighbor(String location, GamePiece neighbor) {
+  void updateNeighbor(String location, GamePiece neighbor) {
     this.neighbors.replace(location, neighbor);
   }
 
@@ -150,4 +159,39 @@ public class GamePiece {
         && this.powerStation == that.powerStation && this.powerLevel == that.powerLevel;
   }
 
+  // sends power thru the neighbors if possible
+  public void powerNeighbors(ArrayList<GamePiece> seen) {
+    seen.add(this);
+    if (this.powerLevel > 0) {
+      int neighborPowerLevel = this.powerLevel - 1;
+      if (this.top && this.neighbors.get("top") != null
+          && !seen.contains(this.neighbors.get("top"))) {
+        if (this.neighbors.get("top").bottom) {
+          this.neighbors.get("top").powerLevel = neighborPowerLevel;
+          this.neighbors.get("top").powerNeighbors(seen);
+        }
+      }
+      if (this.right && this.neighbors.get("right") != null
+          && !seen.contains(this.neighbors.get("right"))) {
+        if (this.neighbors.get("right").left) {
+          this.neighbors.get("right").powerLevel = neighborPowerLevel;
+          this.neighbors.get("right").powerNeighbors(seen);
+        }
+      }
+      if (this.bottom && this.neighbors.get("bottom") != null
+          && !seen.contains(this.neighbors.get("bottom"))) {
+        if (this.neighbors.get("bottom").top) {
+          this.neighbors.get("bottom").powerLevel = neighborPowerLevel;
+          this.neighbors.get("bottom").powerNeighbors(seen);
+        }
+      }
+      if (this.left && this.neighbors.get("left") != null
+          && !seen.contains(this.neighbors.get("left"))) {
+        if (this.neighbors.get("left").right) {
+          this.neighbors.get("left").powerLevel = neighborPowerLevel;
+          this.neighbors.get("left").powerNeighbors(seen);
+        }
+      }
+    }
+  }
 }

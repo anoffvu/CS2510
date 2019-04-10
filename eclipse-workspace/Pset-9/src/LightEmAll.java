@@ -5,7 +5,8 @@ import javalib.impworld.World;
 import javalib.impworld.WorldScene;
 import javalib.worldimages.Posn;
 
-public class LightEmAll extends World {
+// game state and main game class
+class LightEmAll extends World {
 
   // a list of columns of GamePieces,
   // i.e., represents the board in column-major order
@@ -21,10 +22,9 @@ public class LightEmAll extends World {
   // as well as its effective radius
   int powerRow;
   int powerCol;
-  int radius;
+  public static int radius = 3;
   Random rand;
-
-  // maybe make a hashmap of neighbors // connectedness
+  int score; // TODO display this later
 
   public static int CELL_SIZE = 40;
 
@@ -34,17 +34,45 @@ public class LightEmAll extends World {
     this.height = height;
     this.powerRow = 0;
     this.powerCol = 0;
-    this.radius = 99;
+    // this.radius = 10;
     this.nodes = this.generateAllNodes();
     this.board = this.placeNodes();
+    updateAllNeighbors();
     this.mst = new ArrayList<Edge>();
+    this.score = 0;
+  }
+
+  // constructor for generating different types of boards
+  LightEmAll(int width, int height, int genType) {
+    if (genType == 0) {
+      this.rand = new Random();
+      this.width = width;
+      this.height = height;
+      this.powerRow = 0;
+      this.powerCol = 0;
+      this.radius = 99;
+      this.nodes = this.generateAllNodes();
+      this.board = this.placeNodes();
+      this.mst = new ArrayList<Edge>();
+      this.score = 0;
+    }
+    else if (genType == 1) { // fractal board generation
+      this.rand = new Random();
+      this.width = width;
+      this.height = height;
+      this.powerRow = 0;
+      this.powerCol = 0;
+      this.radius = 99;
+      // this.nodes = this.generateAllFractalNodes();
+      this.board = this.placeNodes();
+      this.mst = new ArrayList<Edge>();
+      this.score = 0;
+    }
+    updateAllNeighbors();
+
   }
 
   // will generate all the nodes in one flat list
-  // first row will only have connections down, the middle row will have all
-  // connections
-  // the last row will only have connections up, all other rows have up and down
-  // should we give these nodes a row and column count already?
   public ArrayList<GamePiece> generateAllNodes() {
     int middleColIndex = (int) Math.floor(this.width / 2);
     ArrayList<GamePiece> allNodes = new ArrayList<GamePiece>();
@@ -64,7 +92,6 @@ public class LightEmAll extends World {
         }
       }
     }
-    placePowerStation(allNodes);
     return allNodes;
   }
 
@@ -81,39 +108,58 @@ public class LightEmAll extends World {
         nodesIndex++;
       }
     }
+    // TODO test these
+    powerBoard(columns);
     return columns;
   }
 
-  // places the powerStation in the middle of the nodes
-  public void placePowerStation(ArrayList<GamePiece> allNodes) {
-    int powerPlantIndex = (int) ((this.width * this.height) / 2); // on even
-                                                                  // number
-                                                                  // boards
-                                                                  // it'll
-    // round down
-    int totalNodes = this.width * this.height;
-    for (int i = 0; i < totalNodes; i++) {
-      if (i == powerPlantIndex) {
-        allNodes.get(i).powerStation = true;
-      }
-    }
-
-  }
+  /*
+   * // places the powerStation in the middle of the nodes
+   * public void placePowerStation(ArrayList<ArrayList<GamePiece>> targetBoard) {
+   * 
+   * int powerPlantIndex = (int) ((this.width * this.height) / 2);
+   * // on even number boards it'll round down
+   * int totalNodes = this.width * this.height;
+   * for (int i = 0; i < totalNodes; i++) {
+   * if (i == powerPlantIndex) {
+   * allNodes.get(i).powerStation = true;
+   * }
+   * }
+   * 
+   * 
+   * }
+   */
 
   public void onMouseClicked(Posn mouse, String button) {
     GamePiece clicked = locatePiece(mouse);
+
     if (button.equals("LeftButton")) { // rotate it clockwise
       clicked.rotatePiece(1);
-      // this.updateConnections(clicked);
+      this.score++; // updates the score when a valid move is executed
+      // will want to update connectivity in the future
     }
     else if (button.equals("RightButton")) { // rotate it counter clockwise
-      clicked.rotatePiece(2);
-      // this.updateConnections(clicked);
+      clicked.rotatePiece(-1);
+      this.score++; // updates the score when a valid move is executed
+      // will want to update connectivity in the future
+    }
+    resetPower();
+    powerBoard(this.board);
+    updateAllNeighbors();
+    System.out.println(this.score);
+  }
+
+  // resets the power so the board can update when clicked
+  public void resetPower() {
+    for (int c = 0; c < this.width; c++) {
+      for (int r = 0; r < this.height; r++) {
+        this.board.get(c).get(r).powerLevel = 0;
+      }
     }
   }
 
   // adds all the neighbors to each cell of the game board
-  public void addNeighbors() {
+  public void updateAllNeighbors() {
     for (int c = 0; c < this.width; c++) {
       // column value
       int left = c - 1;
@@ -122,17 +168,21 @@ public class LightEmAll extends World {
         // row value
         int top = r - 1;
         int bottom = r + 1;
+        this.board.get(c).get(r).updateNeighbor("top", null);
+        this.board.get(c).get(r).updateNeighbor("right", null);
+        this.board.get(c).get(r).updateNeighbor("bottom", null);
+        this.board.get(c).get(r).updateNeighbor("left", null);
         if (top >= 0) {
-          this.board.get(c).get(r).addNeighbor("top", this.board.get(c).get(top));
+          this.board.get(c).get(r).updateNeighbor("top", this.board.get(c).get(top));
         }
         if (bottom < this.height) {
-          this.board.get(c).get(r).addNeighbor("bottom", this.board.get(c).get(bottom));
+          this.board.get(c).get(r).updateNeighbor("bottom", this.board.get(c).get(bottom));
         }
         if (left >= 0) {
-          this.board.get(c).get(r).addNeighbor("left", this.board.get(left).get(r));
+          this.board.get(c).get(r).updateNeighbor("left", this.board.get(left).get(r));
         }
         if (right < this.width) {
-          this.board.get(c).get(r).addNeighbor("right", this.board.get(right).get(r));
+          this.board.get(c).get(r).updateNeighbor("right", this.board.get(right).get(r));
         }
       }
     }
@@ -159,4 +209,51 @@ public class LightEmAll extends World {
     }
     return scene;
   }
+
+  // restarts the game
+  public void restartGame() {
+    LightEmAll newGame = new LightEmAll(this.width, this.height);
+    this.nodes = newGame.nodes;
+    this.board = newGame.board;
+    this.mst = newGame.mst;
+    this.width = newGame.width;
+    this.height = newGame.height;
+    this.powerRow = newGame.powerRow;
+    this.powerCol = newGame.powerCol;
+    this.rand = newGame.rand;
+  }
+
+  // powers the board
+  public void powerBoard(ArrayList<ArrayList<GamePiece>> targetBoard) {
+    targetBoard.get(powerCol).get(powerRow).powerStation = true;
+    targetBoard.get(powerCol).get(powerRow).powerLevel = radius;
+    targetBoard.get(powerCol).get(powerRow).powerNeighbors(new ArrayList<GamePiece>());
+  }
+
+  // handles key events
+  public void onKeyEvent(String pressedKey) {
+    // moves the powerStation
+    if (pressedKey.equals("up") && this.powerRow > 0
+        && (this.board.get(powerCol).get(powerRow).neighbors.get("up") != null)) {
+      this.powerRow -= 1;
+    }
+    if (pressedKey.equals("down") && this.powerRow < this.height - 1
+        && (this.board.get(powerCol).get(powerRow).neighbors.get("down") != null)) {
+      this.powerRow += 1;
+    }
+    if (pressedKey.equals("left") && this.powerCol > 0
+        && (this.board.get(powerCol).get(powerRow).neighbors.get("left") != null)) {
+      this.powerCol -= 1;
+    }
+    if (pressedKey.equals("right") && this.powerCol < this.width - 1
+        && (this.board.get(powerCol).get(powerRow).neighbors.get("right") != null)) {
+      this.powerCol += 1;
+    }
+    if (pressedKey.equals(" ") && this.powerCol < this.width) { // restarts the game
+      restartGame();
+    }
+    resetPower();
+    powerBoard(this.board);
+  }
+
 }
