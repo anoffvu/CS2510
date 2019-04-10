@@ -6,6 +6,7 @@ import javalib.worldimages.OutlineMode;
 import javalib.worldimages.OverlayImage;
 import javalib.worldimages.RectangleImage;
 import javalib.worldimages.RotateImage;
+import javalib.worldimages.StarImage;
 import javalib.worldimages.WorldImage;
 
 // a piece in the game
@@ -81,6 +82,10 @@ class GamePiece {
       base = new OverlayImage(connection, base);
     }
     base = new RotateImage(base, 90.0);
+    if (this.powerStation) {
+      base = new OverlayImage(
+          new StarImage(LightEmAll.CELL_SIZE / 4, OutlineMode.SOLID, Color.BLUE), base);
+    }
 
     return base;
   }
@@ -113,41 +118,9 @@ class GamePiece {
       this.bottom = ogLeft;
       this.left = ogTop;
     }
-
-    // System.out.println(this.isConnected());
   }
 
-  // determines if a cell is connected to other cells by checking the sides of
-  // the neighbors cells
-  /*
-   * boolean isConnected() {
-   * 
-   * if (this.right && !(this.neighbors.get("right") != null &&
-   * this.neighbors.get("right").left)) {
-   * return false;
-   * }
-   * 
-   * if (this.bottom
-   * && !(this.neighbors.get("bottom") != null && this.neighbors.get("bottom").top)) {
-   * return false;
-   * }
-   * 
-   * if (this.top && !(this.neighbors.get("top") != null &&
-   * this.neighbors.get("top").bottom)) {
-   * return false;
-   * }
-   * 
-   * if (this.left && !(this.neighbors.get("left") != null &&
-   * this.neighbors.get("left").right)) {
-   * return false;
-   * }
-   * 
-   * return true;
-   * 
-   * }
-   */
-
-  // adds this gamepiece to the neighbors
+  // adds this gamePiece to the neighbors
   void updateNeighbor(String location, GamePiece neighbor) {
     this.neighbors.replace(location, neighbor);
   }
@@ -159,38 +132,45 @@ class GamePiece {
         && this.powerStation == that.powerStation && this.powerLevel == that.powerLevel;
   }
 
+  // checks if this
+  public boolean isConnectedTo(String direction) {
+    if (this.neighbors.get(direction) != null) {
+      if (direction.equals("top")) {
+        return this.neighbors.get(direction).bottom && this.top;
+      }
+      if (direction.equals("bottom")) {
+        return this.neighbors.get(direction).top && this.bottom;
+      }
+      if (direction.equals("left")) {
+        return this.neighbors.get(direction).right && this.left;
+      }
+      if (direction.equals("right")) {
+        return this.neighbors.get(direction).left && this.right;
+      }
+    }
+    return false;
+  }
+
   // sends power thru the neighbors if possible
   public void powerNeighbors(ArrayList<GamePiece> seen) {
     seen.add(this);
     if (this.powerLevel > 0) {
       int neighborPowerLevel = this.powerLevel - 1;
-      if (this.top && this.neighbors.get("top") != null
-          && !seen.contains(this.neighbors.get("top"))) {
-        if (this.neighbors.get("top").bottom) {
+      if (isConnectedTo("top") && !seen.contains(this.neighbors.get("top"))) {
           this.neighbors.get("top").powerLevel = neighborPowerLevel;
           this.neighbors.get("top").powerNeighbors(seen);
-        }
       }
-      if (this.right && this.neighbors.get("right") != null
-          && !seen.contains(this.neighbors.get("right"))) {
-        if (this.neighbors.get("right").left) {
+      if (isConnectedTo("right") && !seen.contains(this.neighbors.get("right"))) {
           this.neighbors.get("right").powerLevel = neighborPowerLevel;
           this.neighbors.get("right").powerNeighbors(seen);
-        }
       }
-      if (this.bottom && this.neighbors.get("bottom") != null
-          && !seen.contains(this.neighbors.get("bottom"))) {
-        if (this.neighbors.get("bottom").top) {
+      if (isConnectedTo("bottom") && !seen.contains(this.neighbors.get("bottom"))) {
           this.neighbors.get("bottom").powerLevel = neighborPowerLevel;
           this.neighbors.get("bottom").powerNeighbors(seen);
-        }
       }
-      if (this.left && this.neighbors.get("left") != null
-          && !seen.contains(this.neighbors.get("left"))) {
-        if (this.neighbors.get("left").right) {
+      if (isConnectedTo("left") && !seen.contains(this.neighbors.get("left"))) {
           this.neighbors.get("left").powerLevel = neighborPowerLevel;
           this.neighbors.get("left").powerNeighbors(seen);
-        }
       }
     }
   }

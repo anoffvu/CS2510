@@ -144,10 +144,10 @@ class ExamplesLightEmAll {
 
   }
 
-  // tests for generateAllNodes
-  public void testgenerateAllNodes(Tester t) {
+  // tests for grabAllNodes
+  public void testGrabAllNodes(Tester t) {
     initData();
-    t.checkExpect(this.game1.generateAllNodes().size(), 9);
+    t.checkExpect(this.game1.grabAllNodes().size(), 9);
     t.checkExpect(this.game1.nodes.size(), 9);
     t.checkExpect(this.game1.nodes.get(4).powerStation, true);
     t.checkExpect(this.game1.nodes.get(1).left, false);
@@ -162,7 +162,7 @@ class ExamplesLightEmAll {
     t.checkExpect(this.game1.nodes.get(7).right, false);
     t.checkExpect(this.game1.nodes.get(7).top, false);
     t.checkExpect(this.game1.nodes.get(7).bottom, false);
-    t.checkExpect(this.game2.generateAllNodes().size(), 100);
+    t.checkExpect(this.game2.grabAllNodes().size(), 100);
     t.checkExpect(this.game2.nodes.size(), 100);
     t.checkExpect(this.game2.nodes.get(50).powerStation, true);
 
@@ -171,22 +171,8 @@ class ExamplesLightEmAll {
   // tests for placeNodes
   public void testPlaceNodes(Tester t) {
     initData();
-    t.checkExpect(this.game1.placeNodes().size(), 3);
-    t.checkExpect(this.game1.placeNodes().get(0).size(), 3);
-    t.checkExpect(this.game1.placeNodes().get(1).size(), 3);
-    t.checkExpect(this.game1.placeNodes().get(2).size(), 3);
-    t.checkExpect(this.game1.placeNodes().get(0).get(0), this.gamePiece1);
-    t.checkExpect(this.game1.placeNodes().get(1).get(0), this.gamePiece2);
-    t.checkExpect(this.game1.placeNodes().get(2).get(0), this.gamePiece3);
-    t.checkExpect(this.game1.placeNodes().get(0).get(1), this.gamePiece4);
-    t.checkExpect(this.game1.placeNodes().get(1).get(1), this.gamePiece5);
-    t.checkExpect(this.game1.placeNodes().get(2).get(1), this.gamePiece6);
-    t.checkExpect(this.game1.placeNodes().get(0).get(2), this.gamePiece7);
-    t.checkExpect(this.game1.placeNodes().get(1).get(2), this.gamePiece8);
-    t.checkExpect(this.game1.placeNodes().get(2).get(2), this.gamePiece9);
-    t.checkExpect(this.game3.board.get(0).get(0), this.gamePiece01);
-    t.checkExpect(this.game3.board.get(4).get(0), this.gamePiece05);
-    t.checkExpect(this.game3.board.get(4).get(2), this.gamePiece15);
+    t.checkExpect(this.game1.generateBoard().size(), 3);
+    t.checkExpect(this.game1.generateBoard().get(0).size(), 3);
   }
 
   // tests for addNeighbors
@@ -242,12 +228,45 @@ class ExamplesLightEmAll {
     // t.checkExpect(this.gamePiece01.drawPiece(), null);
   }
 
-  /*
-   * // TODO tests for calcColor
-   * void testCalcColor(Tester t) {
-   * 
-   * }
-   */
+  // TODO tests for calcColor
+  void testCalcColor(Tester t) {
+    initData();
+    //
+  }
+
+  // TODO tests for calcColor
+  void testUpdateNeightb(Tester t) {
+    initData();
+    //
+  }
+
+  // tests for updateNeighobor
+  void testUpdateNeighbor(Tester t) {
+    initData();
+    t.checkExpect(this.game1.nodes.get(0).neighbors.get("right"), null);
+    t.checkExpect(this.game1.nodes.get(0).neighbors.get("top"), null);
+    t.checkExpect(this.game1.nodes.get(0).neighbors.get("bottom"), null);
+    t.checkExpect(this.game1.nodes.get(0).neighbors.get("left"), null);
+    this.game1.nodes.get(0).updateNeighbor("right", this.gamePiece01);
+    t.checkExpect(this.game1.nodes.get(0).neighbors.get("right"), this.gamePiece01);
+    t.checkExpect(this.game1.nodes.get(0).neighbors.get("top"), null);
+    t.checkExpect(this.game1.nodes.get(0).neighbors.get("bottom"), null);
+    t.checkExpect(this.game1.nodes.get(0).neighbors.get("left"), null);
+    this.game1.nodes.get(0).updateNeighbor("bottom", this.gamePiece02);
+    t.checkExpect(this.game1.nodes.get(0).neighbors.get("right"), this.gamePiece01);
+    t.checkExpect(this.game1.nodes.get(0).neighbors.get("top"), null);
+    t.checkExpect(this.game1.nodes.get(0).neighbors.get("bottom"), this.gamePiece02);
+    t.checkExpect(this.game1.nodes.get(0).neighbors.get("left"), null);
+  }
+
+  // tests for samePiece
+  void testSamePiece(Tester t) {
+    initData();
+    t.checkExpect(this.gamePiece01.samePiece(this.gamePiece01), true);
+    t.checkExpect(this.gamePiece01.samePiece(this.gamePiece02), false);
+    t.checkExpect(this.gamePiece9.samePiece(this.gamePiece9), true);
+    t.checkExpect(this.gamePiece9.samePiece(this.gamePiece10), false);
+  }
 
   // tests for rotatePiece
   void testRotatePiece(Tester t) {
@@ -283,27 +302,8 @@ class ExamplesLightEmAll {
     t.checkExpect(this.gamePiece5.bottom, true);
   }
 
-  // tests for addNeighbor
-  void testAddNeighbor(Tester t) {
-    initData();
-    t.checkExpect(this.game1.nodes.get(0).neighbors.get("right"), null);
-    t.checkExpect(this.game1.nodes.get(0).neighbors.get("top"), null);
-    t.checkExpect(this.game1.nodes.get(0).neighbors.get("bottom"), null);
-    t.checkExpect(this.game1.nodes.get(0).neighbors.get("left"), null);
-    this.game1.nodes.get(0).updateNeighbor("right", this.gamePiece01);
-    t.checkExpect(this.game1.nodes.get(0).neighbors.get("right"), this.gamePiece01);
-    t.checkExpect(this.game1.nodes.get(0).neighbors.get("top"), null);
-    t.checkExpect(this.game1.nodes.get(0).neighbors.get("bottom"), null);
-    t.checkExpect(this.game1.nodes.get(0).neighbors.get("left"), null);
-    this.game1.nodes.get(0).updateNeighbor("bottom", this.gamePiece02);
-    t.checkExpect(this.game1.nodes.get(0).neighbors.get("right"), this.gamePiece01);
-    t.checkExpect(this.game1.nodes.get(0).neighbors.get("top"), null);
-    t.checkExpect(this.game1.nodes.get(0).neighbors.get("bottom"), this.gamePiece02);
-    t.checkExpect(this.game1.nodes.get(0).neighbors.get("left"), null);
-  }
-
-  // tests for samePiece
-  void testSamePiece(Tester t) {
+  // tests for powerNeighbors
+  void testPowerNeighbors(Tester t) {
     initData();
     t.checkExpect(this.gamePiece01.samePiece(this.gamePiece01), true);
     t.checkExpect(this.gamePiece01.samePiece(this.gamePiece02), false);
@@ -381,8 +381,9 @@ class ExamplesLightEmAll {
   // tests for big bang
   void testBigBang(Tester t) {
     initData();
-    LightEmAll game = new LightEmAll(19, 10);
-    game.bigBang(game.width * LightEmAll.CELL_SIZE, game.height * LightEmAll.CELL_SIZE, 0.25);
+    LightEmAll game = new LightEmAll(19, 10, 1);
+    game.bigBang(game.width * LightEmAll.CELL_SIZE,
+        (game.height * LightEmAll.CELL_SIZE) + (LightEmAll.CELL_SIZE * 2), 0.25);
   }
   /*
    * // tests for onMouseClicked

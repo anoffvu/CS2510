@@ -1,9 +1,15 @@
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Random;
 
 import javalib.impworld.World;
 import javalib.impworld.WorldScene;
+import javalib.worldimages.OutlineMode;
+import javalib.worldimages.OverlayImage;
 import javalib.worldimages.Posn;
+import javalib.worldimages.RectangleImage;
+import javalib.worldimages.TextImage;
+import javalib.worldimages.WorldImage;
 
 // game state and main game class
 class LightEmAll extends World {
@@ -25,18 +31,17 @@ class LightEmAll extends World {
   public static int radius = 3;
   Random rand;
   int score; // TODO display this later
-
   public static int CELL_SIZE = 40;
 
+  // the gameplay constructor
   LightEmAll(int width, int height) {
     this.rand = new Random();
     this.width = width;
     this.height = height;
     this.powerRow = 0;
     this.powerCol = 0;
-    // this.radius = 10;
-    this.nodes = this.generateAllNodes();
-    this.board = this.placeNodes();
+    this.board = this.generateBoard();
+    this.nodes = this.grabAllNodes();
     updateAllNeighbors();
     this.mst = new ArrayList<Edge>();
     this.score = 0;
@@ -44,90 +49,104 @@ class LightEmAll extends World {
 
   // constructor for generating different types of boards
   LightEmAll(int width, int height, int genType) {
-    if (genType == -1) {
+    if (genType == -1) { // this will just make a blank board, no connections or neighbors
       this.rand = new Random();
       this.width = width;
       this.height = height;
       this.powerRow = 0;
       this.powerCol = 0;
-      this.nodes = this.generateAllNodes();
-      this.board = this.placeNodes();
+      this.board = this.generateBoard();
+      this.nodes = this.grabAllNodes();
       this.mst = new ArrayList<Edge>();
       this.score = 0;
     }
-    else if (genType == 1) { // fractal board generation
+    else if (genType == 1) { // manual board generation
+      this.rand = new Random();
+      this.width = width;
+      this.height = height;
+      this.powerRow = 5;
+      this.powerCol = 5;
+      this.board = this.generateBoard();
+      this.nodes = this.grabAllNodes();
+      generateManualConnections();
+      updateAllNeighbors();
+      updatePower(this.board);
+      this.mst = new ArrayList<Edge>();
+      this.score = 0;
+    }
+    else if (genType == 2) { // fractal board generation
       this.rand = new Random();
       this.width = width;
       this.height = height;
       this.powerRow = 0;
       this.powerCol = 0;
-      // this.nodes = this.generateAllFractalNodes();
-      this.board = this.placeNodes();
+      this.board = this.generateBoard();
+      this.nodes = this.grabAllNodes();
+      // TODO createFractalConnections();
+      updateAllNeighbors();
+      updatePower(this.board);
       this.mst = new ArrayList<Edge>();
       this.score = 0;
     }
-    updateAllNeighbors();
-
   }
 
-  // will generate all the nodes in one flat list
-  public ArrayList<GamePiece> generateAllNodes() {
-    int middleColIndex = (int) Math.floor(this.width / 2);
+  // will grab all the boards cells, left to right, then top to bottom
+  public ArrayList<GamePiece> grabAllNodes() {
     ArrayList<GamePiece> allNodes = new ArrayList<GamePiece>();
     for (int c = 0; c < this.width; c++) {
       for (int r = 0; r < this.height; r++) {
-        if (c == 0) { // left column
-          allNodes.add(new GamePiece(c, r, false, true, false, false));
-        }
-        else if (c == middleColIndex) { // middle column
-          allNodes.add(new GamePiece(middleColIndex, r, true, true, true, true));
-        }
-        else if ((c + 1) == this.width) { // right column
-          allNodes.add(new GamePiece(c, r, true, false, false, false));
-        }
-        else { // all other columns
-          allNodes.add(new GamePiece(c, r, true, true, false, false));
-        }
+        allNodes.add(this.board.get(c).get(r));
       }
     }
     return allNodes;
   }
 
-  // builds the board with the Nodes
-  // is it better to place them all
-  public ArrayList<ArrayList<GamePiece>> placeNodes() {
-    int nodesIndex = 0;
-    // puts the cells inside the grid
-    ArrayList<ArrayList<GamePiece>> columns = new ArrayList<ArrayList<GamePiece>>();
+  // creates manual connections
+  public void generateManualConnections() {
+    int middleColIndex = (int) Math.floor(this.width / 2);
     for (int c = 0; c < this.width; c++) {
-      columns.add(new ArrayList<GamePiece>());
       for (int r = 0; r < this.height; r++) {
-        columns.get(c).add(r, this.nodes.get(nodesIndex));
-        nodesIndex++;
+        if (c == 0) { // left column
+          this.board.get(c).get(r).left = false;
+          this.board.get(c).get(r).right = true;
+          this.board.get(c).get(r).top = false;
+          this.board.get(c).get(r).bottom = false;
+        }
+        else if (c == middleColIndex) { // middle column
+          this.board.get(c).get(r).left = true;
+          this.board.get(c).get(r).right = true;
+          this.board.get(c).get(r).top = true;
+          this.board.get(c).get(r).bottom = true;
+        }
+        else if ((c + 1) == this.width) { // right column
+          this.board.get(c).get(r).left = true;
+          this.board.get(c).get(r).right = false;
+          this.board.get(c).get(r).top = false;
+          this.board.get(c).get(r).bottom = false;
+        }
+        else { // all other columns
+          this.board.get(c).get(r).left = true;
+          this.board.get(c).get(r).right = true;
+          this.board.get(c).get(r).top = false;
+          this.board.get(c).get(r).bottom = false;
+        }
       }
     }
-    // TODO test these
-    powerBoard(columns);
-    return columns;
   }
 
-  /*
-   * // places the powerStation in the middle of the nodes
-   * public void placePowerStation(ArrayList<ArrayList<GamePiece>> targetBoard) {
-   * 
-   * int powerPlantIndex = (int) ((this.width * this.height) / 2);
-   * // on even number boards it'll round down
-   * int totalNodes = this.width * this.height;
-   * for (int i = 0; i < totalNodes; i++) {
-   * if (i == powerPlantIndex) {
-   * allNodes.get(i).powerStation = true;
-   * }
-   * }
-   * 
-   * 
-   * }
-   */
+  // builds the board, does not create connections or powerStation
+  public ArrayList<ArrayList<GamePiece>> generateBoard() {
+    ArrayList<ArrayList<GamePiece>> genBoard = new ArrayList<ArrayList<GamePiece>>();
+    for (int c = 0; c < this.width; c++) {
+      genBoard.add(new ArrayList<GamePiece>());
+      for (int r = 0; r < this.height; r++) {
+        genBoard.get(c).add(new GamePiece(r, c, false, false, false, false));
+      }
+    }
+    return genBoard;
+  }
 
+  // handles clicks
   public void onMouseClicked(Posn mouse, String button) {
     GamePiece clicked = locatePiece(mouse);
 
@@ -141,23 +160,19 @@ class LightEmAll extends World {
       this.score++; // updates the score when a valid move is executed
       // will want to update connectivity in the future
     }
-    resetPower();
-    powerBoard(this.board);
     updateAllNeighbors();
-    System.out.println(this.score);
-  }
-
-  // resets the power so the board can update when clicked
-  public void resetPower() {
-    for (int c = 0; c < this.width; c++) {
-      for (int r = 0; r < this.height; r++) {
-        this.board.get(c).get(r).powerLevel = 0;
-      }
-    }
+    updatePower(this.board);
   }
 
   // adds all the neighbors to each cell of the game board
   public void updateAllNeighbors() {
+    // resets all connections
+    for (GamePiece g : nodes) {
+      g.updateNeighbor("top", null);
+      g.updateNeighbor("right", null);
+      g.updateNeighbor("bottom", null);
+      g.updateNeighbor("left", null);
+    }
     for (int c = 0; c < this.width; c++) {
       // column value
       int left = c - 1;
@@ -166,10 +181,6 @@ class LightEmAll extends World {
         // row value
         int top = r - 1;
         int bottom = r + 1;
-        this.board.get(c).get(r).updateNeighbor("top", null);
-        this.board.get(c).get(r).updateNeighbor("right", null);
-        this.board.get(c).get(r).updateNeighbor("bottom", null);
-        this.board.get(c).get(r).updateNeighbor("left", null);
         if (top >= 0) {
           this.board.get(c).get(r).updateNeighbor("top", this.board.get(c).get(top));
         }
@@ -195,22 +206,31 @@ class LightEmAll extends World {
 
   // draws the scene
   public WorldScene makeScene() {
-    WorldScene scene = new WorldScene(this.width * LightEmAll.CELL_SIZE,
-        this.height * LightEmAll.CELL_SIZE);
+    int boardWidth = this.width * LightEmAll.CELL_SIZE;
+    int boardHeight = this.height * LightEmAll.CELL_SIZE;
+    WorldScene gameScene = new WorldScene(0, 0);
+    WorldImage scoreBoard = new OverlayImage(
+        new TextImage(Integer.toString(this.score), LightEmAll.CELL_SIZE, Color.GREEN),
+        new OverlayImage(
+            new RectangleImage(3 * CELL_SIZE, (int) 1.2 * CELL_SIZE, OutlineMode.SOLID,
+                Color.black),
+            new RectangleImage(boardWidth, 2 * CELL_SIZE, OutlineMode.SOLID, Color.lightGray)));
+    gameScene.placeImageXY(scoreBoard, boardWidth / 2, 0);
     for (int c = 0; c < this.width; c++) {
       for (int r = 0; r < this.height; r++) {
-        scene.placeImageXY(
+        gameScene.placeImageXY(
             this.board.get(c).get(r).drawPiece().movePinhole((-.5 * LightEmAll.CELL_SIZE),
                 (-.5 * LightEmAll.CELL_SIZE)),
             (c * LightEmAll.CELL_SIZE), (r * LightEmAll.CELL_SIZE));
       }
     }
-    return scene;
+    gameScene.placeImageXY(scoreBoard, boardWidth / 2, boardHeight + CELL_SIZE);
+    return gameScene;
   }
 
   // restarts the game
   public void restartGame() {
-    LightEmAll newGame = new LightEmAll(this.width, this.height);
+    LightEmAll newGame = new LightEmAll(this.width, this.height, 1); // TODO change this to default
     this.nodes = newGame.nodes;
     this.board = newGame.board;
     this.mst = newGame.mst;
@@ -222,36 +242,52 @@ class LightEmAll extends World {
   }
 
   // powers the board
-  public void powerBoard(ArrayList<ArrayList<GamePiece>> targetBoard) {
-    targetBoard.get(powerCol).get(powerRow).powerStation = true;
-    targetBoard.get(powerCol).get(powerRow).powerLevel = radius;
+  public void updatePower(ArrayList<ArrayList<GamePiece>> targetBoard) {
+    // resets the power levels
+    for (GamePiece g : this.nodes) {
+      g.powerLevel = 0;
+    }
+    targetBoard.get(powerCol).get(powerRow).powerStation = true; // sets the station
+    targetBoard.get(powerCol).get(powerRow).powerLevel = radius; // sets power level
+    // passes power to all neighbors
     targetBoard.get(powerCol).get(powerRow).powerNeighbors(new ArrayList<GamePiece>());
   }
 
   // handles key events
   public void onKeyEvent(String pressedKey) {
+
+    GamePiece powerStationPiece = this.board.get(powerCol).get(powerRow);
+    System.out
+        .println("top:" + Boolean.toString(this.board.get(powerCol).get(powerRow - 1).bottom));
+    System.out.println("should have this connect:" + Boolean.toString(powerStationPiece.top));
+    System.out.println("right:" + Boolean.toString(powerStationPiece.right));
+    System.out.println("bottom:" + Boolean.toString(powerStationPiece.bottom));
+    System.out.println("left:" + Boolean.toString(powerStationPiece.left));
     // moves the powerStation
-    if (pressedKey.equals("up") && this.powerRow > 0
-        && (this.board.get(powerCol).get(powerRow).neighbors.get("up") != null)) {
+    if (pressedKey.equals("up") && this.powerRow > 0 && powerStationPiece.isConnectedTo("up")) {
+      this.board.get(powerCol).get(powerRow).powerStation = false;
+      System.out.println(1);
       this.powerRow -= 1;
     }
     if (pressedKey.equals("down") && this.powerRow < this.height - 1
-        && (this.board.get(powerCol).get(powerRow).neighbors.get("down") != null)) {
+        && powerStationPiece.isConnectedTo("down")) {
+      this.board.get(powerCol).get(powerRow).powerStation = false;
       this.powerRow += 1;
     }
     if (pressedKey.equals("left") && this.powerCol > 0
-        && (this.board.get(powerCol).get(powerRow).neighbors.get("left") != null)) {
+        && powerStationPiece.isConnectedTo("left")) {
+      this.board.get(powerCol).get(powerRow).powerStation = false;
       this.powerCol -= 1;
     }
     if (pressedKey.equals("right") && this.powerCol < this.width - 1
-        && (this.board.get(powerCol).get(powerRow).neighbors.get("right") != null)) {
+        && powerStationPiece.isConnectedTo("right")) {
+      this.board.get(powerCol).get(powerRow).powerStation = false;
       this.powerCol += 1;
     }
     if (pressedKey.equals(" ") && this.powerCol < this.width) { // restarts the game
       restartGame();
     }
-    resetPower();
-    powerBoard(this.board);
+    updatePower(this.board);
   }
 
 }
