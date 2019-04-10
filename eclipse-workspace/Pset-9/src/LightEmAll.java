@@ -149,7 +149,6 @@ class LightEmAll extends World {
   // handles clicks
   public void onMouseClicked(Posn mouse, String button) {
     GamePiece clicked = locatePiece(mouse);
-
     if (button.equals("LeftButton")) { // rotate it clockwise
       clicked.rotatePiece(1);
       this.score++; // updates the score when a valid move is executed
@@ -160,6 +159,7 @@ class LightEmAll extends World {
       this.score++; // updates the score when a valid move is executed
       // will want to update connectivity in the future
     }
+    // TODO if we have time, just update this cells neighbors clicked.updateNeighbors();
     updateAllNeighbors();
     updatePower(this.board);
   }
@@ -201,7 +201,7 @@ class LightEmAll extends World {
   public GamePiece locatePiece(Posn mouse) {
     int row = (int) Math.floor(mouse.y / LightEmAll.CELL_SIZE);
     int col = (int) Math.floor(mouse.x / LightEmAll.CELL_SIZE);
-    return board.get(col).get(row);
+    return this.board.get(col).get(row);
   }
 
   // draws the scene
@@ -209,13 +209,14 @@ class LightEmAll extends World {
     int boardWidth = this.width * LightEmAll.CELL_SIZE;
     int boardHeight = this.height * LightEmAll.CELL_SIZE;
     WorldScene gameScene = new WorldScene(0, 0);
+    // a scoreboard to be displayed at the bottom
     WorldImage scoreBoard = new OverlayImage(
         new TextImage(Integer.toString(this.score), LightEmAll.CELL_SIZE, Color.GREEN),
         new OverlayImage(
             new RectangleImage(3 * CELL_SIZE, (int) 1.2 * CELL_SIZE, OutlineMode.SOLID,
                 Color.black),
             new RectangleImage(boardWidth, 2 * CELL_SIZE, OutlineMode.SOLID, Color.lightGray)));
-    gameScene.placeImageXY(scoreBoard, boardWidth / 2, 0);
+    // begins drawing the game board
     for (int c = 0; c < this.width; c++) {
       for (int r = 0; r < this.height; r++) {
         gameScene.placeImageXY(
@@ -224,6 +225,7 @@ class LightEmAll extends World {
             (c * LightEmAll.CELL_SIZE), (r * LightEmAll.CELL_SIZE));
       }
     }
+    // combines the boards
     gameScene.placeImageXY(scoreBoard, boardWidth / 2, boardHeight + CELL_SIZE);
     return gameScene;
   }
@@ -255,27 +257,18 @@ class LightEmAll extends World {
 
   // handles key events
   public void onKeyEvent(String pressedKey) {
-
     GamePiece powerStationPiece = this.board.get(powerCol).get(powerRow);
-    System.out
-        .println("top:" + Boolean.toString(this.board.get(powerCol).get(powerRow - 1).bottom));
-    System.out.println("should have this connect:" + Boolean.toString(powerStationPiece.top));
-    System.out.println("right:" + Boolean.toString(powerStationPiece.right));
-    System.out.println("bottom:" + Boolean.toString(powerStationPiece.bottom));
-    System.out.println("left:" + Boolean.toString(powerStationPiece.left));
     // moves the powerStation
-    if (pressedKey.equals("up") && this.powerRow > 0 && powerStationPiece.isConnectedTo("up")) {
+    if (pressedKey.equals("up") && this.powerRow > 0 && powerStationPiece.isConnectedTo("top")) {
       this.board.get(powerCol).get(powerRow).powerStation = false;
-      System.out.println(1);
       this.powerRow -= 1;
     }
     if (pressedKey.equals("down") && this.powerRow < this.height - 1
-        && powerStationPiece.isConnectedTo("down")) {
+        && powerStationPiece.isConnectedTo("bottom")) {
       this.board.get(powerCol).get(powerRow).powerStation = false;
       this.powerRow += 1;
     }
-    if (pressedKey.equals("left") && this.powerCol > 0
-        && powerStationPiece.isConnectedTo("left")) {
+    if (pressedKey.equals("left") && this.powerCol > 0 && powerStationPiece.isConnectedTo("left")) {
       this.board.get(powerCol).get(powerRow).powerStation = false;
       this.powerCol -= 1;
     }

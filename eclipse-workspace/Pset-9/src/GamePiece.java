@@ -60,6 +60,7 @@ class GamePiece {
     this(row, col, false, false, true, true, false);
   }
 
+  // draws the GamePiece
   public WorldImage drawPiece() {
     WorldImage base = new RectangleImage(LightEmAll.CELL_SIZE, LightEmAll.CELL_SIZE,
         OutlineMode.SOLID, Color.darkGray);
@@ -84,9 +85,8 @@ class GamePiece {
     base = new RotateImage(base, 90.0);
     if (this.powerStation) {
       base = new OverlayImage(
-          new StarImage(LightEmAll.CELL_SIZE / 4, OutlineMode.SOLID, Color.BLUE), base);
+          new StarImage((LightEmAll.CELL_SIZE / 2.5), 8, 2, OutlineMode.SOLID, Color.ORANGE), base);
     }
-
     return base;
   }
 
@@ -132,7 +132,7 @@ class GamePiece {
         && this.powerStation == that.powerStation && this.powerLevel == that.powerLevel;
   }
 
-  // checks if this
+  // checks if this GamePiece is connected to the piece in the given direction
   public boolean isConnectedTo(String direction) {
     if (this.neighbors.get(direction) != null) {
       if (direction.equals("top")) {
@@ -156,19 +156,19 @@ class GamePiece {
     seen.add(this);
     if (this.powerLevel > 0) {
       int neighborPowerLevel = this.powerLevel - 1;
-      if (isConnectedTo("top") && !seen.contains(this.neighbors.get("top"))) {
+      if (this.isConnectedTo("top") && !seen.contains(this.neighbors.get("top"))) {
           this.neighbors.get("top").powerLevel = neighborPowerLevel;
           this.neighbors.get("top").powerNeighbors(seen);
       }
-      if (isConnectedTo("right") && !seen.contains(this.neighbors.get("right"))) {
+      if (this.isConnectedTo("right") && !seen.contains(this.neighbors.get("right"))) {
           this.neighbors.get("right").powerLevel = neighborPowerLevel;
           this.neighbors.get("right").powerNeighbors(seen);
       }
-      if (isConnectedTo("bottom") && !seen.contains(this.neighbors.get("bottom"))) {
+      if (this.isConnectedTo("bottom") && !seen.contains(this.neighbors.get("bottom"))) {
           this.neighbors.get("bottom").powerLevel = neighborPowerLevel;
           this.neighbors.get("bottom").powerNeighbors(seen);
       }
-      if (isConnectedTo("left") && !seen.contains(this.neighbors.get("left"))) {
+      if (this.isConnectedTo("left") && !seen.contains(this.neighbors.get("left"))) {
           this.neighbors.get("left").powerLevel = neighborPowerLevel;
           this.neighbors.get("left").powerNeighbors(seen);
       }
