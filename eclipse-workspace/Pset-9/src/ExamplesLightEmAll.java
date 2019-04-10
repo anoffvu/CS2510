@@ -84,8 +84,8 @@ class ExamplesLightEmAll {
     this.grid1Nodes.add(this.gamePiece7);
     this.grid1Nodes.add(this.gamePiece8);
     this.grid1Nodes.add(this.gamePiece9);
-    this.game1 = new LightEmAll(3, 3);
-    this.game2 = new LightEmAll(10, 10);
+    this.game1 = new LightEmAll(3, 3, -1);
+    this.game2 = new LightEmAll(10, 10, -1);
 
     this.gamePiece01 = new GamePiece(0, 0, false, true, false, false);
     this.gamePiece02 = new GamePiece(1, 0, true, true, false, false);

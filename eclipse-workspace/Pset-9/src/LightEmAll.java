@@ -44,13 +44,12 @@ class LightEmAll extends World {
 
   // constructor for generating different types of boards
   LightEmAll(int width, int height, int genType) {
-    if (genType == 0) {
+    if (genType == -1) {
       this.rand = new Random();
       this.width = width;
       this.height = height;
       this.powerRow = 0;
       this.powerCol = 0;
-      this.radius = 99;
       this.nodes = this.generateAllNodes();
       this.board = this.placeNodes();
       this.mst = new ArrayList<Edge>();
@@ -62,7 +61,6 @@ class LightEmAll extends World {
       this.height = height;
       this.powerRow = 0;
       this.powerCol = 0;
-      this.radius = 99;
       // this.nodes = this.generateAllFractalNodes();
       this.board = this.placeNodes();
       this.mst = new ArrayList<Edge>();
