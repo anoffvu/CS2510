@@ -26,7 +26,7 @@ class GamePiece {
   int powerLevel;
   HashMap<String, GamePiece> neighbors;
 
-  GamePiece(int row, int col, ArrayList<GamePiece> neighbors, boolean left, boolean right,
+  GamePiece(int row, int col, HashMap<String, GamePiece> neighbors, boolean left, boolean right,
       boolean top, boolean bottom, boolean powerStation, int powerLevel) {
     this.row = row;
     this.col = col;
@@ -36,7 +36,7 @@ class GamePiece {
     this.bottom = bottom;
     this.powerStation = powerStation;
     this.powerLevel = powerLevel;
-    this.neighbors = new HashMap<String, GamePiece>();
+    this.neighbors = neighbors;
     this.neighbors.put("left", null);
     this.neighbors.put("right", null);
     this.neighbors.put("top", null);
@@ -46,7 +46,7 @@ class GamePiece {
 
   GamePiece(int row, int col, boolean left, boolean right, boolean top, boolean bottom,
       boolean powerStation) {
-    this(row, col, new ArrayList<GamePiece>(), left, right, top, bottom, powerStation, 0);
+    this(row, col, new HashMap<String, GamePiece>(), left, right, top, bottom, powerStation, 0);
 
   }
 
