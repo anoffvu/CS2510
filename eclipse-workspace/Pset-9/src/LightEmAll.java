@@ -66,8 +66,8 @@ class LightEmAll extends World {
       this.rand = new Random();
       this.width = width;
       this.height = height;
-      this.powerRow = 5;
-      this.powerCol = 5;
+      this.powerRow = 0;
+      this.powerCol = 0;
       this.radius = 3;
       this.board = this.generateBoard();
       this.nodes = this.grabAllNodes();
@@ -86,7 +86,7 @@ class LightEmAll extends World {
       this.radius = 3;
       this.board = this.generateBoard();
       this.nodes = this.grabAllNodes();
-      // TODO generateFractalConnections();
+      generateFractalConnections(new Posn(0, 0), this.board);
       updateAllNeighbors();
       updatePower(this.board);
       this.mst = new ArrayList<Edge>();
@@ -136,6 +136,162 @@ class LightEmAll extends World {
         }
       }
     }
+  }
+
+  // generates a fractal board
+  // TODO tests
+  public void generateFractalConnections(Posn lastKnownPosition,
+      ArrayList<ArrayList<GamePiece>> currentBoard) {
+    ArrayList<ArrayList<ArrayList<GamePiece>>> splits = new ArrayList<ArrayList<ArrayList<GamePiece>>>();
+    int splitType = determineSplitType(currentBoard);
+    if (splitType == 0) { // no split needed, execute base cases
+      int colCount = currentBoard.size();
+      int rowCount = currentBoard.get(0).size();
+      if (colCount == 2 && rowCount == 2) { // a 2 x 2
+        buildU(currentBoard);
+      }
+      if (colCount == 2 && rowCount == 3) { // a 2 x 3
+        buildU(currentBoard);
+      }
+      if (colCount == 3 && rowCount == 2) { // a 3 x 2
+        buildU(currentBoard);
+        currentBoard.get(1).get(0).bottom = true;
+        currentBoard.get(1).get(1).top = true;
+      }
+      if (colCount == 3 && rowCount == 3) { // a 3 x 3
+        buildU(currentBoard);
+        currentBoard.get(1).get(0).bottom = true;
+        currentBoard.get(1).get(1).top = true;
+        currentBoard.get(1).get(1).bottom = true;
+        currentBoard.get(1).get(2).top = true;
+      }
+    }
+    else if (splitType == 1) { // horizontal and vertical splits needed
+      buildU(currentBoard);
+      // gets top left, top right, bottom left, bottom right splits
+      splits = splitBoard(splitType, currentBoard);
+      // partition the board
+      generateFractalConnections(new Posn(0, 0), splits.get(0));
+      generateFractalConnections(new Posn(1, 0), splits.get(1));
+      generateFractalConnections(new Posn(0, 1), splits.get(2));
+      generateFractalConnections(new Posn(0, 1), splits.get(3));
+    }
+    else if (splitType == 2) { // only top and bottom split needed
+      splits = splitBoard(splitType, currentBoard); // gets top then bottom
+      int bottomRow = splits.get(0).get(0).size() - 1;
+      int rightCol = splits.get(0).size() - 1;
+      if (lastKnownPosition.x == 0) { // add the left connection between top and bottom
+
+        splits.get(0).get(0).get(bottomRow).bottom = true; // top, left, bottom
+        splits.get(1).get(0).get(0).top = true; // bottom, left, top
+      }
+      if (lastKnownPosition.x == 1) { // add the right connection between top and bottom
+        splits.get(0).get(rightCol).get(bottomRow).bottom = true; // top, right, bottom
+        splits.get(1).get(rightCol).get(0).top = true; // bottom, right, top
+      }
+      generateFractalConnections(new Posn(0, 0), splits.get(0));
+      generateFractalConnections(new Posn(0, 1), splits.get(1));
+    }
+    else if (splitType == 3) { // only left and right split needed
+      buildU(currentBoard);
+      splits = splitBoard(splitType, currentBoard); // gets left then right
+      generateFractalConnections(new Posn(0, 0), splits.get(0));
+      generateFractalConnections(new Posn(1, 0), splits.get(1));
+    }
+  }
+
+  // splits the board in the desired manner
+  public ArrayList<ArrayList<ArrayList<GamePiece>>> splitBoard(int splitType,
+      ArrayList<ArrayList<GamePiece>> boardToSplit) {
+    ArrayList<ArrayList<ArrayList<GamePiece>>> ret = new ArrayList<ArrayList<ArrayList<GamePiece>>>();
+    // this funky math is so java can actually round up correctly
+    int splitCol = boardToSplit.size() / 2 + ((boardToSplit.size() % 2 == 0) ? 0 : 1);
+    int splitRow = boardToSplit.get(0).size() / 2 + ((boardToSplit.get(0).size() % 2 == 0) ? 0 : 1);
+    if (splitType == 1) { // split into 4 quadrants
+      ArrayList<ArrayList<GamePiece>> quad1 = new ArrayList<ArrayList<GamePiece>>();
+      ArrayList<ArrayList<GamePiece>> quad2 = new ArrayList<ArrayList<GamePiece>>();
+      ArrayList<ArrayList<GamePiece>> quad3 = new ArrayList<ArrayList<GamePiece>>();
+      ArrayList<ArrayList<GamePiece>> quad4 = new ArrayList<ArrayList<GamePiece>>();
+      for (int c = 0; c < splitCol; c++) {
+        quad1.add(new ArrayList<GamePiece>(boardToSplit.get(c).subList(0, splitRow)));
+        quad3.add(new ArrayList<GamePiece>(
+            boardToSplit.get(c).subList(splitRow, boardToSplit.get(0).size())));
+      }
+      for (int c = splitCol; c < boardToSplit.size(); c++) {
+        quad2.add(new ArrayList<GamePiece>(boardToSplit.get(c).subList(0, splitRow)));
+        quad4.add(new ArrayList<GamePiece>(
+            boardToSplit.get(c).subList(splitRow, boardToSplit.get(0).size())));
+      }
+      ret.add(quad1);
+      ret.add(quad2);
+      ret.add(quad3);
+      ret.add(quad4);
+    }
+    if (splitType == 2) { // split top and bottom
+      ArrayList<ArrayList<GamePiece>> top = new ArrayList<ArrayList<GamePiece>>();
+      ArrayList<ArrayList<GamePiece>> bottom = new ArrayList<ArrayList<GamePiece>>();
+      for (int c = 0; c < boardToSplit.size(); c++) {
+        top.add(new ArrayList<GamePiece>(boardToSplit.get(c).subList(0, splitRow)));
+        bottom.add(new ArrayList<GamePiece>(
+            boardToSplit.get(c).subList(splitRow, boardToSplit.get(0).size())));
+      }
+      ret.add(top);
+      ret.add(bottom);
+    }
+    if (splitType == 3) { // split left and right
+      ArrayList<ArrayList<GamePiece>> left = new ArrayList<ArrayList<GamePiece>>(
+          boardToSplit.subList(0, splitCol));
+      ArrayList<ArrayList<GamePiece>> right = new ArrayList<ArrayList<GamePiece>>(
+          boardToSplit.subList(splitCol, boardToSplit.size()));
+      ret.add(left);
+      ret.add(right);
+    }
+    return ret;
+  }
+
+  public int determineSplitType(ArrayList<ArrayList<GamePiece>> currentBoard) {
+    int colCount = currentBoard.size();
+    int rowCount = currentBoard.get(0).size();
+    if (colCount < 4 && rowCount < 4) { // no split needed
+      return 0;
+    }
+    else if (colCount >= 4 && rowCount >= 4) { // vertical and horizontal split needed
+      return 1;
+    }
+    else if (colCount < 4 && rowCount >= 4) { // top and bottom split needed
+      return 2;
+    }
+    else if (colCount >= 4 && rowCount < 4) { // left and right split needed
+      return 3;
+    }
+    return -1; // error
+  }
+
+  // makes the u pattern on the passed in board
+  public void buildU(ArrayList<ArrayList<GamePiece>> currentBoard) {
+    for (int r = 0; r < currentBoard.get(0).size(); r++) { // only iterating by each rows here
+      if ((r != (currentBoard.get(0).size() - 1)) && r != 0) { // not the bottom or top row
+        currentBoard.get(0).get(r).top = true;
+        currentBoard.get(0).get(r).bottom = true;
+        currentBoard.get(currentBoard.size() - 1).get(r).top = true;
+        currentBoard.get(currentBoard.size() - 1).get(r).bottom = true;
+      }
+      else if (r == 0) { // top row
+        currentBoard.get(0).get(r).bottom = true;
+        currentBoard.get(currentBoard.size() - 1).get(r).bottom = true;
+      }
+      else if (r == (currentBoard.get(0).size() - 1)) { // bottom row
+        for (int c = 1; c < currentBoard.size() - 1; c++) { // all nodes between left & right ones
+          currentBoard.get(c).get(r).left = true;
+          currentBoard.get(c).get(r).right = true;
+        }
+        currentBoard.get(0).get(r).top = true;
+        currentBoard.get(0).get(r).right = true;
+        currentBoard.get(currentBoard.size() - 1).get(r).top = true;
+        currentBoard.get(currentBoard.size() - 1).get(r).left = true;
+      }
+    }
+
   }
 
   // builds the board, does not create connections or powerStation
@@ -225,8 +381,7 @@ class LightEmAll extends World {
       for (int r = 0; r < this.height; r++) {
         gameScene.placeImageXY(
             this.board.get(c).get(r).drawPiece(this.radius)
-                .movePinhole((-.5 * LightEmAll.CELL_SIZE),
-                (-.5 * LightEmAll.CELL_SIZE)),
+                .movePinhole((-.5 * LightEmAll.CELL_SIZE), (-.5 * LightEmAll.CELL_SIZE)),
             (c * LightEmAll.CELL_SIZE), (r * LightEmAll.CELL_SIZE));
       }
     }

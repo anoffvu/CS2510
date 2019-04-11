@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 
-import javalib.worldimages.Posn;
 import tester.Tester;
 
 // examples class
@@ -46,6 +45,7 @@ class ExamplesLightEmAll {
   ArrayList<ArrayList<GamePiece>> grid3;
   ArrayList<GamePiece> grid3Nodes;
   LightEmAll game3;
+  LightEmAll twoByTwo;
 
   public void initData() {
     this.mt = new ArrayList<GamePiece>();
@@ -141,218 +141,295 @@ class ExamplesLightEmAll {
     this.grid3Nodes.add(this.gamePiece14);
     this.grid3Nodes.add(this.gamePiece15);
     this.game3 = new LightEmAll(5, 3);
+    this.twoByTwo = new LightEmAll(2, 2, -1);
+  }
+
+  /*
+   * // TODO tests for drawPiece
+   * void testDrawPiece(Tester t) {
+   * initData();
+   * // t.checkExpect(this.gamePiece01.drawPiece(), null);
+   * }
+   * 
+   * // TODO tests for calcColor
+   * void testCalcColor(Tester t) {
+   * initData();
+   * //
+   * }
+   * 
+   * // tests for updateNeighobor
+   * void testUpdateNeighbor(Tester t) {
+   * initData();
+   * t.checkExpect(this.game1.nodes.get(0).neighbors.get("right"), null);
+   * t.checkExpect(this.game1.nodes.get(0).neighbors.get("top"), null);
+   * t.checkExpect(this.game1.nodes.get(0).neighbors.get("bottom"), null);
+   * t.checkExpect(this.game1.nodes.get(0).neighbors.get("left"), null);
+   * this.game1.nodes.get(0).updateNeighbor("right", this.gamePiece01);
+   * t.checkExpect(this.game1.nodes.get(0).neighbors.get("right"), this.gamePiece01);
+   * t.checkExpect(this.game1.nodes.get(0).neighbors.get("top"), null);
+   * t.checkExpect(this.game1.nodes.get(0).neighbors.get("bottom"), null);
+   * t.checkExpect(this.game1.nodes.get(0).neighbors.get("left"), null);
+   * this.game1.nodes.get(0).updateNeighbor("bottom", this.gamePiece02);
+   * t.checkExpect(this.game1.nodes.get(0).neighbors.get("right"), this.gamePiece01);
+   * t.checkExpect(this.game1.nodes.get(0).neighbors.get("top"), null);
+   * t.checkExpect(this.game1.nodes.get(0).neighbors.get("bottom"), this.gamePiece02);
+   * t.checkExpect(this.game1.nodes.get(0).neighbors.get("left"), null);
+   * }
+   * 
+   * // TODO tests for samePiece
+   * // redo thse test
+   * void testSamePiece(Tester t) {
+   * initData();
+   * t.checkExpect(this.gamePiece01.samePiece(this.gamePiece01), true);
+   * t.checkExpect(this.gamePiece01.samePiece(this.gamePiece02), false);
+   * t.checkExpect(this.gamePiece9.samePiece(this.gamePiece9), true);
+   * t.checkExpect(this.gamePiece9.samePiece(this.gamePiece10), false);
+   * }
+   * 
+   * // TODO tests for isConnectedTo
+   * void testIsConnecteTo(Tester t) {
+   * 
+   * }
+   * 
+   * // tests for rotatePiece
+   * // TODO test added functionality
+   * void testRotatePiece(Tester t) {
+   * initData();
+   * t.checkExpect(this.gamePiece1.left, false);
+   * t.checkExpect(this.gamePiece1.top, false);
+   * t.checkExpect(this.gamePiece1.right, true);
+   * t.checkExpect(this.gamePiece1.bottom, false);
+   * this.gamePiece1.rotatePiece(1);
+   * t.checkExpect(this.gamePiece1.left, false);
+   * t.checkExpect(this.gamePiece1.top, false);
+   * t.checkExpect(this.gamePiece1.right, false);
+   * t.checkExpect(this.gamePiece1.bottom, true);
+   * initData();
+   * t.checkExpect(this.gamePiece1.left, false);
+   * t.checkExpect(this.gamePiece1.top, false);
+   * t.checkExpect(this.gamePiece1.right, true);
+   * t.checkExpect(this.gamePiece1.bottom, false);
+   * this.gamePiece1.rotatePiece(-1);
+   * t.checkExpect(this.gamePiece1.left, false);
+   * t.checkExpect(this.gamePiece1.top, true);
+   * t.checkExpect(this.gamePiece1.right, false);
+   * t.checkExpect(this.gamePiece1.bottom, false);
+   * initData();
+   * t.checkExpect(this.gamePiece5.left, true);
+   * t.checkExpect(this.gamePiece5.top, true);
+   * t.checkExpect(this.gamePiece5.right, true);
+   * t.checkExpect(this.gamePiece5.bottom, true);
+   * this.gamePiece5.rotatePiece(1);
+   * t.checkExpect(this.gamePiece5.left, true);
+   * t.checkExpect(this.gamePiece5.top, true);
+   * t.checkExpect(this.gamePiece5.right, true);
+   * t.checkExpect(this.gamePiece5.bottom, true);
+   * }
+   * 
+   * // Todo tests for powerNeighbors
+   * void testPowerNeighbors(Tester t) {
+   * initData();
+   * }
+   * 
+   * // TODO tests for grabAllNodes
+   * public void testGrabAllNodes(Tester t) {
+   * initData();
+   * t.checkExpect(this.game1.grabAllNodes().size(), 9);
+   * t.checkExpect(this.game1.nodes.size(), 9);
+   * t.checkExpect(this.game2.nodes.size(), 100);
+   * 
+   * }
+   * 
+   * // TODO tests for generateManualConnections
+   * public void testGenerateManualConnections(Tester t) {
+   * 
+   * }
+   * 
+   * // TODO tests for generateBoard
+   * public void testGenerateBoard(Tester t) {
+   * initData();
+   * t.checkExpect(this.game1.generateBoard().size(), 3);
+   * t.checkExpect(this.game1.generateBoard().get(0).size(), 3);
+   * }
+   * 
+   * // tests for onMouseClicked
+   * // TODO added functionality
+   * void testOnMouseClicked(Tester t) {
+   * initData();
+   * t.checkExpect(this.game1.board.get(0).get(0).left, false);
+   * t.checkExpect(this.game1.board.get(0).get(0).top, false);
+   * t.checkExpect(this.game1.board.get(0).get(0).right, true);
+   * t.checkExpect(this.game1.board.get(0).get(0).bottom, false);
+   * t.checkExpect(this.game1.score, 0);
+   * this.game1.onMouseClicked(new Posn(1, 1), "LeftButton");
+   * t.checkExpect(this.game1.score, 1);
+   * t.checkExpect(this.game1.board.get(0).get(0).left, false);
+   * t.checkExpect(this.game1.board.get(0).get(0).top, false);
+   * t.checkExpect(this.game1.board.get(0).get(0).right, false);
+   * t.checkExpect(this.game1.board.get(0).get(0).bottom, true);
+   * this.game1.onMouseClicked(new Posn(1, 1), "RightButton");
+   * t.checkExpect(this.game1.score, 2);
+   * t.checkExpect(this.game1.board.get(0).get(0).left, false);
+   * t.checkExpect(this.game1.board.get(0).get(0).top, false);
+   * t.checkExpect(this.game1.board.get(0).get(0).right, true);
+   * t.checkExpect(this.game1.board.get(0).get(0).bottom, false);
+   * this.game1.onMouseClicked(new Posn(1, 1), "RightButton");
+   * t.checkExpect(this.game1.score, 3);
+   * t.checkExpect(this.game1.board.get(0).get(0).left, false);
+   * t.checkExpect(this.game1.board.get(0).get(0).top, true);
+   * t.checkExpect(this.game1.board.get(0).get(0).right, false);
+   * t.checkExpect(this.game1.board.get(0).get(0).bottom, false);
+   * }
+   * 
+   * // tests for updateAllNeighbors
+   * // TODO test added functionality
+   * public void testUpdateAllNeighbors(Tester t) {
+   * initData();
+   * t.checkExpect(this.gamePiece1.neighbors.get("top"), null);
+   * t.checkExpect(this.gamePiece1.neighbors.get("left"), null);
+   * t.checkExpect(this.gamePiece1.neighbors.get("right"), null);
+   * t.checkExpect(this.gamePiece1.neighbors.get("bottom"), null);
+   * 
+   * t.checkExpect(this.gamePiece5.neighbors.get("top"), null);
+   * t.checkExpect(this.gamePiece5.neighbors.get("left"), null);
+   * t.checkExpect(this.gamePiece5.neighbors.get("right"), null);
+   * t.checkExpect(this.gamePiece5.neighbors.get("bottom"), null);
+   * 
+   * this.game1.updateAllNeighbors();
+   * 
+   * t.checkExpect(this.game1.board.get(0).get(0).neighbors.get("right").samePiece(this.
+   * gamePiece2),
+   * true);
+   * t.checkExpect(this.game1.board.get(0).get(0).neighbors.get("left"), null);
+   * t.checkExpect(this.game1.board.get(0).get(0).neighbors.get("bottom").samePiece(this.
+   * gamePiece4),
+   * true);
+   * t.checkExpect(this.game1.board.get(0).get(0).neighbors.get("top"), null);
+   * 
+   * t.checkExpect(this.game1.board.get(1).get(1).neighbors.get("top").samePiece(this.
+   * gamePiece2),
+   * true);
+   * t.checkExpect(this.game1.board.get(1).get(1).neighbors.get("right").samePiece(this.
+   * gamePiece6),
+   * true);
+   * t.checkExpect(this.game1.board.get(1).get(1).neighbors.get("bottom").samePiece(this.
+   * gamePiece8),
+   * true);
+   * t.checkExpect(this.game1.board.get(1).get(1).neighbors.get("left").samePiece(this.
+   * gamePiece4),
+   * true);
+   * 
+   * t.checkExpect(this.gamePiece01.neighbors.get("top"), null);
+   * t.checkExpect(this.gamePiece01.neighbors.get("left"), null);
+   * t.checkExpect(this.gamePiece01.neighbors.get("right"), null);
+   * t.checkExpect(this.gamePiece01.neighbors.get("bottom"), null);
+   * 
+   * this.game3.updateAllNeighbors();
+   * 
+   * t.checkExpect(this.game3.board.get(0).get(0).neighbors.get("top"), null);
+   * t.checkExpect(this.game3.board.get(0).get(0).neighbors.get("right").samePiece(this.
+   * gamePiece02),
+   * true);
+   * t.checkExpect(
+   * this.game3.board.get(0).get(0).neighbors.get("bottom").samePiece(this.gamePiece06),
+   * true);
+   * t.checkExpect(this.game3.board.get(0).get(0).neighbors.get("left"), null);
+   * 
+   * }
+   * 
+   * // TODO tests for locatePiece
+   * void testLocatePiece(Tester t) {
+   * initData();
+   * }
+   * 
+   * // TODO tests for restartGame
+   * void testRestartGame(Tester t) {
+   * initData();
+   * }
+   * 
+   * // TODO tests for updatePower
+   * void testUpdatePower(Tester t) {
+   * initData();
+   * }
+   * 
+   * // TODO tests for onKeyEvent
+   * void testOnKeyEvent(Tester t) {
+   * initData();
+   * }
+   */
+
+  // tests for splitBoard
+  void testSplitBoard(Tester t) {
+    initData();
+    t.checkExpect(this.game2.splitBoard(1, new LightEmAll(4, 4, 2).board).size(), 4);
+    t.checkExpect(this.game2.splitBoard(1, new LightEmAll(4, 4, 2).board).get(0).size(), 2);
+    t.checkExpect(this.game2.splitBoard(1, new LightEmAll(4, 4, 2).board).get(0).get(0).size(), 2);
+    t.checkExpect(this.game2.splitBoard(1, new LightEmAll(4, 4, 2).board).get(1).get(0).size(), 2);
+    t.checkExpect(this.game2.splitBoard(1, new LightEmAll(4, 4, 2).board).get(2).get(0).size(), 2);
+    t.checkExpect(this.game2.splitBoard(1, new LightEmAll(4, 4, 2).board).get(3).get(0).size(), 2);
+    t.checkExpect(this.game2.splitBoard(2, new LightEmAll(2, 4, 2).board).size(), 2);
+    t.checkExpect(this.game2.splitBoard(1, new LightEmAll(7, 7, 2).board).size(), 4);
+    t.checkExpect(this.game2.splitBoard(1, new LightEmAll(7, 7, 2).board).get(0).size(), 4);
+    t.checkExpect(this.game2.splitBoard(1, new LightEmAll(7, 7, 2).board).get(1).size(), 3);
+    t.checkExpect(this.game2.splitBoard(1, new LightEmAll(7, 7, 2).board).get(2).size(), 4);
+    t.checkExpect(this.game2.splitBoard(1, new LightEmAll(7, 7, 2).board).get(3).size(), 3);
+    t.checkExpect(this.game2.splitBoard(1, new LightEmAll(7, 7, 2).board).get(0).get(0).size(), 4);
+    t.checkExpect(this.game2.splitBoard(1, new LightEmAll(7, 7, 2).board).get(1).get(0).size(), 4);
+    t.checkExpect(this.game2.splitBoard(1, new LightEmAll(7, 7, 2).board).get(2).get(0).size(), 3);
+    t.checkExpect(this.game2.splitBoard(1, new LightEmAll(7, 7, 2).board).get(3).get(0).size(), 3);
 
   }
 
-  // TODO tests for drawPiece
-  void testDrawPiece(Tester t) {
+  // tests for determineSplitType
+  void testDetermineSplitType(Tester t) {
     initData();
-    // t.checkExpect(this.gamePiece01.drawPiece(), null);
+    t.checkExpect(this.game2.determineSplitType(game2.board), 1);
+    t.checkExpect(this.game2.determineSplitType(new LightEmAll(4, 4, 1).board), 1);
+    t.checkExpect(this.game2.determineSplitType(new LightEmAll(3, 4, 1).board), 2);
+    t.checkExpect(this.game2.determineSplitType(new LightEmAll(10, 2, 1).board), 3);
+    t.checkExpect(this.game2.determineSplitType(new LightEmAll(2, 10, 1).board), 2);
+    t.checkExpect(this.game2.determineSplitType(new LightEmAll(7, 7, 1).board), 1);
   }
 
-  // TODO tests for calcColor
-  void testCalcColor(Tester t) {
+  // tests for buildU
+  void testBuildU(Tester t) {
     initData();
-    //
-  }
-
-  // tests for updateNeighobor
-  void testUpdateNeighbor(Tester t) {
+    t.checkExpect(this.game2.board.get(0).get(0).bottom, false);
+    t.checkExpect(this.game2.board.get(9).get(0).bottom, false);
+    t.checkExpect(this.game2.board.get(0).get(9).top, false);
+    t.checkExpect(this.game2.board.get(9).get(9).top, false);
+    t.checkExpect(this.game2.board.get(0).get(4).top, false);
+    t.checkExpect(this.game2.board.get(9).get(4).top, false);
+    t.checkExpect(this.game2.board.get(0).get(4).top, false);
+    t.checkExpect(this.game2.board.get(9).get(4).top, false);
+    this.game2.buildU(this.game2.board);
+    t.checkExpect(this.game2.board.get(0).get(0).bottom, true);
+    t.checkExpect(this.game2.board.get(9).get(0).bottom, true);
+    t.checkExpect(this.game2.board.get(0).get(9).top, true);
+    t.checkExpect(this.game2.board.get(9).get(9).top, true);
+    t.checkExpect(this.game2.board.get(0).get(4).top, true);
+    t.checkExpect(this.game2.board.get(9).get(4).top, true);
+    t.checkExpect(this.game2.board.get(0).get(4).top, true);
+    t.checkExpect(this.game2.board.get(9).get(4).top, true);
     initData();
-    t.checkExpect(this.game1.nodes.get(0).neighbors.get("right"), null);
-    t.checkExpect(this.game1.nodes.get(0).neighbors.get("top"), null);
-    t.checkExpect(this.game1.nodes.get(0).neighbors.get("bottom"), null);
-    t.checkExpect(this.game1.nodes.get(0).neighbors.get("left"), null);
-    this.game1.nodes.get(0).updateNeighbor("right", this.gamePiece01);
-    t.checkExpect(this.game1.nodes.get(0).neighbors.get("right"), this.gamePiece01);
-    t.checkExpect(this.game1.nodes.get(0).neighbors.get("top"), null);
-    t.checkExpect(this.game1.nodes.get(0).neighbors.get("bottom"), null);
-    t.checkExpect(this.game1.nodes.get(0).neighbors.get("left"), null);
-    this.game1.nodes.get(0).updateNeighbor("bottom", this.gamePiece02);
-    t.checkExpect(this.game1.nodes.get(0).neighbors.get("right"), this.gamePiece01);
-    t.checkExpect(this.game1.nodes.get(0).neighbors.get("top"), null);
-    t.checkExpect(this.game1.nodes.get(0).neighbors.get("bottom"), this.gamePiece02);
-    t.checkExpect(this.game1.nodes.get(0).neighbors.get("left"), null);
-  }
+    t.checkExpect(this.twoByTwo.board.get(0).get(0).bottom, false);
+    t.checkExpect(this.twoByTwo.board.get(1).get(0).bottom, false);
+    t.checkExpect(this.twoByTwo.board.get(0).get(1).top, false);
+    t.checkExpect(this.twoByTwo.board.get(1).get(1).top, false);
+    this.twoByTwo.buildU(twoByTwo.board);
+    t.checkExpect(this.twoByTwo.board.get(0).get(0).bottom, true);
+    t.checkExpect(this.twoByTwo.board.get(1).get(0).bottom, true);
+    t.checkExpect(this.twoByTwo.board.get(0).get(1).top, true);
+    t.checkExpect(this.twoByTwo.board.get(1).get(1).top, true);
 
-  // TODO tests for samePiece
-  // redo thse test
-  void testSamePiece(Tester t) {
-    initData();
-    t.checkExpect(this.gamePiece01.samePiece(this.gamePiece01), true);
-    t.checkExpect(this.gamePiece01.samePiece(this.gamePiece02), false);
-    t.checkExpect(this.gamePiece9.samePiece(this.gamePiece9), true);
-    t.checkExpect(this.gamePiece9.samePiece(this.gamePiece10), false);
-  }
-
-  // TODO tests for isConnectedTo
-  void testIsConnecteTo(Tester t) {
-
-  }
-
-  // tests for rotatePiece
-  // TODO test added functionality
-  void testRotatePiece(Tester t) {
-    initData();
-    t.checkExpect(this.gamePiece1.left, false);
-    t.checkExpect(this.gamePiece1.top, false);
-    t.checkExpect(this.gamePiece1.right, true);
-    t.checkExpect(this.gamePiece1.bottom, false);
-    this.gamePiece1.rotatePiece(1);
-    t.checkExpect(this.gamePiece1.left, false);
-    t.checkExpect(this.gamePiece1.top, false);
-    t.checkExpect(this.gamePiece1.right, false);
-    t.checkExpect(this.gamePiece1.bottom, true);
-    initData();
-    t.checkExpect(this.gamePiece1.left, false);
-    t.checkExpect(this.gamePiece1.top, false);
-    t.checkExpect(this.gamePiece1.right, true);
-    t.checkExpect(this.gamePiece1.bottom, false);
-    this.gamePiece1.rotatePiece(-1);
-    t.checkExpect(this.gamePiece1.left, false);
-    t.checkExpect(this.gamePiece1.top, true);
-    t.checkExpect(this.gamePiece1.right, false);
-    t.checkExpect(this.gamePiece1.bottom, false);
-    initData();
-    t.checkExpect(this.gamePiece5.left, true);
-    t.checkExpect(this.gamePiece5.top, true);
-    t.checkExpect(this.gamePiece5.right, true);
-    t.checkExpect(this.gamePiece5.bottom, true);
-    this.gamePiece5.rotatePiece(1);
-    t.checkExpect(this.gamePiece5.left, true);
-    t.checkExpect(this.gamePiece5.top, true);
-    t.checkExpect(this.gamePiece5.right, true);
-    t.checkExpect(this.gamePiece5.bottom, true);
-  }
-
-  // Todo tests for powerNeighbors
-  void testPowerNeighbors(Tester t) {
-    initData();
-  }
-
-  // TODO tests for grabAllNodes
-  public void testGrabAllNodes(Tester t) {
-    initData();
-    t.checkExpect(this.game1.grabAllNodes().size(), 9);
-    t.checkExpect(this.game1.nodes.size(), 9);
-    t.checkExpect(this.game2.nodes.size(), 100);
-
-  }
-
-  // TODO tests for generateManualConnections
-  public void testGenerateManualConnections(Tester t) {
-
-  }
-
-  // TODO tests for generateBoard
-  public void testGenerateBoard(Tester t) {
-    initData();
-    t.checkExpect(this.game1.generateBoard().size(), 3);
-    t.checkExpect(this.game1.generateBoard().get(0).size(), 3);
-  }
-
-  // tests for onMouseClicked
-  // TODO added functionality
-  void testOnMouseClicked(Tester t) {
-    initData();
-    t.checkExpect(this.game1.board.get(0).get(0).left, false);
-    t.checkExpect(this.game1.board.get(0).get(0).top, false);
-    t.checkExpect(this.game1.board.get(0).get(0).right, true);
-    t.checkExpect(this.game1.board.get(0).get(0).bottom, false);
-    t.checkExpect(this.game1.score, 0);
-    this.game1.onMouseClicked(new Posn(1, 1), "LeftButton");
-    t.checkExpect(this.game1.score, 1);
-    t.checkExpect(this.game1.board.get(0).get(0).left, false);
-    t.checkExpect(this.game1.board.get(0).get(0).top, false);
-    t.checkExpect(this.game1.board.get(0).get(0).right, false);
-    t.checkExpect(this.game1.board.get(0).get(0).bottom, true);
-    this.game1.onMouseClicked(new Posn(1, 1), "RightButton");
-    t.checkExpect(this.game1.score, 2);
-    t.checkExpect(this.game1.board.get(0).get(0).left, false);
-    t.checkExpect(this.game1.board.get(0).get(0).top, false);
-    t.checkExpect(this.game1.board.get(0).get(0).right, true);
-    t.checkExpect(this.game1.board.get(0).get(0).bottom, false);
-    this.game1.onMouseClicked(new Posn(1, 1), "RightButton");
-    t.checkExpect(this.game1.score, 3);
-    t.checkExpect(this.game1.board.get(0).get(0).left, false);
-    t.checkExpect(this.game1.board.get(0).get(0).top, true);
-    t.checkExpect(this.game1.board.get(0).get(0).right, false);
-    t.checkExpect(this.game1.board.get(0).get(0).bottom, false);
-  }
-
-  // tests for updateAllNeighbors
-  // TODO test added functionality
-  public void testUpdateAllNeighbors(Tester t) {
-    initData();
-    t.checkExpect(this.gamePiece1.neighbors.get("top"), null);
-    t.checkExpect(this.gamePiece1.neighbors.get("left"), null);
-    t.checkExpect(this.gamePiece1.neighbors.get("right"), null);
-    t.checkExpect(this.gamePiece1.neighbors.get("bottom"), null);
-
-    t.checkExpect(this.gamePiece5.neighbors.get("top"), null);
-    t.checkExpect(this.gamePiece5.neighbors.get("left"), null);
-    t.checkExpect(this.gamePiece5.neighbors.get("right"), null);
-    t.checkExpect(this.gamePiece5.neighbors.get("bottom"), null);
-
-    this.game1.updateAllNeighbors();
-
-    t.checkExpect(this.game1.board.get(0).get(0).neighbors.get("right").samePiece(this.gamePiece2),
-        true);
-    t.checkExpect(this.game1.board.get(0).get(0).neighbors.get("left"), null);
-    t.checkExpect(this.game1.board.get(0).get(0).neighbors.get("bottom").samePiece(this.gamePiece4),
-        true);
-    t.checkExpect(this.game1.board.get(0).get(0).neighbors.get("top"), null);
-
-    t.checkExpect(this.game1.board.get(1).get(1).neighbors.get("top").samePiece(this.gamePiece2),
-        true);
-    t.checkExpect(this.game1.board.get(1).get(1).neighbors.get("right").samePiece(this.gamePiece6),
-        true);
-    t.checkExpect(this.game1.board.get(1).get(1).neighbors.get("bottom").samePiece(this.gamePiece8),
-        true);
-    t.checkExpect(this.game1.board.get(1).get(1).neighbors.get("left").samePiece(this.gamePiece4),
-        true);
-
-    t.checkExpect(this.gamePiece01.neighbors.get("top"), null);
-    t.checkExpect(this.gamePiece01.neighbors.get("left"), null);
-    t.checkExpect(this.gamePiece01.neighbors.get("right"), null);
-    t.checkExpect(this.gamePiece01.neighbors.get("bottom"), null);
-
-    this.game3.updateAllNeighbors();
-
-    t.checkExpect(this.game3.board.get(0).get(0).neighbors.get("top"), null);
-    t.checkExpect(this.game3.board.get(0).get(0).neighbors.get("right").samePiece(this.gamePiece02),
-        true);
-    t.checkExpect(
-        this.game3.board.get(0).get(0).neighbors.get("bottom").samePiece(this.gamePiece06), true);
-    t.checkExpect(this.game3.board.get(0).get(0).neighbors.get("left"), null);
-
-  }
-
-  // TODO tests for locatePiece
-  void testLocatePiece(Tester t) {
-    initData();
-  }
-
-  // TODO tests for restartGame
-  void testRestartGame(Tester t) {
-    initData();
-  }
-
-  // TODO tests for updatePower
-  void testUpdatePower(Tester t) {
-    initData();
-  }
-
-  // TODO tests for onKeyEvent
-  void testOnKeyEvent(Tester t) {
-    initData();
   }
 
   // tests for big bang
   void testBigBang(Tester t) {
     initData();
-    LightEmAll game = new LightEmAll(19, 10, 1);
+    LightEmAll game = new LightEmAll(2, 2, 2);
     game.bigBang(game.width * LightEmAll.CELL_SIZE,
         (game.height * LightEmAll.CELL_SIZE) + (LightEmAll.CELL_SIZE * 2), 0.25);
   }
+
 }
