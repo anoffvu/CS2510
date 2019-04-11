@@ -61,11 +61,11 @@ class GamePiece {
   }
 
   // draws the GamePiece
-  public WorldImage drawPiece() {
+  public WorldImage drawPiece(int radius) {
     WorldImage base = new RectangleImage(LightEmAll.CELL_SIZE, LightEmAll.CELL_SIZE,
         OutlineMode.SOLID, Color.darkGray);
     WorldImage connection = new RectangleImage((int) LightEmAll.CELL_SIZE / 6,
-        (int) LightEmAll.CELL_SIZE / 2, OutlineMode.SOLID, calcColor()).movePinhole(0,
+        (int) LightEmAll.CELL_SIZE / 2, OutlineMode.SOLID, calcColor(radius)).movePinhole(0,
             (int) LightEmAll.CELL_SIZE / 4);
     if (this.top) {
       base = new OverlayImage(connection, base);
@@ -91,9 +91,9 @@ class GamePiece {
   }
 
   // gradient color functionality
-  public Color calcColor() {
+  public Color calcColor(int radius) {
     if (powerLevel > 0) {
-      return new Color(255, 255, 0, (255 / LightEmAll.radius * this.powerLevel));
+      return new Color(255, 255, 0, (255 / radius * this.powerLevel));
     }
     else {
       return Color.GRAY;

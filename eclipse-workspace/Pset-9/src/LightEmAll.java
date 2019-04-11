@@ -28,7 +28,7 @@ class LightEmAll extends World {
   // as well as its effective radius
   int powerRow;
   int powerCol;
-  public static int radius = 3;
+  int radius;
   Random rand;
   int score; // TODO display this later
   public static int CELL_SIZE = 40;
@@ -40,6 +40,7 @@ class LightEmAll extends World {
     this.height = height;
     this.powerRow = 0;
     this.powerCol = 0;
+    this.radius = 3;
     this.board = this.generateBoard();
     this.nodes = this.grabAllNodes();
     updateAllNeighbors();
@@ -55,6 +56,7 @@ class LightEmAll extends World {
       this.height = height;
       this.powerRow = 0;
       this.powerCol = 0;
+      this.radius = 3;
       this.board = this.generateBoard();
       this.nodes = this.grabAllNodes();
       this.mst = new ArrayList<Edge>();
@@ -66,6 +68,7 @@ class LightEmAll extends World {
       this.height = height;
       this.powerRow = 5;
       this.powerCol = 5;
+      this.radius = 3;
       this.board = this.generateBoard();
       this.nodes = this.grabAllNodes();
       generateManualConnections();
@@ -80,9 +83,10 @@ class LightEmAll extends World {
       this.height = height;
       this.powerRow = 0;
       this.powerCol = 0;
+      this.radius = 3;
       this.board = this.generateBoard();
       this.nodes = this.grabAllNodes();
-      // TODO createFractalConnections();
+      // TODO generateFractalConnections();
       updateAllNeighbors();
       updatePower(this.board);
       this.mst = new ArrayList<Edge>();
@@ -220,7 +224,8 @@ class LightEmAll extends World {
     for (int c = 0; c < this.width; c++) {
       for (int r = 0; r < this.height; r++) {
         gameScene.placeImageXY(
-            this.board.get(c).get(r).drawPiece().movePinhole((-.5 * LightEmAll.CELL_SIZE),
+            this.board.get(c).get(r).drawPiece(this.radius)
+                .movePinhole((-.5 * LightEmAll.CELL_SIZE),
                 (-.5 * LightEmAll.CELL_SIZE)),
             (c * LightEmAll.CELL_SIZE), (r * LightEmAll.CELL_SIZE));
       }
@@ -250,7 +255,7 @@ class LightEmAll extends World {
       g.powerLevel = 0;
     }
     targetBoard.get(powerCol).get(powerRow).powerStation = true; // sets the station
-    targetBoard.get(powerCol).get(powerRow).powerLevel = radius; // sets power level
+    targetBoard.get(powerCol).get(powerRow).powerLevel = this.radius; // sets power level
     // passes power to all neighbors
     targetBoard.get(powerCol).get(powerRow).powerNeighbors(new ArrayList<GamePiece>());
   }
