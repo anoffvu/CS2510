@@ -2,20 +2,22 @@
 <qualifiedTypeNameHistroy>
     <fullyQualifiedTypeName name="ILoRoadTripChunk"/>
     <fullyQualifiedTypeName name="javalib.worldcanvas.WorldCanvas"/>
-    <fullyQualifiedTypeName name="javalib.worldimages.OutlineMode"/>
     <fullyQualifiedTypeName name="javalib.worldimages.CircleImage"/>
     <fullyQualifiedTypeName name="javalib.worldimages.OverlayImage"/>
     <fullyQualifiedTypeName name="java.lang.Math"/>
     <fullyQualifiedTypeName name="Monomial"/>
-    <fullyQualifiedTypeName name="java.lang.System"/>
     <fullyQualifiedTypeName name="tester.Tester"/>
     <fullyQualifiedTypeName name="java.util.Random"/>
     <fullyQualifiedTypeName name="java.util.ArrayList"/>
-    <fullyQualifiedTypeName name="java.awt.Color"/>
     <fullyQualifiedTypeName name="javalib.worldimages.TextImage"/>
     <fullyQualifiedTypeName name="javalib.funworld.WorldScene"/>
     <fullyQualifiedTypeName name="javalib.impworld.WorldScene"/>
     <fullyQualifiedTypeName name="javalib.impworld.World"/>
     <fullyQualifiedTypeName name="javalib.worldimages.VisiblePinholeImage"/>
     <fullyQualifiedTypeName name="javalib.worldimages.RotateImage"/>
+    <fullyQualifiedTypeName name="javalib.worldimages.OutlineMode"/>
+    <fullyQualifiedTypeName name="java.awt.Color"/>
+    <fullyQualifiedTypeName name="java.awt.Font"/>
+    <fullyQualifiedTypeName name="java.util.Deque"/>
+    <fullyQualifiedTypeName name="java.lang.System"/>
 </qualifiedTypeNameHistroy>

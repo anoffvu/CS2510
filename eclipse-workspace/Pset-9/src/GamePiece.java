@@ -157,20 +157,20 @@ class GamePiece {
     if (this.powerLevel > 0) {
       int neighborPowerLevel = this.powerLevel - 1;
       if (this.isConnectedTo("top") && !seen.contains(this.neighbors.get("top"))) {
-          this.neighbors.get("top").powerLevel = neighborPowerLevel;
-          this.neighbors.get("top").powerNeighbors(seen);
+        this.neighbors.get("top").powerLevel = neighborPowerLevel;
+        this.neighbors.get("top").powerNeighbors(seen);
       }
       if (this.isConnectedTo("right") && !seen.contains(this.neighbors.get("right"))) {
-          this.neighbors.get("right").powerLevel = neighborPowerLevel;
-          this.neighbors.get("right").powerNeighbors(seen);
+        this.neighbors.get("right").powerLevel = neighborPowerLevel;
+        this.neighbors.get("right").powerNeighbors(seen);
       }
       if (this.isConnectedTo("bottom") && !seen.contains(this.neighbors.get("bottom"))) {
-          this.neighbors.get("bottom").powerLevel = neighborPowerLevel;
-          this.neighbors.get("bottom").powerNeighbors(seen);
+        this.neighbors.get("bottom").powerLevel = neighborPowerLevel;
+        this.neighbors.get("bottom").powerNeighbors(seen);
       }
       if (this.isConnectedTo("left") && !seen.contains(this.neighbors.get("left"))) {
-          this.neighbors.get("left").powerLevel = neighborPowerLevel;
-          this.neighbors.get("left").powerNeighbors(seen);
+        this.neighbors.get("left").powerLevel = neighborPowerLevel;
+        this.neighbors.get("left").powerNeighbors(seen);
       }
     }
   }

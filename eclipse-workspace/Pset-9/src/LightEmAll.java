@@ -30,22 +30,12 @@ class LightEmAll extends World {
   int powerCol;
   int radius;
   Random rand;
-  int score; // TODO display this later
+  int score;
   public static int CELL_SIZE = 40;
 
   // the gameplay constructor
   LightEmAll(int width, int height) {
-    this.rand = new Random();
-    this.width = width;
-    this.height = height;
-    this.powerRow = 0;
-    this.powerCol = 0;
-    this.radius = 3;
-    this.board = this.generateBoard();
-    this.nodes = this.grabAllNodes();
-    updateAllNeighbors();
-    this.mst = new ArrayList<Edge>();
-    this.score = 0;
+    this(width, height, 2);
   }
 
   // constructor for generating different types of boards
@@ -56,7 +46,7 @@ class LightEmAll extends World {
       this.height = height;
       this.powerRow = 0;
       this.powerCol = 0;
-      this.radius = 3;
+      this.radius = 10;
       this.board = this.generateBoard();
       this.nodes = this.grabAllNodes();
       this.mst = new ArrayList<Edge>();
@@ -68,7 +58,7 @@ class LightEmAll extends World {
       this.height = height;
       this.powerRow = 0;
       this.powerCol = 0;
-      this.radius = 3;
+      this.radius = 10;
       this.board = this.generateBoard();
       this.nodes = this.grabAllNodes();
       generateManualConnections();
@@ -83,7 +73,7 @@ class LightEmAll extends World {
       this.height = height;
       this.powerRow = 0;
       this.powerCol = 0;
-      this.radius = 3;
+      this.radius = 10;
       this.board = this.generateBoard();
       this.nodes = this.grabAllNodes();
       generateFractalConnections(new Posn(0, 0), this.board);
@@ -139,10 +129,10 @@ class LightEmAll extends World {
   }
 
   // generates a fractal board
-  // TODO tests
   public void generateFractalConnections(Posn lastKnownPosition,
       ArrayList<ArrayList<GamePiece>> currentBoard) {
-    ArrayList<ArrayList<ArrayList<GamePiece>>> splits = new ArrayList<ArrayList<ArrayList<GamePiece>>>();
+    ArrayList<ArrayList<ArrayList<GamePiece>>> splits = // eclipse keeps moving this back
+        new ArrayList<ArrayList<ArrayList<GamePiece>>>();
     int splitType = determineSplitType(currentBoard);
     if (splitType == 0) { // no split needed, execute base cases
       int colCount = currentBoard.size();
@@ -203,7 +193,8 @@ class LightEmAll extends World {
   // splits the board in the desired manner
   public ArrayList<ArrayList<ArrayList<GamePiece>>> splitBoard(int splitType,
       ArrayList<ArrayList<GamePiece>> boardToSplit) {
-    ArrayList<ArrayList<ArrayList<GamePiece>>> ret = new ArrayList<ArrayList<ArrayList<GamePiece>>>();
+    ArrayList<ArrayList<ArrayList<GamePiece>>> ret = // eclipse keeps moving this back
+        new ArrayList<ArrayList<ArrayList<GamePiece>>>();
     // this funky math is so java can actually round up correctly
     int splitCol = boardToSplit.size() / 2 + ((boardToSplit.size() % 2 == 0) ? 0 : 1);
     int splitRow = boardToSplit.get(0).size() / 2 + ((boardToSplit.get(0).size() % 2 == 0) ? 0 : 1);
@@ -312,14 +303,11 @@ class LightEmAll extends World {
     if (button.equals("LeftButton")) { // rotate it clockwise
       clicked.rotatePiece(1);
       this.score++; // updates the score when a valid move is executed
-      // will want to update connectivity in the future
     }
     else if (button.equals("RightButton")) { // rotate it counter clockwise
       clicked.rotatePiece(-1);
       this.score++; // updates the score when a valid move is executed
-      // will want to update connectivity in the future
     }
-    // TODO if we have time, just update this cells neighbors clicked.updateNeighbors();
     updateAllNeighbors();
     updatePower(this.board);
   }
@@ -387,20 +375,25 @@ class LightEmAll extends World {
     }
     // combines the boards
     gameScene.placeImageXY(scoreBoard, boardWidth / 2, boardHeight + CELL_SIZE);
+    // displays restart instructions
+    gameScene.placeImageXY(new TextImage("Press space to restart.", 15, Color.BLACK),
+        boardWidth / 5, boardHeight + CELL_SIZE);
     return gameScene;
   }
 
   // restarts the game
   public void restartGame() {
-    LightEmAll newGame = new LightEmAll(this.width, this.height, 1); // TODO change this to default
-    this.nodes = newGame.nodes;
+    LightEmAll newGame = new LightEmAll(this.width, this.height);
     this.board = newGame.board;
+    this.nodes = newGame.nodes;
     this.mst = newGame.mst;
     this.width = newGame.width;
     this.height = newGame.height;
     this.powerRow = newGame.powerRow;
     this.powerCol = newGame.powerCol;
+    this.radius = newGame.radius;
     this.rand = newGame.rand;
+    this.score = 0;
   }
 
   // powers the board
@@ -414,6 +407,50 @@ class LightEmAll extends World {
     // passes power to all neighbors
     targetBoard.get(powerCol).get(powerRow).powerNeighbors(new ArrayList<GamePiece>());
   }
+
+  // performs a breadth first transversal on this board
+  // passed in a start cell
+  /*
+   * public HashMap<GamePiece, GamePiece> breadthFirstTransversal(GamePiece startNode) {
+   * HashMap<GamePiece, GamePiece> ret = new HashMap<GamePiece, GamePiece>();
+   * ArrayDeque<GamePiece> queue = new ArrayDeque<GamePiece>();
+   * ArrayDeque<GamePiece> seen = new ArrayDeque<GamePiece>();
+   * queue.addFirst(startNode);
+   * while (!queue.isEmpty()) {
+   * GamePiece next = queue.getFirst();
+   * if (!seen.contains(next)) {
+   * if (next.isConnectedTo("top")) {
+   * queue.addFirst(next.neighbors.get("top"));
+   * ret.put(next.neighbors.get("top"), next);
+   * seen.add(next);
+   * }
+   * if (next.isConnectedTo("left")) {
+   * queue.addFirst(next.neighbors.get("left"));
+   * ret.put(next.neighbors.get("left"), next);
+   * seen.add(next);
+   * }
+   * if (next.isConnectedTo("right")) {
+   * queue.addFirst(next.neighbors.get("right"));
+   * ret.put(next.neighbors.get("right"), next);
+   * seen.add(next);
+   * }
+   * if (next.isConnectedTo("bottom")) {
+   * queue.addFirst(next.neighbors.get("bottom"));
+   * ret.put(next.neighbors.get("bottom"), next);
+   * seen.add(next);
+   * }
+   * }
+   * queue.remove(next);
+   * }
+   * 
+   * return ret;
+   * 
+   * }
+   * 
+   * public int calcRadius() {
+   * 
+   * }
+   */
 
   // handles key events
   public void onKeyEvent(String pressedKey) {
