@@ -61,7 +61,6 @@ class ExamplesLightEmAll {
   LightEmAll twoByTwoBlank;
   LightEmAll twoByTwo;
 
-
   public void initData() {
     this.mt = new ArrayList<GamePiece>();
     // TODO: edit game pieces to add neighbors
@@ -320,54 +319,14 @@ class ExamplesLightEmAll {
     t.checkExpect(this.game2.nodes.size(), 100);
   }
 
-  // TODO tests for locatePiece
-  void testLocatePiece(Tester t) {
-    initData();
-
-  }
-
-  // tests for restartGame
-  void testRestartGame(Tester t) {
-    initData();
-    this.game1.onMouseClicked(new Posn(1, 1), "LeftButton");
-    t.checkExpect(this.game1.score, 1);
-    this.game1.restartGame();
-    t.checkExpect(this.game1.score, 0);
-
-    this.game2.onMouseClicked(new Posn(1, 1), "RightButton");
-    t.checkExpect(this.game2.score, 1);
-    this.game2.restartGame();
-    t.checkExpect(this.game2.score, 0);
-  }
-
-  // TODO tests for updatePower
-  void testUpdatePower(Tester t) {
+  // TODO tests for manualConnections
+  public void testManualConnections(Tester t) {
     initData();
   }
 
-  // TODO tests for onKeyEvent
-  void testOnKeyEvent(Tester t) {
+  // TODO tests for generateFractalConnections
+  void testGenerateFractalConnections(Tester t) {
     initData();
-
-  }
-
-  // tests for updateAllNeighbors
-  public void testUpdateAllNeighbors(Tester t) {
-    initData();
-    t.checkExpect(this.gamePiece1.neighbors.get("top"), null);
-    t.checkExpect(this.gamePiece1.neighbors.get("left"), null);
-    t.checkExpect(this.gamePiece1.neighbors.get("right"), this.gamePiece2);
-    t.checkExpect(this.gamePiece1.neighbors.get("bottom"), this.gamePiece4);
-
-    initData();
-    this.gamePiece1.rotatePiece(1);
-    this.game1.updateAllNeighbors();
-
-    t.checkExpect(this.gamePiece1.neighbors.get("top"), null);
-    t.checkExpect(this.gamePiece1.neighbors.get("left"), null);
-    t.checkExpect(this.gamePiece1.neighbors.get("right"), this.gamePiece2);
-    t.checkExpect(this.gamePiece1.neighbors.get("bottom"), this.gamePiece4);
-
   }
 
   // tests for splitBoard
@@ -435,10 +394,69 @@ class ExamplesLightEmAll {
     t.checkExpect(this.twoByTwoBlank.board.get(1).get(1).top, true);
   }
 
-  // TODO tests for generateFractalConnections
-  void testGenerateFractalConnections(Tester t) {
+  // TODO tests for generateBoard
+  void testGenerateBoard(Tester t) {
+    initData();
+
+  }
+
+  // TODO tests for onMouseClicked
+  void testOnMouseClicked(Tester t) {
+    initData();
+
+  }
+
+  // tests for updateAllNeighbors
+  public void testUpdateAllNeighbors(Tester t) {
+    initData();
+    t.checkExpect(this.gamePiece1.neighbors.get("top"), null);
+    t.checkExpect(this.gamePiece1.neighbors.get("left"), null);
+    t.checkExpect(this.gamePiece1.neighbors.get("right"), this.gamePiece2);
+    t.checkExpect(this.gamePiece1.neighbors.get("bottom"), this.gamePiece4);
+
+    initData();
+    this.gamePiece1.rotatePiece(1);
+    this.game1.updateAllNeighbors();
+
+    t.checkExpect(this.gamePiece1.neighbors.get("top"), null);
+    t.checkExpect(this.gamePiece1.neighbors.get("left"), null);
+    t.checkExpect(this.gamePiece1.neighbors.get("right"), this.gamePiece2);
+    t.checkExpect(this.gamePiece1.neighbors.get("bottom"), this.gamePiece4);
+
+  }
+
+  // TODO tests for locatePiece
+  void testLocatePiece(Tester t) {
+    initData();
+
+  }
+
+  // tests for restartGame
+  void testRestartGame(Tester t) {
+    initData();
+    this.game1.onMouseClicked(new Posn(1, 1), "LeftButton");
+    t.checkExpect(this.game1.score, 1);
+    this.game1.restartGame();
+    t.checkExpect(this.game1.score, 0);
+
+    this.game2.onMouseClicked(new Posn(1, 1), "RightButton");
+    t.checkExpect(this.game2.score, 1);
+    this.game2.restartGame();
+    t.checkExpect(this.game2.score, 0);
+  }
+
+  // TODO tests for updatePower
+  void testUpdatePower(Tester t) {
     initData();
   }
+
+  // TODO tests for onKeyEvent
+  void testOnKeyEvent(Tester t) {
+    initData();
+
+  }
+
+
 
   /*
    * // TODO tests for
