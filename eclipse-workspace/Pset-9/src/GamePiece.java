@@ -1,5 +1,6 @@
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import javalib.worldimages.OutlineMode;
@@ -64,7 +65,7 @@ class GamePiece {
   public WorldImage drawPiece(int radius) {
     WorldImage base = new RectangleImage(LightEmAll.CELL_SIZE, LightEmAll.CELL_SIZE,
         OutlineMode.SOLID, Color.darkGray);
-    WorldImage connection = new RectangleImage((int) LightEmAll.CELL_SIZE / 6,
+    WorldImage connection = new RectangleImage((int) LightEmAll.CELL_SIZE / 8,
         (int) LightEmAll.CELL_SIZE / 2, OutlineMode.SOLID, calcColor(radius)).movePinhole(0,
             (int) LightEmAll.CELL_SIZE / 4);
     if (this.top) {
@@ -154,23 +155,16 @@ class GamePiece {
   // sends power thru the neighbors if possible
   public void powerNeighbors(ArrayList<GamePiece> seen) {
     seen.add(this);
+    ArrayList<String> directions = new ArrayList<String>(
+        Arrays.asList("left", "right", "top", "bottom"));
     if (this.powerLevel > 0) {
       int neighborPowerLevel = this.powerLevel - 1;
-      if (this.isConnectedTo("top") && !seen.contains(this.neighbors.get("top"))) {
-        this.neighbors.get("top").powerLevel = neighborPowerLevel;
-        this.neighbors.get("top").powerNeighbors(seen);
-      }
-      if (this.isConnectedTo("right") && !seen.contains(this.neighbors.get("right"))) {
-        this.neighbors.get("right").powerLevel = neighborPowerLevel;
-        this.neighbors.get("right").powerNeighbors(seen);
-      }
-      if (this.isConnectedTo("bottom") && !seen.contains(this.neighbors.get("bottom"))) {
-        this.neighbors.get("bottom").powerLevel = neighborPowerLevel;
-        this.neighbors.get("bottom").powerNeighbors(seen);
-      }
-      if (this.isConnectedTo("left") && !seen.contains(this.neighbors.get("left"))) {
-        this.neighbors.get("left").powerLevel = neighborPowerLevel;
-        this.neighbors.get("left").powerNeighbors(seen);
+      for (String dir : directions) { // for each direction that a GamePiece has
+        // if it has a connection in that direction and has not been seen
+        if (this.isConnectedTo(dir) && !seen.contains(this.neighbors.get(dir))) {
+          this.neighbors.get(dir).powerLevel = neighborPowerLevel;
+          this.neighbors.get(dir).powerNeighbors(seen);
+        }
       }
     }
   }

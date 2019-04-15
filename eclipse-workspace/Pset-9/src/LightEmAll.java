@@ -1,5 +1,9 @@
 import java.awt.Color;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import javalib.impworld.World;
@@ -46,11 +50,11 @@ class LightEmAll extends World {
       this.height = height;
       this.powerRow = 0;
       this.powerCol = 0;
-      this.radius = 10;
       this.board = this.generateBoard();
       this.nodes = this.grabAllNodes();
       this.mst = new ArrayList<Edge>();
       this.score = 0;
+      this.radius = (this.calcDiameter() / 2) + 1;
     }
     else if (genType == 1) { // manual board generation
       this.rand = new Random();
@@ -58,14 +62,14 @@ class LightEmAll extends World {
       this.height = height;
       this.powerRow = 0;
       this.powerCol = 0;
-      this.radius = 10;
       this.board = this.generateBoard();
       this.nodes = this.grabAllNodes();
-      generateManualConnections();
-      updateAllNeighbors();
-      updatePower(this.board);
       this.mst = new ArrayList<Edge>();
       this.score = 0;
+      generateManualConnections();
+      updateAllNeighbors();
+      this.radius = (this.calcDiameter() / 2) + 1;
+      updatePower(this.board);
     }
     else if (genType == 2) { // fractal board generation
       this.rand = new Random();
@@ -73,14 +77,14 @@ class LightEmAll extends World {
       this.height = height;
       this.powerRow = 0;
       this.powerCol = 0;
-      this.radius = 10;
       this.board = this.generateBoard();
       this.nodes = this.grabAllNodes();
-      generateFractalConnections(new Posn(0, 0), this.board);
-      updateAllNeighbors();
-      updatePower(this.board);
       this.mst = new ArrayList<Edge>();
       this.score = 0;
+      generateFractalConnections(new Posn(0, 0), this.board);
+      updateAllNeighbors();
+      this.radius = (this.calcDiameter() / 2) + 1;
+      updatePower(this.board);
     }
   }
 
@@ -408,49 +412,58 @@ class LightEmAll extends World {
     targetBoard.get(powerCol).get(powerRow).powerNeighbors(new ArrayList<GamePiece>());
   }
 
-  // performs a breadth first transversal on this board
-  // passed in a start cell
-  /*
-   * public HashMap<GamePiece, GamePiece> breadthFirstTransversal(GamePiece startNode) {
-   * HashMap<GamePiece, GamePiece> ret = new HashMap<GamePiece, GamePiece>();
-   * ArrayDeque<GamePiece> queue = new ArrayDeque<GamePiece>();
-   * ArrayDeque<GamePiece> seen = new ArrayDeque<GamePiece>();
-   * queue.addFirst(startNode);
-   * while (!queue.isEmpty()) {
-   * GamePiece next = queue.getFirst();
-   * if (!seen.contains(next)) {
-   * if (next.isConnectedTo("top")) {
-   * queue.addFirst(next.neighbors.get("top"));
-   * ret.put(next.neighbors.get("top"), next);
-   * seen.add(next);
-   * }
-   * if (next.isConnectedTo("left")) {
-   * queue.addFirst(next.neighbors.get("left"));
-   * ret.put(next.neighbors.get("left"), next);
-   * seen.add(next);
-   * }
-   * if (next.isConnectedTo("right")) {
-   * queue.addFirst(next.neighbors.get("right"));
-   * ret.put(next.neighbors.get("right"), next);
-   * seen.add(next);
-   * }
-   * if (next.isConnectedTo("bottom")) {
-   * queue.addFirst(next.neighbors.get("bottom"));
-   * ret.put(next.neighbors.get("bottom"), next);
-   * seen.add(next);
-   * }
-   * }
-   * queue.remove(next);
-   * }
-   * 
-   * return ret;
-   * 
-   * }
-   * 
-   * public int calcRadius() {
-   * 
-   * }
-   */
+  // grabs the farthest reachable node from the given node
+  public GamePiece getFarthestNode(GamePiece startNode) {
+    HashMap<GamePiece, Integer> distMap = generateDistanceMap(startNode);
+    GamePiece farthestNode = startNode;
+    int max = 0;
+    // iterates over every entry in the distance map
+    for (Map.Entry<GamePiece, Integer> entry : distMap.entrySet()) {
+      GamePiece key = entry.getKey();
+      Integer value = entry.getValue();
+      // if the distance is larger, it will make that the farthest node and update the max
+      if (value > max) {
+        max = value;
+        farthestNode = key;
+      }
+    }
+    return farthestNode;
+  }
+
+  // calculates the diameter of this game
+  public int calcDiameter() {
+    // grabs the farthest node from the powerStation
+    GamePiece farthestFromPower = this.getFarthestNode(this.board.get(powerCol).get(powerRow));
+    // grabs the farthest node from whatever node that returns ^
+    GamePiece farthestSecond = this.getFarthestNode(farthestFromPower);
+    // add 1 to count the start node
+    return generateDistanceMap(farthestFromPower).get(farthestSecond) + 1;
+  }
+
+  // creates a distance map of all the GamePieces reachable from the passed in GamePiece
+  public HashMap<GamePiece, Integer> generateDistanceMap(GamePiece startNode) {
+    ArrayList<String> directions = new ArrayList<String>(
+        Arrays.asList("left", "right", "top", "bottom"));
+    ArrayDeque<GamePiece> queue = new ArrayDeque<GamePiece>();
+    ArrayList<GamePiece> seen = new ArrayList<GamePiece>();
+    HashMap<GamePiece, Integer> distMap = new HashMap<GamePiece, Integer>();
+    queue.addFirst(startNode);
+    distMap.put(startNode, 0);
+    while (!queue.isEmpty()) {
+      GamePiece next = queue.removeFirst();
+      if (!seen.contains(next)) {
+        seen.add(next);
+        for (String dir : directions) { // for each direction that a GamePiece has
+          // if it has a connection in that direction and the connection isnt already seen
+          if (next.isConnectedTo(dir) && !seen.contains(next.neighbors.get(dir))) {
+            queue.addFirst(next.neighbors.get(dir));
+            distMap.put(next.neighbors.get(dir), distMap.get(next) + 1);
+          }
+        }
+      }
+    }
+    return distMap;
+  }
 
   // handles key events
   public void onKeyEvent(String pressedKey) {

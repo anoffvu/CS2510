@@ -1,7 +1,14 @@
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javalib.worldimages.OutlineMode;
+import javalib.worldimages.OverlayImage;
 import javalib.worldimages.Posn;
+import javalib.worldimages.RectangleImage;
+import javalib.worldimages.RotateImage;
+import javalib.worldimages.StarImage;
+import javalib.worldimages.WorldImage;
 import tester.Tester;
 
 // examples class
@@ -60,6 +67,9 @@ class ExamplesLightEmAll {
 
   LightEmAll twoByTwoBlank;
   LightEmAll twoByTwo;
+  LightEmAll threeByThreeU;
+  LightEmAll tenByTen;
+  LightEmAll fourByFour;
 
   public void initData() {
     this.mt = new ArrayList<GamePiece>();
@@ -202,12 +212,37 @@ class ExamplesLightEmAll {
 
     this.twoByTwoBlank = new LightEmAll(2, 2, -1);
     this.twoByTwo = new LightEmAll(2, 2, 2);
+    this.threeByThreeU = new LightEmAll(3, 3, 2);
+    this.tenByTen = new LightEmAll(10, 10, 1);
+    this.fourByFour = new LightEmAll(4, 4, 1);
   }
 
-  // TODO tests for drawPiece
+  // tests for drawPiece
   void testDrawPiece(Tester t) {
+    // these tests are based off the coloring of a 10 radius board
+    WorldImage base = new RectangleImage(LightEmAll.CELL_SIZE, LightEmAll.CELL_SIZE,
+        OutlineMode.SOLID, Color.darkGray);
     initData();
-
+    t.checkExpect(this.game1.board.get(0).get(0).drawPiece(this.game1.radius), new RotateImage(
+        new RotateImage(new RotateImage(new RotateImage(base, 90.0), 90.0), 90.0), 90.0));
+    t.checkExpect(this.threeByThreeU.board.get(2).get(0).drawPiece(this.game1.radius),
+        new RotateImage(
+            new RotateImage(
+                new OverlayImage(
+                    new RectangleImage(5, 20, OutlineMode.SOLID, new Color(128, 128, 128))
+                        .movePinhole(0, 10),
+                    new RotateImage(new RotateImage(base, 90.0), 90.0)),
+                90.0),
+            90.0));
+    t.checkExpect(this.threeByThreeU.board.get(0).get(0).drawPiece(this.threeByThreeU.radius),
+        new OverlayImage(
+            new StarImage((LightEmAll.CELL_SIZE / 2.5), 8, 2, OutlineMode.SOLID, Color.ORANGE),
+            new RotateImage(new RotateImage(
+                new OverlayImage(
+                    new RectangleImage(5, 20, OutlineMode.SOLID, new Color(255, 255, 0, 252))
+                        .movePinhole(0, 10),
+                    new RotateImage(new RotateImage(base, 90.0), 90.0)),
+                90.0), 90.0)));
   }
 
   // TODO tests for calcColor
@@ -409,19 +444,19 @@ class ExamplesLightEmAll {
   // tests for updateAllNeighbors
   public void testUpdateAllNeighbors(Tester t) {
     initData();
-    t.checkExpect(this.gamePiece1.neighbors.get("top"), null);
-    t.checkExpect(this.gamePiece1.neighbors.get("left"), null);
-    t.checkExpect(this.gamePiece1.neighbors.get("right"), this.gamePiece2);
-    t.checkExpect(this.gamePiece1.neighbors.get("bottom"), this.gamePiece4);
+    t.checkExpect(this.game1.board.get(0).get(0).neighbors.get("top"), null);
+    t.checkExpect(this.game1.board.get(0).get(0).neighbors.get("bottom"), null);
+    t.checkExpect(this.game1.board.get(0).get(0).neighbors.get("left"), null);
+    t.checkExpect(this.game1.board.get(0).get(0).neighbors.get("right"), null);
 
     initData();
-    this.gamePiece1.rotatePiece(1);
     this.game1.updateAllNeighbors();
-
-    t.checkExpect(this.gamePiece1.neighbors.get("top"), null);
-    t.checkExpect(this.gamePiece1.neighbors.get("left"), null);
-    t.checkExpect(this.gamePiece1.neighbors.get("right"), this.gamePiece2);
-    t.checkExpect(this.gamePiece1.neighbors.get("bottom"), this.gamePiece4);
+    t.checkExpect(this.game1.board.get(0).get(0).neighbors.get("top"), null);
+    t.checkExpect(this.game1.board.get(0).get(0).neighbors.get("left"), null);
+    t.checkExpect(this.game1.board.get(0).get(0).neighbors.get("right"),
+        this.game1.board.get(1).get(0));
+    t.checkExpect(this.game1.board.get(0).get(0).neighbors.get("bottom"),
+        this.game1.board.get(0).get(1));
 
   }
 
@@ -443,6 +478,11 @@ class ExamplesLightEmAll {
     t.checkExpect(this.game2.score, 1);
     this.game2.restartGame();
     t.checkExpect(this.game2.score, 0);
+
+    this.twoByTwo.onMouseClicked(new Posn(1, 1), "RightButton");
+    // t.checkExpect(this.twoByTwo.score, 1);
+    this.twoByTwo.restartGame();
+    // t.checkExpect(this.twoByTwo.score, 0);
   }
 
   // TODO tests for updatePower
@@ -456,23 +496,47 @@ class ExamplesLightEmAll {
 
   }
 
+  // tests for getFarthestNode
+  void testGetFarthestNode(Tester t) {
+    initData();
+    t.checkExpect(this.threeByThreeU.getFarthestNode(this.threeByThreeU.nodes.get(0)),
+        this.threeByThreeU.board.get(2).get(0));
+    t.checkExpect(this.fourByFour.getFarthestNode(this.fourByFour.board.get(0).get(0)),
+        this.fourByFour.board.get(0).get(3));
+    t.checkExpect(this.fourByFour.getFarthestNode(this.fourByFour.board.get(1).get(0)),
+        this.fourByFour.board.get(0).get(3));
+  }
 
+  // tests for calcDiameter
+  void testCalcDiameter(Tester t) {
+    initData();
+    t.checkExpect(this.threeByThreeU.calcDiameter(), 7);
+    t.checkExpect(this.fourByFour.calcDiameter(), 8);
+    t.checkExpect(this.tenByTen.calcDiameter(), 20);
+  }
 
-  /*
-   * // TODO tests for
-   * void testBreadthFirstTransversal(Tester t) {
-   * initData();
-   * this.twoByTwo.buildU(twoByTwo.board);
-   * t.checkExpect(twoByTwo.breadthFirstTransversal(twoByTwo.board.get(0).get(0)).size(),
-   * 4);
-   * }
-   */
+  // tests for generateDistanceMap
+  void testGenerateDistanceMap(Tester t) {
+    initData();
+    t.checkExpect(this.threeByThreeU.generateDistanceMap(this.threeByThreeU.nodes.get(0))
+        .get(this.threeByThreeU.nodes.get(0)), 0);
+    t.checkExpect(this.tenByTen.generateDistanceMap(this.tenByTen.nodes.get(0))
+        .get(this.tenByTen.board.get(0).get(2)), 12);
+    t.checkExpect(this.tenByTen.generateDistanceMap(this.tenByTen.nodes.get(0))
+        .get(this.tenByTen.board.get(9).get(0)), 9);
+    t.checkExpect(this.threeByThreeU.generateDistanceMap(this.threeByThreeU.nodes.get(0))
+        .get(this.threeByThreeU.board.get(0).get(0)), 0);
+    t.checkExpect(this.threeByThreeU.generateDistanceMap(this.threeByThreeU.nodes.get(0))
+        .get(this.threeByThreeU.board.get(0).get(2)), 2);
+    t.checkExpect(this.threeByThreeU.generateDistanceMap(this.threeByThreeU.nodes.get(0))
+        .get(this.threeByThreeU.board.get(2).get(0)), 6);
+  }
 
   /*
    * // tests for big bang
    * void testBigBang(Tester t) {
    * initData();
-   * LightEmAll game = new LightEmAll(2, 2);
+   * LightEmAll game = new LightEmAll(10, 10, 1);
    * game.bigBang(game.width * LightEmAll.CELL_SIZE,
    * (game.height * LightEmAll.CELL_SIZE) + (LightEmAll.CELL_SIZE * 2), 0.25);
    * }
