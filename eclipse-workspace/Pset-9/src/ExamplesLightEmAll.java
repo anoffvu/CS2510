@@ -1,13 +1,17 @@
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
+import javalib.impworld.WorldScene;
 import javalib.worldimages.OutlineMode;
 import javalib.worldimages.OverlayImage;
 import javalib.worldimages.Posn;
 import javalib.worldimages.RectangleImage;
 import javalib.worldimages.RotateImage;
 import javalib.worldimages.StarImage;
+import javalib.worldimages.TextImage;
+import javalib.worldimages.WorldEnd;
 import javalib.worldimages.WorldImage;
 import tester.Tester;
 
@@ -185,7 +189,7 @@ class ExamplesLightEmAll {
     this.grid1Nodes.add(this.gamePiece7);
     this.grid1Nodes.add(this.gamePiece8);
     this.grid1Nodes.add(this.gamePiece9);
-    this.game1 = new LightEmAll(3, 3, -1);
+    this.game1 = new LightEmAll(3, 3, -1, new Random(3));
     this.game2 = new LightEmAll(10, 10, -1);
 
     this.gamePiece01 = new GamePiece(0, 0, false, true, false, false);
@@ -616,7 +620,9 @@ class ExamplesLightEmAll {
     t.checkExpect(this.twoByTwo.locatePiece(new Posn(1, 0)), this.twoGamePiece1);
     t.checkExpect(this.twoByTwo.locatePiece(new Posn(1, 1)), this.twoGamePiece1);
     t.checkExpect(this.twoByTwo.locatePiece(new Posn(2, 2)), this.twoGamePiece1);
-    t.checkExpect(this.twoByTwo.locatePiece(new Posn(5, 5)), this.twoGamePiece1);
+    t.checkExpect(this.twoByTwo.locatePiece(new Posn(1, 41)), this.twoGamePiece2);
+    t.checkExpect(this.twoByTwo.locatePiece(new Posn(41, 41)), this.twoGamePiece3);
+    t.checkExpect(this.twoByTwo.locatePiece(new Posn(41, 1)), this.twoGamePiece4);
     t.checkExpect(this.twoByTwo.locatePiece(new Posn(0, 0)), this.twoByTwo.board.get(0).get(0));
     t.checkExpect(this.twoByTwo.locatePiece(new Posn(1, 1)), this.twoByTwo.board.get(0).get(0));
   }
@@ -658,6 +664,50 @@ class ExamplesLightEmAll {
   // tests for generateRandomGrid
   void testGenerateRandomGrid(Tester t) {
     initData();
+    this.game1.generateFractalConnections(new Posn(0, 0), this.game1.board);
+    t.checkExpect(this.game1.nodes.get(0).left, false);
+    t.checkExpect(this.game1.nodes.get(0).top, false);
+    t.checkExpect(this.game1.nodes.get(0).right, false);
+    t.checkExpect(this.game1.nodes.get(0).bottom, true);
+    t.checkExpect(this.game1.nodes.get(4).left, false);
+    t.checkExpect(this.game1.nodes.get(4).top, true);
+    t.checkExpect(this.game1.nodes.get(4).right, false);
+    t.checkExpect(this.game1.nodes.get(4).bottom, true);
+    t.checkExpect(this.game1.nodes.get(8).left, true);
+    t.checkExpect(this.game1.nodes.get(8).top, true);
+    t.checkExpect(this.game1.nodes.get(8).right, false);
+    t.checkExpect(this.game1.nodes.get(8).bottom, false);
+    t.checkExpect(this.game1.nodes.get(2).left, false);
+    t.checkExpect(this.game1.nodes.get(2).top, true);
+    t.checkExpect(this.game1.nodes.get(2).right, true);
+    t.checkExpect(this.game1.nodes.get(2).bottom, false);
+    t.checkExpect(this.game1.nodes.get(6).left, false);
+    t.checkExpect(this.game1.nodes.get(6).top, false);
+    t.checkExpect(this.game1.nodes.get(6).right, false);
+    t.checkExpect(this.game1.nodes.get(6).bottom, true);
+    this.game1.generateRandomGrid(this.game1.nodes);
+
+    t.checkExpect(this.game1.nodes.get(0).left, false);
+    t.checkExpect(this.game1.nodes.get(0).top, true);
+    t.checkExpect(this.game1.nodes.get(0).right, false);
+    t.checkExpect(this.game1.nodes.get(0).bottom, false);
+    t.checkExpect(this.game1.nodes.get(4).left, false);
+    t.checkExpect(this.game1.nodes.get(4).top, true);
+    t.checkExpect(this.game1.nodes.get(4).right, false);
+    t.checkExpect(this.game1.nodes.get(4).bottom, true);
+    t.checkExpect(this.game1.nodes.get(8).left, true);
+    t.checkExpect(this.game1.nodes.get(8).top, true);
+    t.checkExpect(this.game1.nodes.get(8).right, false);
+    t.checkExpect(this.game1.nodes.get(8).bottom, false);
+    t.checkExpect(this.game1.nodes.get(2).left, false);
+    t.checkExpect(this.game1.nodes.get(2).top, true);
+    t.checkExpect(this.game1.nodes.get(2).right, true);
+    t.checkExpect(this.game1.nodes.get(2).bottom, false);
+    t.checkExpect(this.game1.nodes.get(6).left, false);
+    t.checkExpect(this.game1.nodes.get(6).top, false);
+    t.checkExpect(this.game1.nodes.get(6).right, true);
+    t.checkExpect(this.game1.nodes.get(6).bottom, false);
+
   }
 
   // tests for onKeyEvent
@@ -739,7 +789,7 @@ class ExamplesLightEmAll {
     t.checkExpect(this.game1.gameEnd, -1);
   }
 
-//tests for getFarthestNode
+  // tests for getFarthestNode
   void testGetFarthestNode(Tester t) {
     initData();
     t.checkExpect(this.threeByThreeU.getFarthestNode(this.threeByThreeU.nodes.get(0)),
@@ -775,14 +825,32 @@ class ExamplesLightEmAll {
         .get(this.threeByThreeU.board.get(2).get(0)), 6);
   }
 
-  /*
-   * // tests for bigBang, will render the game
-   * void testBigBang(Tester t) {
-   * initData();
-   * LightEmAll game = new LightEmAll(10, 10, 2);
-   * game.bigBang(game.width * LightEmAll.CELL_SIZE,
-   * (game.height * LightEmAll.CELL_SIZE) + (LightEmAll.CELL_SIZE * 2), 0.25);
-   * }
-   */
+  // tests for worldEnds
+  void testWorldEnds(Tester t) {
+    initData();
+    int middleX = (int) (this.game1.width * LightEmAll.CELL_SIZE) / 2;
+    int middleY = (int) (this.game1.height * LightEmAll.CELL_SIZE) / 2;
+    WorldScene winScene = this.game1.getEmptyScene();
+    winScene.placeImageXY(new TextImage("You Win!", LightEmAll.CELL_SIZE, Color.GREEN), middleX,
+        middleY);
+    WorldScene loseScene = this.game1.getEmptyScene();
+    loseScene.placeImageXY(new TextImage("You Lose!", LightEmAll.CELL_SIZE, Color.GREEN), middleX,
+        middleY);
+    t.checkExpect(this.game1.worldEnds(), new WorldEnd(false, this.game1.makeScene()));
+    this.game1.gameEnd = 1;
+    t.checkExpect(this.game1.worldEnds(), new WorldEnd(true, winScene));
+    initData();
+    t.checkExpect(this.game1.worldEnds(), new WorldEnd(false, this.game1.makeScene()));
+    this.game1.gameEnd = -1;
+    t.checkExpect(this.game1.worldEnds(), new WorldEnd(true, loseScene));
+  }
+
+  // tests for bigBang, will render the game
+  void testBigBang(Tester t) {
+    initData();
+    LightEmAll game = new LightEmAll(10, 10, 2);
+    game.bigBang(game.width * LightEmAll.CELL_SIZE,
+        (game.height * LightEmAll.CELL_SIZE) + (LightEmAll.CELL_SIZE * 2), 0.25);
+  }
 
 }

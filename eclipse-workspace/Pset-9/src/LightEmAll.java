@@ -13,6 +13,7 @@ import javalib.worldimages.OverlayImage;
 import javalib.worldimages.Posn;
 import javalib.worldimages.RectangleImage;
 import javalib.worldimages.TextImage;
+import javalib.worldimages.WorldEnd;
 import javalib.worldimages.WorldImage;
 
 // game state and main game class
@@ -39,18 +40,23 @@ class LightEmAll extends World {
   int time; // counts time every tick, tickrate of 1 will advance the clock every second
   public static int CELL_SIZE = 40; // size of each cell
 
-  int maxScore = 40; // max number of rotations before you lose
-  int maxTime = 240; // max number of ticks before you lose (divide by 1/tickrate for second value)
+  int maxScore = 2; // max number of rotations before you lose
+  int maxTime = 40; // max number of ticks before you lose (divide by 1/tickrate for second value)
 
   // the default gameplay constructor
   LightEmAll(int width, int height) {
     this(width, height, 3);
   }
 
-  // constructor for generating different types of boards
+  // constructor for making different types of boards
   LightEmAll(int width, int height, int genType) {
+    this(width, height, genType, new Random());
+  }
+
+  // constructor for generating different types of boards but you pass in a random
+  LightEmAll(int width, int height, int genType, Random rand) {
     if (genType == -1) { // this will just make a blank board, no connections or neighbors
-      this.rand = new Random();
+      this.rand = rand;
       this.width = width;
       this.height = height;
       this.powerRow = 0;
@@ -64,7 +70,7 @@ class LightEmAll extends World {
       this.time = 0;
     }
     else if (genType == 1) { // manual board generation
-      this.rand = new Random();
+      this.rand = rand;
       this.width = width;
       this.height = height;
       this.powerRow = 0;
@@ -81,7 +87,7 @@ class LightEmAll extends World {
       this.time = 0;
     }
     else if (genType == 2) { // fractal board generation
-      this.rand = new Random();
+      this.rand = rand;
       this.width = width;
       this.height = height;
       this.powerRow = 0;
@@ -99,7 +105,7 @@ class LightEmAll extends World {
     }
 
     else if (genType == 3) { // random board generation
-      this.rand = new Random();
+      this.rand = rand;
       this.width = width;
       this.height = height;
       this.powerRow = 0;
@@ -548,6 +554,27 @@ class LightEmAll extends World {
     checkGameEnd(this.nodes, this.score, this.time);
     System.out.println(Integer.toString(this.time));
     System.out.println(Integer.toString(this.gameEnd));
+  }
+
+  // ends the world and checks win/loss
+  public WorldEnd worldEnds() {
+    int middleX = (int) (this.width * CELL_SIZE) / 2;
+    int middleY = (int) (this.height * CELL_SIZE) / 2;
+    WorldScene end = this.getEmptyScene();
+    if (this.gameEnd == 1) {
+      end.placeImageXY(new TextImage("You Win!", CELL_SIZE, Color.GREEN), middleX, middleY);
+      return new WorldEnd(true, end);
+    }
+    else if (this.gameEnd == -1) {
+      end.placeImageXY(
+          new TextImage("You Lose!",
+              CELL_SIZE, Color.RED),
+          middleX, middleY);
+      return new WorldEnd(true, end);
+    }
+    else {
+      return new WorldEnd(false, this.makeScene());
+    }
   }
 
   // will check game end state
