@@ -61,6 +61,10 @@ class GamePiece {
     this(row, col, false, false, true, true, false);
   }
 
+  GamePiece() {
+
+  }
+
   // draws the GamePiece
   public WorldImage drawPiece(int radius) {
     WorldImage base = new RectangleImage(LightEmAll.CELL_SIZE, LightEmAll.CELL_SIZE,

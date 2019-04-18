@@ -14,6 +14,12 @@ import tester.Tester;
 // examples class
 class ExamplesLightEmAll {
 
+//2x2 GamePieces 
+  GamePiece twoGamePiece1;
+  GamePiece twoGamePiece2;
+  GamePiece twoGamePiece3;
+  GamePiece twoGamePiece4;
+
   ArrayList<GamePiece> mt;
   GamePiece gamePiece1;
   GamePiece gamePiece2;
@@ -32,7 +38,7 @@ class ExamplesLightEmAll {
   LightEmAll game1;
   LightEmAll game2;
 
-  // making a 3 x 5 grid
+// making a 3 x 5 grid
   GamePiece gamePiece01;
   GamePiece gamePiece02;
   GamePiece gamePiece03;
@@ -65,6 +71,11 @@ class ExamplesLightEmAll {
   HashMap<String, GamePiece> gamePiece8Neighbors;
   HashMap<String, GamePiece> gamePiece9Neighbors;
 
+  HashMap<String, GamePiece> twoGamePiece1Neighbors;
+  HashMap<String, GamePiece> twoGamePiece2Neighbors;
+  HashMap<String, GamePiece> twoGamePiece3Neighbors;
+  HashMap<String, GamePiece> twoGamePiece4Neighbors;
+
   LightEmAll twoByTwoBlank;
   LightEmAll twoByTwo;
   LightEmAll threeByThreeU;
@@ -73,7 +84,6 @@ class ExamplesLightEmAll {
 
   public void initData() {
     this.mt = new ArrayList<GamePiece>();
-    // TODO: edit game pieces to add neighbors
 
     this.gamePiece1Neighbors = new HashMap<String, GamePiece>();
     this.gamePiece2Neighbors = new HashMap<String, GamePiece>();
@@ -84,6 +94,29 @@ class ExamplesLightEmAll {
     this.gamePiece7Neighbors = new HashMap<String, GamePiece>();
     this.gamePiece8Neighbors = new HashMap<String, GamePiece>();
     this.gamePiece9Neighbors = new HashMap<String, GamePiece>();
+
+    this.twoGamePiece1Neighbors = new HashMap<String, GamePiece>();
+    this.twoGamePiece2Neighbors = new HashMap<String, GamePiece>();
+    this.twoGamePiece3Neighbors = new HashMap<String, GamePiece>();
+    this.twoGamePiece4Neighbors = new HashMap<String, GamePiece>();
+
+    this.twoGamePiece1 = new GamePiece(0, 0, this.twoGamePiece1Neighbors, false, false, false, true,
+        true, 3);
+    this.twoGamePiece2 = new GamePiece(1, 0, this.twoGamePiece2Neighbors, false, true, true, false,
+        false, 2);
+    this.twoGamePiece3 = new GamePiece(1, 1, this.twoGamePiece3Neighbors, true, false, true, false,
+        false, 1);
+    this.twoGamePiece4 = new GamePiece(0, 1, this.twoGamePiece4Neighbors, false, false, false, true,
+        false, 0);
+
+    this.twoGamePiece1Neighbors.put("bottom", this.twoGamePiece2);
+    this.twoGamePiece1Neighbors.put("right", this.twoGamePiece4);
+    this.twoGamePiece2Neighbors.put("top", this.twoGamePiece1);
+    this.twoGamePiece2Neighbors.put("right", this.twoGamePiece3);
+    this.twoGamePiece3Neighbors.put("left", this.twoGamePiece2);
+    this.twoGamePiece3Neighbors.put("top", this.twoGamePiece4);
+    this.twoGamePiece4Neighbors.put("bottom", this.twoGamePiece3);
+    this.twoGamePiece4Neighbors.put("left", this.twoGamePiece1);
 
     this.gamePiece1 = new GamePiece(0, 0, this.gamePiece1Neighbors, false, false, false, true, true,
         0);
@@ -208,16 +241,17 @@ class ExamplesLightEmAll {
     this.grid3Nodes.add(this.gamePiece13);
     this.grid3Nodes.add(this.gamePiece14);
     this.grid3Nodes.add(this.gamePiece15);
-    this.game3 = new LightEmAll(5, 3);
+    this.game3 = new LightEmAll(5, 3, 2);
 
     this.twoByTwoBlank = new LightEmAll(2, 2, -1);
     this.twoByTwo = new LightEmAll(2, 2, 2);
     this.threeByThreeU = new LightEmAll(3, 3, 2);
     this.tenByTen = new LightEmAll(10, 10, 1);
     this.fourByFour = new LightEmAll(4, 4, 1);
+
   }
 
-  // tests for drawPiece
+//tests for drawPiece
   void testDrawPiece(Tester t) {
     // these tests are based off the coloring of a 10 radius board
     WorldImage base = new RectangleImage(LightEmAll.CELL_SIZE, LightEmAll.CELL_SIZE,
@@ -245,9 +279,14 @@ class ExamplesLightEmAll {
                 90.0), 90.0)));
   }
 
-  // TODO tests for calcColor
+  // tests for calcColor
   void testCalcColor(Tester t) {
     initData();
+    t.checkExpect(this.game1.board.get(0).get(0).calcColor(this.game1.width), Color.gray);
+    t.checkExpect(this.game3.board.get(0).get(0).calcColor(this.game3.width), Color.YELLOW);
+    t.checkExpect(this.game3.board.get(2).get(0).calcColor(this.game3.width), Color.gray);
+    t.checkExpect(this.twoByTwo.board.get(0).get(0).calcColor(3), Color.YELLOW);
+    t.checkExpect(this.twoByTwo.board.get(1).get(0).calcColor(3), Color.gray);
 
   }
 
@@ -338,9 +377,22 @@ class ExamplesLightEmAll {
     t.checkExpect(this.gamePiece3.bottom, false);
   }
 
-  // TODO tests for powerNeighbors
+  // tests for powerNeighbors
   void testPowerNeighbors(Tester t) {
     initData();
+    t.checkExpect(this.twoByTwo.board.get(0).get(0).powerLevel, 3);
+    t.checkExpect(this.twoByTwo.board.get(1).get(0).powerLevel, 0);
+    t.checkExpect(this.twoByTwo.board.get(0).get(1).powerLevel, 2);
+
+  }
+
+  // tests for generateBoard
+  void testGenerateBoard(Tester t) {
+    initData();
+    t.checkExpect(this.game1.generateBoard().size(), 3);
+    t.checkExpect(this.game1.generateBoard().get(0).size(), 3);
+    t.checkExpect(this.game2.generateBoard().size(), 10);
+    t.checkExpect(this.game2.generateBoard().get(0).size(), 10);
   }
 
   // tests for grabAllNodes
@@ -354,14 +406,80 @@ class ExamplesLightEmAll {
     t.checkExpect(this.game2.nodes.size(), 100);
   }
 
-  // TODO tests for manualConnections
+  // tests for manualConnections
   public void testManualConnections(Tester t) {
     initData();
+    t.checkExpect(this.game1.board.get(0).get(0).right, false);
+    t.checkExpect(this.game1.board.get(1).get(1).right, false);
+    t.checkExpect(this.game1.board.get(2).get(0).right, false);
+
+    this.game1.generateManualConnections();
+    t.checkExpect(this.game1.board.get(0).get(0).right, true);
+    t.checkExpect(this.game1.board.get(0).get(0).right, true);
+    t.checkExpect(this.game1.board.get(1).get(1).right, true);
+    t.checkExpect(this.game1.board.get(1).get(1).bottom, true);
+    t.checkExpect(this.game1.board.get(1).get(1).top, true);
+    t.checkExpect(this.game1.board.get(2).get(0).right, false);
+    t.checkExpect(this.game1.board.get(2).get(0).left, true);
+
   }
 
   // TODO tests for generateFractalConnections
   void testGenerateFractalConnections(Tester t) {
     initData();
+    t.checkExpect(this.game1.board.get(0).get(0).bottom, false);
+    t.checkExpect(this.game1.board.get(0).get(1).bottom, false);
+    t.checkExpect(this.game1.board.get(0).get(1).top, false);
+    t.checkExpect(this.game1.board.get(0).get(2).right, false);
+    t.checkExpect(this.game1.board.get(0).get(2).top, false);
+    this.game1.generateFractalConnections(new Posn(0, 0), this.game1.board);
+    t.checkExpect(this.game1.board.get(0).get(0).bottom, true);
+    t.checkExpect(this.game1.board.get(0).get(1).bottom, true);
+    t.checkExpect(this.game1.board.get(0).get(1).top, true);
+    t.checkExpect(this.game1.board.get(0).get(2).right, true);
+    t.checkExpect(this.game1.board.get(0).get(2).top, true);
+
+    t.checkExpect(this.game2.board.get(0).get(0).bottom, false);
+    t.checkExpect(this.game2.board.get(0).get(1).bottom, false);
+    t.checkExpect(this.game2.board.get(0).get(1).top, false);
+    t.checkExpect(this.game2.board.get(0).get(2).right, false);
+    t.checkExpect(this.game2.board.get(0).get(2).top, false);
+    t.checkExpect(this.game2.board.get(0).get(2).right, false);
+    t.checkExpect(this.game2.board.get(0).get(3).top, false);
+    t.checkExpect(this.game2.board.get(0).get(3).bottom, false);
+    t.checkExpect(this.game2.board.get(1).get(2).right, false);
+    t.checkExpect(this.game2.board.get(1).get(2).left, false);
+    t.checkExpect(this.game2.board.get(1).get(2).top, false);
+    t.checkExpect(this.game2.board.get(3).get(2).right, false);
+    t.checkExpect(this.game2.board.get(3).get(2).top, false);
+    t.checkExpect(this.game2.board.get(4).get(9).top, false);
+    t.checkExpect(this.game2.board.get(4).get(9).right, false);
+    t.checkExpect(this.game2.board.get(4).get(9).left, false);
+    t.checkExpect(this.game2.board.get(4).get(7).top, false);
+    t.checkExpect(this.game2.board.get(4).get(7).left, false);
+    t.checkExpect(this.game2.board.get(4).get(7).bottom, false);
+
+    this.game2.generateFractalConnections(new Posn(0, 0), this.game2.board);
+    t.checkExpect(this.game2.board.get(0).get(0).bottom, true);
+    t.checkExpect(this.game2.board.get(0).get(1).bottom, true);
+    t.checkExpect(this.game2.board.get(0).get(1).top, true);
+    t.checkExpect(this.game2.board.get(0).get(2).right, true);
+    t.checkExpect(this.game2.board.get(0).get(2).top, true);
+    t.checkExpect(this.game2.board.get(0).get(2).right, true);
+    t.checkExpect(this.game2.board.get(0).get(3).top, true);
+    t.checkExpect(this.game2.board.get(0).get(3).bottom, true);
+    t.checkExpect(this.game2.board.get(1).get(2).right, true);
+    t.checkExpect(this.game2.board.get(1).get(2).left, true);
+    t.checkExpect(this.game2.board.get(1).get(2).top, true);
+    t.checkExpect(this.game2.board.get(3).get(2).right, true);
+    t.checkExpect(this.game2.board.get(3).get(2).top, true);
+    t.checkExpect(this.game2.board.get(4).get(9).top, true);
+    t.checkExpect(this.game2.board.get(4).get(9).right, true);
+    t.checkExpect(this.game2.board.get(4).get(9).left, true);
+    t.checkExpect(this.game2.board.get(4).get(7).top, true);
+    t.checkExpect(this.game2.board.get(4).get(7).left, true);
+    t.checkExpect(this.game2.board.get(4).get(7).bottom, true);
+
   }
 
   // tests for splitBoard
@@ -429,15 +547,35 @@ class ExamplesLightEmAll {
     t.checkExpect(this.twoByTwoBlank.board.get(1).get(1).top, true);
   }
 
-  // TODO tests for generateBoard
-  void testGenerateBoard(Tester t) {
-    initData();
-
-  }
-
-  // TODO tests for onMouseClicked
+  // tests for onMouseClicked
   void testOnMouseClicked(Tester t) {
     initData();
+    t.checkExpect(this.game3.board.get(0).get(0).top, false);
+    t.checkExpect(this.game3.board.get(0).get(0).right, false);
+    t.checkExpect(this.game3.board.get(0).get(0).bottom, true);
+    t.checkExpect(this.game3.board.get(0).get(0).left, false);
+    t.checkExpect(this.game3.score, 0);
+
+    this.game3.onMouseClicked(new Posn(0, 0), "LeftButton");
+    t.checkExpect(this.game3.board.get(0).get(0).top, false);
+    t.checkExpect(this.game3.board.get(0).get(0).right, false);
+    t.checkExpect(this.game3.board.get(0).get(0).bottom, false);
+    t.checkExpect(this.game3.board.get(0).get(0).left, true);
+    t.checkExpect(this.game3.score, 1);
+
+    this.game3.onMouseClicked(new Posn(0, 0), "RightButton");
+    t.checkExpect(this.game3.board.get(0).get(0).top, false);
+    t.checkExpect(this.game3.board.get(0).get(0).right, false);
+    t.checkExpect(this.game3.board.get(0).get(0).bottom, true);
+    t.checkExpect(this.game3.board.get(0).get(0).left, false);
+    t.checkExpect(this.game3.score, 2);
+
+    this.game3.onMouseClicked(new Posn(0, 0), "RightButton");
+    t.checkExpect(this.game3.board.get(0).get(0).top, false);
+    t.checkExpect(this.game3.board.get(0).get(0).right, true);
+    t.checkExpect(this.game3.board.get(0).get(0).bottom, false);
+    t.checkExpect(this.game3.board.get(0).get(0).left, false);
+    t.checkExpect(this.game3.score, 3);
 
   }
 
@@ -460,10 +598,27 @@ class ExamplesLightEmAll {
 
   }
 
-  // TODO tests for locatePiece
+  // tests for locatePiece
   void testLocatePiece(Tester t) {
     initData();
-
+    t.checkExpect(this.game1.locatePiece(new Posn(0, 0)),
+        new GamePiece(0, 0, false, false, false, false));
+    t.checkExpect(this.game2.locatePiece(new Posn(0, 0)),
+        new GamePiece(0, 0, false, false, false, false));
+    t.checkExpect(this.game1.locatePiece(new Posn(1, 1)),
+        new GamePiece(0, 0, false, false, false, false));
+    t.checkExpect(this.game1.locatePiece(new Posn(0, 2)),
+        new GamePiece(0, 0, false, false, false, false));
+    t.checkExpect(this.game1.locatePiece(new Posn(1, 1)),
+        new GamePiece(0, 0, false, false, false, false));
+    t.checkExpect(this.twoByTwo.locatePiece(new Posn(0, 0)), this.twoGamePiece1);
+    t.checkExpect(this.twoByTwo.locatePiece(new Posn(0, 1)), this.twoGamePiece1);
+    t.checkExpect(this.twoByTwo.locatePiece(new Posn(1, 0)), this.twoGamePiece1);
+    t.checkExpect(this.twoByTwo.locatePiece(new Posn(1, 1)), this.twoGamePiece1);
+    t.checkExpect(this.twoByTwo.locatePiece(new Posn(2, 2)), this.twoGamePiece1);
+    t.checkExpect(this.twoByTwo.locatePiece(new Posn(5, 5)), this.twoGamePiece1);
+    t.checkExpect(this.twoByTwo.locatePiece(new Posn(0, 0)), this.twoByTwo.board.get(0).get(0));
+    t.checkExpect(this.twoByTwo.locatePiece(new Posn(1, 1)), this.twoByTwo.board.get(0).get(0));
   }
 
   // tests for restartGame
@@ -471,32 +626,120 @@ class ExamplesLightEmAll {
     initData();
     this.game1.onMouseClicked(new Posn(1, 1), "LeftButton");
     t.checkExpect(this.game1.score, 1);
+    t.checkExpect(this.game1.time, 0);
+    this.game1.onTick();
+    this.game1.onTick();
+    this.game1.onTick();
+    this.game1.onTick();
+    t.checkExpect(this.game1.time, 4);
     this.game1.restartGame();
     t.checkExpect(this.game1.score, 0);
+    t.checkExpect(this.game1.time, 0);
 
     this.game2.onMouseClicked(new Posn(1, 1), "RightButton");
     t.checkExpect(this.game2.score, 1);
+    t.checkExpect(this.game2.time, 0);
+    this.game2.onTick();
+    t.checkExpect(this.game2.time, 1);
     this.game2.restartGame();
     t.checkExpect(this.game2.score, 0);
-
-    this.twoByTwo.onMouseClicked(new Posn(1, 1), "RightButton");
-    // t.checkExpect(this.twoByTwo.score, 1);
-    this.twoByTwo.restartGame();
-    // t.checkExpect(this.twoByTwo.score, 0);
+    t.checkExpect(this.game2.time, 0);
   }
 
-  // TODO tests for updatePower
+  // tests for updatePower
   void testUpdatePower(Tester t) {
     initData();
+    t.checkExpect(this.twoByTwo.board.get(1).get(0).powerStation, false);
+    this.twoByTwo.updatePower(this.twoByTwo.board);
+    t.checkExpect(this.twoByTwo.board.get(0).get(0).powerStation, true);
+
   }
 
-  // TODO tests for onKeyEvent
+  // tests for generateRandomGrid
+  void testGenerateRandomGrid(Tester t) {
+    initData();
+  }
+
+  // tests for onKeyEvent
   void testOnKeyEvent(Tester t) {
     initData();
+    t.checkExpect(this.twoByTwo.powerRow, 0);
+    this.twoByTwo.onKeyEvent("down");
+    t.checkExpect(this.twoByTwo.powerRow, 1);
+    this.twoByTwo.onKeyEvent("right");
+    t.checkExpect(this.twoByTwo.powerCol, 1);
+
+    t.checkExpect(this.game3.powerRow, 0);
+    this.game3.onKeyEvent("down");
+    t.checkExpect(this.game3.powerRow, 1);
+    this.game3.onKeyEvent("down");
+    t.checkExpect(this.game3.powerRow, 2);
+    this.game3.onKeyEvent("right");
+    t.checkExpect(this.game3.powerCol, 1);
+  }
+
+  // tests for checkGameEnd
+  void testCheckGameEnd(Tester t) {
+    initData();
+    t.checkExpect(this.game2.gameEnd, 0);
+    this.game2.checkGameEnd(this.game2.nodes, this.game2.score, this.game2.time);
+    t.checkExpect(this.game2.gameEnd, 0);
+
+    initData();
+    t.checkExpect(this.game2.gameEnd, 0);
+    this.game2.time = this.game2.maxTime - 1;
+    this.game2.checkGameEnd(this.game2.nodes, this.game2.score, this.game2.time);
+    t.checkExpect(this.game2.gameEnd, 0);
+
+    initData();
+    t.checkExpect(this.game2.gameEnd, 0);
+    this.game2.time = this.game2.maxTime;
+    this.game2.checkGameEnd(this.game2.nodes, this.game2.score, this.game2.time);
+    t.checkExpect(this.game2.gameEnd, -1);
+
+    initData();
+    t.checkExpect(this.game2.gameEnd, 0);
+    this.game2.time = this.game2.maxTime + 1;
+    this.game2.checkGameEnd(this.game2.nodes, this.game2.score, this.game2.time);
+    t.checkExpect(this.game2.gameEnd, -1);
+
+    initData();
+    t.checkExpect(this.game2.gameEnd, 0);
+    this.game2.score = this.game2.maxScore - 1;
+    this.game2.checkGameEnd(this.game2.nodes, this.game2.score, this.game2.score);
+    t.checkExpect(this.game2.gameEnd, 0);
+
+    initData();
+    t.checkExpect(this.game2.gameEnd, 0);
+    this.game2.score = this.game2.maxScore;
+    this.game2.checkGameEnd(this.game2.nodes, this.game2.score, this.game2.score);
+    t.checkExpect(this.game2.gameEnd, -1);
+
+    initData();
+    t.checkExpect(this.game2.gameEnd, 0);
+    this.game2.score = this.game2.maxScore + 1;
+    this.game2.checkGameEnd(this.game2.nodes, this.game2.score, this.game2.score);
+    t.checkExpect(this.game2.gameEnd, -1);
 
   }
 
-  // tests for getFarthestNode
+  // tests for onTick
+  void testOnTick(Tester t) {
+    initData();
+    t.checkExpect(this.game1.time, 0);
+    this.game1.onTick();
+    t.checkExpect(this.game1.time, 1);
+    this.game1.onTick();
+    t.checkExpect(this.game1.time, 2);
+    initData();
+    t.checkExpect(this.game1.gameEnd, 0);
+    this.game1.time = 99999998;
+    this.game1.onTick();
+    t.checkExpect(this.game1.time, 99999999);
+    t.checkExpect(this.game1.gameEnd, -1);
+  }
+
+//tests for getFarthestNode
   void testGetFarthestNode(Tester t) {
     initData();
     t.checkExpect(this.threeByThreeU.getFarthestNode(this.threeByThreeU.nodes.get(0)),
@@ -533,10 +776,10 @@ class ExamplesLightEmAll {
   }
 
   /*
-   * // tests for big bang
+   * // tests for bigBang, will render the game
    * void testBigBang(Tester t) {
    * initData();
-   * LightEmAll game = new LightEmAll(10, 10, 1);
+   * LightEmAll game = new LightEmAll(10, 10, 2);
    * game.bigBang(game.width * LightEmAll.CELL_SIZE,
    * (game.height * LightEmAll.CELL_SIZE) + (LightEmAll.CELL_SIZE * 2), 0.25);
    * }

@@ -30,16 +30,21 @@ class LightEmAll extends World {
   int height; // row count
   // the current location of the power station,
   // as well as its effective radius
-  int powerRow;
-  int powerCol;
-  int radius;
-  Random rand;
-  int score;
-  public static int CELL_SIZE = 40;
+  int powerRow; // row to place the powerStation
+  int powerCol; // column to place the powerStation
+  int radius; // radius of the game's graph, also how far power will reach outward
+  Random rand; // random for all random game elements
+  int score; // number of rotations the player does
+  int gameEnd; // 0 is ongoing, -1 is a loss, 1 is a win
+  int time; // counts time every tick, tickrate of 1 will advance the clock every second
+  public static int CELL_SIZE = 40; // size of each cell
 
-  // the gameplay constructor
+  int maxScore = 40; // max number of rotations before you lose
+  int maxTime = 240; // max number of ticks before you lose (divide by 1/tickrate for second value)
+
+  // the default gameplay constructor
   LightEmAll(int width, int height) {
-    this(width, height, 2);
+    this(width, height, 3);
   }
 
   // constructor for generating different types of boards
@@ -55,6 +60,8 @@ class LightEmAll extends World {
       this.mst = new ArrayList<Edge>();
       this.score = 0;
       this.radius = (this.calcDiameter() / 2) + 1;
+      this.gameEnd = 0;
+      this.time = 0;
     }
     else if (genType == 1) { // manual board generation
       this.rand = new Random();
@@ -70,6 +77,8 @@ class LightEmAll extends World {
       updateAllNeighbors();
       this.radius = (this.calcDiameter() / 2) + 1;
       updatePower(this.board);
+      this.gameEnd = 0;
+      this.time = 0;
     }
     else if (genType == 2) { // fractal board generation
       this.rand = new Random();
@@ -85,6 +94,28 @@ class LightEmAll extends World {
       updateAllNeighbors();
       this.radius = (this.calcDiameter() / 2) + 1;
       updatePower(this.board);
+      this.gameEnd = 0;
+      this.time = 0;
+    }
+
+    else if (genType == 3) { // random board generation
+      this.rand = new Random();
+      this.width = width;
+      this.height = height;
+      this.powerRow = 0;
+      this.powerCol = 0;
+      this.board = this.generateBoard();
+      this.nodes = this.grabAllNodes();
+      this.mst = new ArrayList<Edge>();
+      this.score = 0;
+      this.radius = (this.calcDiameter() / 2) + 1;
+      generateFractalConnections(new Posn(0, 0), this.board);
+      updateAllNeighbors();
+      this.radius = (this.calcDiameter() / 2) + 1;
+      generateRandomGrid(this.nodes);
+      updatePower(this.board);
+      this.gameEnd = 0;
+      this.time = 0;
     }
   }
 
@@ -298,7 +329,19 @@ class LightEmAll extends World {
         genBoard.get(c).add(new GamePiece(r, c, false, false, false, false));
       }
     }
+
     return genBoard;
+
+  }
+
+  // takes in a grid of gamepieces and rotates each piece by a random integer
+  public void generateRandomGrid(ArrayList<GamePiece> nodes) {
+    for (GamePiece node : nodes) {
+      int numRotations = this.rand.nextInt(4);
+      for (int i = 0; i < numRotations; i++) {
+        node.rotatePiece(1);
+      }
+    }
   }
 
   // handles clicks
@@ -314,6 +357,7 @@ class LightEmAll extends World {
     }
     updateAllNeighbors();
     updatePower(this.board);
+    checkGameEnd(this.nodes, this.score, this.time);
   }
 
   // adds all the neighbors to each cell of the game board
@@ -380,8 +424,11 @@ class LightEmAll extends World {
     // combines the boards
     gameScene.placeImageXY(scoreBoard, boardWidth / 2, boardHeight + CELL_SIZE);
     // displays restart instructions
-    gameScene.placeImageXY(new TextImage("Press space to restart.", 15, Color.BLACK),
-        boardWidth / 5, boardHeight + CELL_SIZE);
+    gameScene.placeImageXY(new TextImage("Press space to restart.", 10, Color.BLACK),
+        boardWidth / 2, boardHeight + (CELL_SIZE / 4));
+    gameScene.placeImageXY(
+        new TextImage("Time: " + Integer.toString((int) (this.time / 4)), 10, Color.BLACK),
+        boardWidth / 2, boardHeight + CELL_SIZE + (3 * (CELL_SIZE / 4)));
     return gameScene;
   }
 
@@ -397,7 +444,9 @@ class LightEmAll extends World {
     this.powerCol = newGame.powerCol;
     this.radius = newGame.radius;
     this.rand = newGame.rand;
-    this.score = 0;
+    this.score = newGame.score;
+    this.gameEnd = newGame.gameEnd;
+    this.time = newGame.time;
   }
 
   // powers the board
@@ -493,4 +542,36 @@ class LightEmAll extends World {
     updatePower(this.board);
   }
 
+  // will run onTick functions
+  public void onTick() {
+    this.time++;
+    checkGameEnd(this.nodes, this.score, this.time);
+    System.out.println(Integer.toString(this.time));
+    System.out.println(Integer.toString(this.gameEnd));
+  }
+
+  // will check game end state
+  public void checkGameEnd(ArrayList<GamePiece> nodes, int currScore, int currTime) {
+    boolean win = true;
+    boolean loss = true;
+    for (GamePiece node : nodes) {
+      if (node.powerLevel < 1) {
+        win = false;
+      }
+    }
+    // checks if the score and time is less than the defined maxes
+    if (this.score < maxScore && this.time < maxTime) {
+      loss = false;
+    }
+
+    if (win) {
+      this.gameEnd = 1; // returns 1 if game is won
+    }
+    else if (loss) {
+      this.gameEnd = -1; // returns -1 if game is lost
+    }
+    else {
+      this.gameEnd = 0; // returns 0 if the game is ongoing
+    }
+  }
 }

@@ -3,7 +3,6 @@
     <fullyQualifiedTypeName name="ILoRoadTripChunk"/>
     <fullyQualifiedTypeName name="javalib.worldcanvas.WorldCanvas"/>
     <fullyQualifiedTypeName name="javalib.worldimages.CircleImage"/>
-    <fullyQualifiedTypeName name="javalib.worldimages.OverlayImage"/>
     <fullyQualifiedTypeName name="java.lang.Math"/>
     <fullyQualifiedTypeName name="Monomial"/>
     <fullyQualifiedTypeName name="tester.Tester"/>
@@ -15,9 +14,11 @@
     <fullyQualifiedTypeName name="javalib.impworld.World"/>
     <fullyQualifiedTypeName name="javalib.worldimages.VisiblePinholeImage"/>
     <fullyQualifiedTypeName name="javalib.worldimages.RotateImage"/>
-    <fullyQualifiedTypeName name="javalib.worldimages.OutlineMode"/>
     <fullyQualifiedTypeName name="java.awt.Color"/>
     <fullyQualifiedTypeName name="java.awt.Font"/>
     <fullyQualifiedTypeName name="java.util.Deque"/>
+    <fullyQualifiedTypeName name="javalib.worldimages.OutlineMode"/>
+    <fullyQualifiedTypeName name="javalib.worldimages.OverlayImage"/>
+    <fullyQualifiedTypeName name="java.util.Arrays"/>
     <fullyQualifiedTypeName name="java.lang.System"/>
 </qualifiedTypeNameHistroy>
