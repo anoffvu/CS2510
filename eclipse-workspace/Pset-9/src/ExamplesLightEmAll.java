@@ -1,5 +1,6 @@
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -18,7 +19,7 @@ import tester.Tester;
 // examples class
 class ExamplesLightEmAll {
 
-//2x2 GamePieces 
+  // 2x2 GamePieces
   GamePiece twoGamePiece1;
   GamePiece twoGamePiece2;
   GamePiece twoGamePiece3;
@@ -42,7 +43,7 @@ class ExamplesLightEmAll {
   LightEmAll game1;
   LightEmAll game2;
 
-// making a 3 x 5 grid
+  // making a 3 x 5 grid
   GamePiece gamePiece01;
   GamePiece gamePiece02;
   GamePiece gamePiece03;
@@ -85,6 +86,8 @@ class ExamplesLightEmAll {
   LightEmAll threeByThreeU;
   LightEmAll tenByTen;
   LightEmAll fourByFour;
+
+  ArrayList<Edge> emptyEdges;
 
   public void initData() {
     this.mt = new ArrayList<GamePiece>();
@@ -252,10 +255,11 @@ class ExamplesLightEmAll {
     this.threeByThreeU = new LightEmAll(3, 3, 2);
     this.tenByTen = new LightEmAll(10, 10, 1);
     this.fourByFour = new LightEmAll(4, 4, 1);
+    this.emptyEdges = new ArrayList<Edge>();
 
   }
 
-//tests for drawPiece
+  // tests for drawPiece
   void testDrawPiece(Tester t) {
     // these tests are based off the coloring of a 10 radius board
     WorldImage base = new RectangleImage(LightEmAll.CELL_SIZE, LightEmAll.CELL_SIZE,
@@ -428,7 +432,7 @@ class ExamplesLightEmAll {
 
   }
 
-  // TODO tests for generateFractalConnections
+  // tests for generateFractalConnections
   void testGenerateFractalConnections(Tester t) {
     initData();
     t.checkExpect(this.game1.board.get(0).get(0).bottom, false);
@@ -685,16 +689,16 @@ class ExamplesLightEmAll {
     t.checkExpect(this.game1.nodes.get(6).top, false);
     t.checkExpect(this.game1.nodes.get(6).right, false);
     t.checkExpect(this.game1.nodes.get(6).bottom, true);
-    this.game1.generateRandomGrid(this.game1.nodes);
+    this.game1.randomizeGrid(this.game1.nodes);
 
     t.checkExpect(this.game1.nodes.get(0).left, false);
-    t.checkExpect(this.game1.nodes.get(0).top, true);
-    t.checkExpect(this.game1.nodes.get(0).right, false);
+    t.checkExpect(this.game1.nodes.get(0).top, false);
+    t.checkExpect(this.game1.nodes.get(0).right, true);
     t.checkExpect(this.game1.nodes.get(0).bottom, false);
-    t.checkExpect(this.game1.nodes.get(4).left, false);
-    t.checkExpect(this.game1.nodes.get(4).top, true);
-    t.checkExpect(this.game1.nodes.get(4).right, false);
-    t.checkExpect(this.game1.nodes.get(4).bottom, true);
+    t.checkExpect(this.game1.nodes.get(4).left, true);
+    t.checkExpect(this.game1.nodes.get(4).top, false);
+    t.checkExpect(this.game1.nodes.get(4).right, true);
+    t.checkExpect(this.game1.nodes.get(4).bottom, false);
     t.checkExpect(this.game1.nodes.get(8).left, true);
     t.checkExpect(this.game1.nodes.get(8).top, true);
     t.checkExpect(this.game1.nodes.get(8).right, false);
@@ -845,10 +849,58 @@ class ExamplesLightEmAll {
     t.checkExpect(this.game1.worldEnds(), new WorldEnd(true, loseScene));
   }
 
+  // tests for generateAllPossibleEdges
+  void testGenerateAllPossibleEdges(Tester t) {
+    initData();
+    t.checkExpect(this.game1.generateAllPossibleEdges(this.game1.board).size(), 12);
+    t.checkExpect(this.twoByTwo.generateAllPossibleEdges(this.twoByTwo.board).size(), 4);
+  }
+
+  // tests for generateAllPossibleEdges
+  void testEdgeS(Tester t) {
+    initData();
+    this.emptyEdges = this.game1.generateAllPossibleEdges(this.game1.board);
+    t.checkExpect(emptyEdges.get(0).weight, 77);
+    t.checkExpect(emptyEdges.get(2).weight, 181);
+    t.checkExpect(emptyEdges.get(4).weight, 176);
+    Collections.sort(this.emptyEdges, new SortByWeight());
+    t.checkExpect(emptyEdges.get(0).weight, 6);
+    t.checkExpect(emptyEdges.get(1).weight, 14);
+    t.checkExpect(emptyEdges.get(2).weight, 77);
+    t.checkExpect(emptyEdges.get(3).weight, 86);
+    t.checkExpect(emptyEdges.get(4).weight, 92);
+  }
+
+  // tests for initRepresentative
+  void testInitRepresentative(Tester t) {
+    initData();
+    t.checkExpect(this.game1.initRepresentative(this.game1.nodes).get(this.game1.nodes.get(0)),
+        this.game1.nodes.get(0));
+    t.checkExpect(this.game1.initRepresentative(this.game1.nodes).get(this.game1.nodes.get(2)),
+        this.game1.nodes.get(2));
+    t.checkExpect(this.game1.initRepresentative(this.game1.nodes).get(this.game1.nodes.get(8)),
+        this.game1.nodes.get(8));
+    t.checkExpect(this.game1.initRepresentative(this.game1.nodes).get(this.game1.nodes.get(1)),
+        this.game1.nodes.get(1));
+    
+  }
+
+  // tests for generateEdgeConnections
+  void testGenerateEdgeConnections(Tester t) {
+    initData();
+    t.checkExpect(this.game1.board.get(0).get(0).right, false);
+    t.checkExpect(this.game1.board.get(0).get(1).left, false);
+    t.checkExpect(this.game1.board.get(0).get(0).bottom, false);
+    this.game1.generateEdgeConnections();
+    t.checkExpect(this.game1.board.get(0).get(0).right, true);
+    t.checkExpect(this.game1.board.get(0).get(1).left, false);
+    t.checkExpect(this.game1.board.get(0).get(0).bottom, true);
+  }
+
   // tests for bigBang, will render the game
   void testBigBang(Tester t) {
     initData();
-    LightEmAll game = new LightEmAll(10, 10, 2);
+    LightEmAll game = new LightEmAll(10, 10, 3);
     game.bigBang(game.width * LightEmAll.CELL_SIZE,
         (game.height * LightEmAll.CELL_SIZE) + (LightEmAll.CELL_SIZE * 2), 0.25);
   }

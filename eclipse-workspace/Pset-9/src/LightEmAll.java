@@ -2,6 +2,8 @@ import java.awt.Color;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -40,8 +42,8 @@ class LightEmAll extends World {
   int time; // counts time every tick, tickrate of 1 will advance the clock every second
   public static int CELL_SIZE = 40; // size of each cell
 
-  int maxScore = 2; // max number of rotations before you lose
-  int maxTime = 40; // max number of ticks before you lose (divide by 1/tickrate for second value)
+  int maxScore = 20; // max number of rotations before you lose
+  int maxTime = 240; // max number of ticks before you lose (divide by 1/tickrate for second value)
 
   // the default gameplay constructor
   LightEmAll(int width, int height) {
@@ -63,7 +65,7 @@ class LightEmAll extends World {
       this.powerCol = 0;
       this.board = this.generateBoard();
       this.nodes = this.grabAllNodes();
-      this.mst = new ArrayList<Edge>();
+      this.mst = generateMST(generateAllPossibleEdges(this.board));
       this.score = 0;
       this.radius = (this.calcDiameter() / 2) + 1;
       this.gameEnd = 0;
@@ -77,7 +79,7 @@ class LightEmAll extends World {
       this.powerCol = 0;
       this.board = this.generateBoard();
       this.nodes = this.grabAllNodes();
-      this.mst = new ArrayList<Edge>();
+      this.mst = generateMST(generateAllPossibleEdges(this.board));
       this.score = 0;
       generateManualConnections();
       updateAllNeighbors();
@@ -94,7 +96,7 @@ class LightEmAll extends World {
       this.powerCol = 0;
       this.board = this.generateBoard();
       this.nodes = this.grabAllNodes();
-      this.mst = new ArrayList<Edge>();
+      this.mst = generateMST(generateAllPossibleEdges(this.board));
       this.score = 0;
       generateFractalConnections(new Posn(0, 0), this.board);
       updateAllNeighbors();
@@ -112,13 +114,13 @@ class LightEmAll extends World {
       this.powerCol = 0;
       this.board = this.generateBoard();
       this.nodes = this.grabAllNodes();
-      this.mst = new ArrayList<Edge>();
+      this.mst = generateMST(generateAllPossibleEdges(this.board));
       this.score = 0;
       this.radius = (this.calcDiameter() / 2) + 1;
-      generateFractalConnections(new Posn(0, 0), this.board);
+      generateEdgeConnections();
       updateAllNeighbors();
       this.radius = (this.calcDiameter() / 2) + 1;
-      generateRandomGrid(this.nodes);
+      randomizeGrid(this.nodes);
       updatePower(this.board);
       this.gameEnd = 0;
       this.time = 0;
@@ -341,7 +343,7 @@ class LightEmAll extends World {
   }
 
   // takes in a grid of gamepieces and rotates each piece by a random integer
-  public void generateRandomGrid(ArrayList<GamePiece> nodes) {
+  public void randomizeGrid(ArrayList<GamePiece> nodes) {
     for (GamePiece node : nodes) {
       int numRotations = this.rand.nextInt(4);
       for (int i = 0; i < numRotations; i++) {
@@ -552,8 +554,6 @@ class LightEmAll extends World {
   public void onTick() {
     this.time++;
     checkGameEnd(this.nodes, this.score, this.time);
-    System.out.println(Integer.toString(this.time));
-    System.out.println(Integer.toString(this.gameEnd));
   }
 
   // ends the world and checks win/loss
@@ -566,10 +566,7 @@ class LightEmAll extends World {
       return new WorldEnd(true, end);
     }
     else if (this.gameEnd == -1) {
-      end.placeImageXY(
-          new TextImage("You Lose!",
-              CELL_SIZE, Color.RED),
-          middleX, middleY);
+      end.placeImageXY(new TextImage("You Lose!", CELL_SIZE, Color.RED), middleX, middleY);
       return new WorldEnd(true, end);
     }
     else {
@@ -600,5 +597,96 @@ class LightEmAll extends World {
     else {
       this.gameEnd = 0; // returns 0 if the game is ongoing
     }
+  }
+
+  // creates a list of all the possible edges
+  public ArrayList<Edge> generateAllPossibleEdges(ArrayList<ArrayList<GamePiece>> board) {
+    ArrayList<Edge> ret = new ArrayList<Edge>();
+    for (int c = 0; c < this.width; c++) {
+      for (int r = 0; r < this.height; r++) {
+        if (c < this.width - 1) {
+          ret.add(new Edge(board.get(c).get(r), board.get(c + 1).get(r), this.rand.nextInt(200)));
+        }
+
+        if (r < this.height - 1) {
+          ret.add(new Edge(board.get(c).get(r), board.get(c).get(r + 1), this.rand.nextInt(200)));
+        }
+      }
+    }
+    return ret;
+  }
+
+  // calculates the MST given the edges
+  public ArrayList<Edge> generateMST(ArrayList<Edge> edges) {
+    HashMap<GamePiece, GamePiece> representatives = new HashMap<GamePiece, GamePiece>();
+    ArrayList<Edge> ret = new ArrayList<Edge>();
+    ArrayDeque<Edge> queue = new ArrayDeque<Edge>();
+    ArrayList<Edge> sortedEdges = edges;
+    // sort the edges by ascending weight
+    Collections.sort(sortedEdges, new SortByWeight());
+    // adds the edges to the queue
+    for (Edge e : sortedEdges) {
+      queue.addLast(e);
+    }
+
+    // setting every GamePiece to have itself as a representative
+    for (GamePiece p : this.nodes) {
+      representatives.put(p, p);
+    }
+    // while the work list isn't empty
+    while (!queue.isEmpty()) {
+      // remove first item of work list
+      Edge next = queue.removeFirst();
+      if (find(representatives, next.fromNode) == find(representatives, next.toNode)) {
+        // would adding this edge cause a cycle?
+        // then do nothing
+      }
+      // else add it to the mst, and update the representatives
+      else {
+        ret.add(next);
+        union(representatives, find(representatives, next.fromNode),
+            find(representatives, next.toNode));
+      }
+    }
+    return ret;
+  }
+
+  // finds the representative of the given GamePiece
+  GamePiece find(HashMap<GamePiece, GamePiece> reps, GamePiece key) {
+    if (reps.get(key).equals(key)) {
+      return key;
+    }
+    else {
+      return find(reps, reps.get(key));
+    }
+  }
+
+  // EFFECT: updates the representatives of the hashmap with the given pieces 
+  public void union(HashMap<GamePiece, GamePiece> reps, GamePiece from, GamePiece to) {
+    reps.put(from, to);
+  }
+
+  // makes the initial representatives hashmap for Kruskals
+  public HashMap<GamePiece, GamePiece> initRepresentative(ArrayList<GamePiece> nodes) {
+    HashMap<GamePiece, GamePiece> ret = new HashMap<GamePiece, GamePiece>();
+    for (GamePiece node : nodes) {
+      ret.put(node, node);
+    }
+    return ret;
+  }
+
+  // creates all the board connections where the edges are
+  public void generateEdgeConnections() {
+    for (Edge e : this.mst) {
+      e.createConnections();
+    }
+  }
+}
+
+//compares the weight of 2 edges
+class SortByWeight implements Comparator<Edge> {
+
+  public int compare(Edge edge1, Edge edge2) {
+    return edge1.weight - edge2.weight;
   }
 }
